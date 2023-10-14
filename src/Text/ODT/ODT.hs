@@ -412,9 +412,6 @@ instance MaybeParaStyle ODT where
             textprops 
               | Just tp <- toTextProps textpropsodt = tp
               | Nothing <- toTextProps textpropsodt = newTextProps
-            --   | Nothing <- toTextProps textpropsodt = error $ "No textprops: " <> (show $ getAttrVal styleNameName n1 )-- <> show textpropsodt
-              -- Errors on styles where no textprops are defined, e.g. Standard in styles.xml
-              -- Also errors when appending text style rather than paragraph style
               
   toParaStyle _ = Nothing
 
