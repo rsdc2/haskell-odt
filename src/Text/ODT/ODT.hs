@@ -410,7 +410,8 @@ instance MaybeParaStyle ODT where
               | StyleNode TextPropsNode n odt3 <- textpropsodt = textpropsodt
               | otherwise = error "Unknown error"
             textprops 
-              | Just tp <- toTextProps textpropsodt = tp
+              | Just tp <- toTextProps textpropsodt = 
+                -- If no <text-properties> node, applies the standard text props
               | Nothing <- toTextProps textpropsodt = newTextProps
               
   toParaStyle _ = Nothing
