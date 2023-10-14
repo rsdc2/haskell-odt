@@ -157,38 +157,38 @@ newParaStyle = ParaStyle {
 
 -- TODO add fontsize
 instance Show TextStyle where
-    show :: TextStyle -> String
-    show ts = "TextStyle " <> "[" <> show fontsize <> "," <> show fs <> "," <> show fw <> "," <> show u <> "," <> show tp <> "," <> show name <> "]"
-        where fontsize = getFontSize ts
-              fs = getFontStyle ts
-              fw = getFontWeight ts
-              u = getUnderline ts
-              tp = getTextPosition ts
-              name = textStyleName ts
+  show :: TextStyle -> String
+  show ts = "TextStyle " <> "[" <> show fontsize <> "," <> show fs <> "," <> show fw <> "," <> show u <> "," <> show tp <> "," <> show name <> "]"
+      where fontsize = getFontSize ts
+            fs = getFontStyle ts
+            fw = getFontWeight ts
+            u = getUnderline ts
+            tp = getTextPosition ts
+            name = textStyleName ts
 
 instance Show ParaStyle where
-    show :: ParaStyle -> String
-    show ts = "ParaStyle " <> "[" <> show fs <> "," <> show fw <> "," <> show u <> "," <> show tp <> "," <> show name <> "]"
-        where fs = getFontStyle ts
-              fw = getFontWeight ts
-              u = getUnderline ts
-              tp = getTextPosition ts
-              name = paraStyleName ts
+  show :: ParaStyle -> String
+  show ts = "ParaStyle " <> "[" <> show fs <> "," <> show fw <> "," <> show u <> "," <> show tp <> "," <> show name <> "]"
+      where fs = getFontStyle ts
+            fw = getFontWeight ts
+            u = getUnderline ts
+            tp = getTextPosition ts
+            name = paraStyleName ts
 
 instance Eq TextStyle where
-    x == y =       getFontSize x == getFontSize y
-                && getFontStyle x == getFontStyle y 
-                && getFontWeight x == getFontWeight y
-                && getUnderline x == getUnderline y
-                && getTextPosition x == getTextPosition y
+  x == y =       getFontSize x == getFontSize y
+              && getFontStyle x == getFontStyle y 
+              && getFontWeight x == getFontWeight y
+              && getUnderline x == getUnderline y
+              && getTextPosition x == getTextPosition y
     
 instance Eq ParaStyle where
-    x == y =       getFontSize x == getFontSize y
-                && getFontStyle x == getFontStyle y 
-                && getFontWeight x == getFontWeight y
-                && getUnderline x == getUnderline y
-                && getTextPosition x == getTextPosition y
-                && parentStyleName x == parentStyleName y
+  x == y =       getFontSize x == getFontSize y
+              && getFontStyle x == getFontStyle y 
+              && getFontWeight x == getFontWeight y
+              && getUnderline x == getUnderline y
+              && getTextPosition x == getTextPosition y
+              && parentStyleName x == parentStyleName y
 
 data StyleFamily = 
     MiscFamily T.Text
@@ -259,7 +259,7 @@ instance IsAttrText Underline where
 instance IsAttrText TextPosition where
   toAttrText :: TextPosition -> T.Text
   toAttrText (TextPosition txt) = txt
-  toAttrText NormalPosition = "normal" -- TODO work out what this should be
+  toAttrText NormalPosition = "" -- TODO work out what this should be
 
   fromAttrText :: T.Text -> TextPosition
   fromAttrText s 
@@ -296,7 +296,6 @@ instance IsTextPropAttrMap FontWeight where
       (toName StyleNS "font-weight-asian",    toAttrText fw)
     , (toName StyleNS "font-weight-complex",  toAttrText fw)
     , (toName FoNS "font-weight",             toAttrText fw) ]
-    
 
 instance IsTextPropAttrMap Underline where
   toTextPropAttrMap :: Underline -> Map.Map Name T.Text
@@ -309,7 +308,7 @@ instance IsTextPropAttrMap Underline where
 instance IsTextPropAttrMap TextPosition where
   toTextPropAttrMap :: TextPosition -> Map.Map Name T.Text
   toTextPropAttrMap NormalPosition = Map.empty
-  toTextPropAttrMap (TextPosition txt) = Map.fromList [ (toName StyleNS "text-position", txt)]
+  toTextPropAttrMap (TextPosition txt) = Map.fromList [(toName StyleNS "text-position", txt)]
 
 -- Used when creating a new style node
 instance IsStyle TextStyle where
@@ -320,7 +319,6 @@ instance IsStyle ParaStyle where
   toStyleAttrMap :: ParaStyle -> Map.Map Name T.Text
   toStyleAttrMap ps = Map.union (toStyleAttrMap ParaFamily) (Map.fromList [ (toName StyleNS "name", fromMaybe "" $ paraStyleName ps),
                                                                             (toName StyleNS "parent-style-name", parentStyleName ps)])
-
 
 -- Used when assigning text to a particular style
 instance IsNodeStyleAttrMap TextStyle where
@@ -336,9 +334,6 @@ instance IsNodeStyleAttrMap ParaStyle where
         | Just name <- paraStyleName ps = Map.fromList [ (toName TextNS "style-name", name) ]
 
 -- For generating style attributes in a style definition
-
-
-
 class HasTextStyles a where
   getTextStyles :: a -> [TextStyle]
   getTextStyleName :: TextStyle -> a -> T.Text

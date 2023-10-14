@@ -132,10 +132,10 @@ instance Semigroup ODT where
               styleODT = StyleNode StyleType n2 odt2
               style = toStyle $ styleODT   
 
-    OfficeNode  DocStyles  n1 odt1 <> StyleNode    StyleType   n2 odt2   = OfficeNode DocStyles n1 $ odt1 <> StyleNode    StyleType   n2 odt2
+    OfficeNode  DocStyles  n1 odt1 <> StyleNode StyleType n2 odt2 = OfficeNode DocStyles n1 $ odt1 <> StyleNode StyleType n2 odt2
     
     -- TODO check for styles with the same name 
-    OfficeNode  Styles  n1 odt1 <> StyleNode    StyleType   n2 odt2   = OfficeNode Styles n1 $ ODTSeq (StyleNode    StyleType   n2 odt2) odt1
+    OfficeNode  Styles  n1 odt1 <> StyleNode StyleType n2 odt2 = OfficeNode Styles n1 $ ODTSeq (StyleNode StyleType n2 odt2) odt1
 
     OfficeNode  officeType  n1 odt1 <> StyleNode    StyleType   n2 odt2             = OfficeNode officeType n1 (odt1 <> StyleNode    StyleType   n2' odt2) 
         where   styleODT = StyleNode    StyleType   n2 odt2
