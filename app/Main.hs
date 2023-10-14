@@ -69,15 +69,17 @@ readWriteMonoid = do
     let italicParaODT = toODT italicPara
 
     let archive = Archive {
-        contentDoc = appendODT italicParaODT contentodtdoc
+        -- contentDoc = appendODT italicParaODT contentodtdoc
+        contentDoc = contentodtdoc
       , stylesDoc = appendODT newstyleodt stylesodtdoc  -- . appendODT italicParaODT $ 
-      } 
+    } 
     -- let archive = Archive {contentDoc = contentodtdoc, stylesDoc = appendODT newstyleodt stylesodtdoc} 
     -- let archive = Archive {contentDoc = contentodtdoc, stylesDoc = stylesodtdoc} 
     -- let newodt = ODT.span bold " some bold text"
-    let newodt = mconcat [ ODT.p newParaStyle "Normal parastyle text"
-                  , ODT.p italicPara "Italic parastyle text"
-                  , ODT.p newParaStyle ""
+    let newodt = mconcat [ 
+                    ODT.p newParaStyle "Normal parastyle text"
+                  -- , ODT.p italicPara "Italic parastyle text"
+                  -- , ODT.p newParaStyle ""
                   , ODT.span normal "Some normal text" 
                 --   , ODT.str "This is a new string. "
                   , ODT.span boldItalic "Some bold and italic text"
@@ -85,7 +87,8 @@ readWriteMonoid = do
                   , ODT.span bold " and some bold text." 
                   , ODT.span newstyle " and newstyle text"
                   , ODT.span footnoteAnchor " and footnote anchor text"
-                  , ODT.p newParaStyle ""]
+                  -- , ODT.p newParaStyle ""
+                  ]
 
     -- let newodt = ODT.p <> ODT.span bold "bold text" <> ODT.span italic "italic text" <> ODT.span newstyle "newstyle text"
     

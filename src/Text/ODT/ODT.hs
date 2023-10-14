@@ -212,7 +212,7 @@ instance Semigroup ODT where
 
     -- When an ODTSeq is appended to an ODT, append each element individually
     -- This is what allows style names etc. to be imparted to Span nodes before appending
-    -- TODO test if this is still needed
+    -- TODO test if this is still needed: in practice appending is done to the document
     odt1                            <> ODTSeq       odt2        odt3                = (odt1 <> odt2) <> odt3
 
     -- ERROR: NO PATTERN MATCH
@@ -404,14 +404,15 @@ instance MaybeParaStyle ODT where
 
       where odt1 = StyleNode StyleType n1 odt2
             textpropsodt = getTextPropsODT odt2
-            textpropsodt'
+            textpropsodt'   -- Include this stage to ensure that only one <text-properties> node is returned
               | ODTSeq x y <- textpropsodt = error "More than one <text-properties> node"
               | EmptyODT <- textpropsodt = error "No <text-properties> node"
               | StyleNode TextPropsNode n odt3 <- textpropsodt = textpropsodt
               | otherwise = error "Unknown error"
             textprops 
               | Just tp <- toTextProps textpropsodt = tp
-              | Nothing <- toTextProps textpropsodt = error $ "No textprops: " <> (show $ getAttrVal styleNameName n1 )-- <> show textpropsodt
+              | Nothing <- toTextProps textpropsodt = newTextProps
+            --   | Nothing <- toTextProps textpropsodt = error $ "No textprops: " <> (show $ getAttrVal styleNameName n1 )-- <> show textpropsodt
               -- Errors on styles where no textprops are defined, e.g. Standard in styles.xml
               -- Also errors when appending text style rather than paragraph style
               
