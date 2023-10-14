@@ -56,13 +56,13 @@ readWriteMonoid = do
     let italic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}}
     let underlineStyle = newTextStyle {textTextProps = newTextProps {underline = Solid}}
     let bold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}}
-    let boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold}}
+    let boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
     let normal = newTextStyle 
     let newstyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
     let footnoteAnchor = newTextStyle {textTextProps = newTextProps {textPosition = "super 58%"}}
 
     let italicPara = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
-    let italicParaODT = toODT $ italicPara
+    let italicParaODT = toODT italicPara
     putStrLn $ "\nitalicParaODT: " <> show italicParaODT <> "\n"
 
     let newstyleodt = toODT newstyle

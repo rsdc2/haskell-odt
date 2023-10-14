@@ -289,13 +289,13 @@ instance IsNodes ODT where
 
 instance HasAttrs ODT where 
     getAttrs :: ODT -> Map.Map Name T.Text
-    getAttrs (OfficeNode    _  odtxml  _) = getAttrs odtxml
-    getAttrs (TextNode    _  odtxml  _) = getAttrs odtxml
+    getAttrs (OfficeNode _ odtxml _) = getAttrs odtxml
     getAttrs (TextNode _ odtxml _) = getAttrs odtxml
-    getAttrs (TextLeaf      _    odtxml ) = getAttrs odtxml
-    getAttrs (StyleNode     _   odtxml  _ ) = getAttrs odtxml
+    getAttrs (TextNode _ odtxml _) = getAttrs odtxml
+    getAttrs (TextLeaf _ odtxml ) = getAttrs odtxml
+    getAttrs (StyleNode _ odtxml _) = getAttrs odtxml
     getAttrs (ODTSeq odt1 odt2) = Map.unions [getAttrs odt1, getAttrs odt2]
-    getAttrs (MiscODT       odtxml) = Map.empty
+    getAttrs (MiscODT odtxml) = Map.empty
     getAttrs EmptyODT = Map.empty
 
     getAttrVal :: Name -> ODT -> T.Text
@@ -308,8 +308,9 @@ instance HasAttrs ODT where
     setAttrVal attrname attrval odt = odt -- TODO needs proper treatment
 
 -- Used to realise element attributes as type constructors
-getTypeFromAttr :: (HasAttrs a, IsString b) => Name -> a -> b 
-getTypeFromAttr name hasattrs = fromString . T.unpack . getAttrVal name $ hasattrs
+-- hasattrs is something that has XML attributes, e.g. ODTXML, or Node
+getTypeFromAttr :: (HasAttrs a, IsAttrText b) => Name -> a -> b 
+getTypeFromAttr name hasattrs = fromAttrText . getAttrVal name $ hasattrs
 
 instance HasTextStyles ODT where
     -- Returns a list of TextStyles from an ODT
@@ -327,9 +328,9 @@ instance HasTextStyles ODT where
         | ODTSeq odt2 odt3 <- getTextStylesODT $ odt1 = case toTextStyle odt2 == Just ts1 of
             True -> getAttrVal styleNameName odt2
             False -> getTextStyleName ts1 odt3 
-        | StyleNode StyleType n1 textprops <- getTextStylesODT odt1 = case toTextStyle (StyleNode StyleType n1 textprops) of
-            Just ts1 -> getAttrVal styleNameName n1
-            Nothing -> error $ show odt1
+        | StyleNode StyleType n1 textprops <- getTextStylesODT odt1 = case toTextStyle (StyleNode StyleType n1 textprops) == Just ts1 of
+            True -> getAttrVal styleNameName n1
+            False -> error $ show $ toTextStyle (StyleNode StyleType n1 textprops)-- show ts1
         | EmptyODT <- getTextStylesODT odt1 = error $ show odt1
         | otherwise = error $ show odt1
 
@@ -358,9 +359,9 @@ instance HasParaStyles ODT where
         | ODTSeq odt2 odt3 <- getParaStylesODT $ odt1 = case toParaStyle odt2 == Just ps1 of
             True -> getAttrVal styleNameName odt2
             False -> getParaStyleName ps1 odt3 
-        | StyleNode StyleType n1 textprops <- getParaStylesODT odt1 = case toParaStyle (StyleNode StyleType n1 textprops) of
-            Just ps1 -> getAttrVal styleNameName n1
-            Nothing -> error $ show odt1
+        | StyleNode StyleType n1 textprops <- getParaStylesODT odt1 = case toParaStyle (StyleNode StyleType n1 textprops) == Just ps1 of
+            True -> getAttrVal styleNameName n1
+            False -> error $ show odt1
         | EmptyODT <- getParaStylesODT odt1 = error $ show odt1
         | otherwise = error $ show odt1
 
@@ -376,13 +377,13 @@ instance HasParaStyles ODT where
 
 instance MaybeTextProps ODT where
   toTextProps :: ODT -> Maybe TextProps
-  toTextProps (StyleNode TextPropsNode n _) = 
+  toTextProps (StyleNode TextPropsNode odtxml _) = 
     Just TextProps {
-      fontSize = getTypeFromAttr foFontSizeName n
-    , fontStyle = getTypeFromAttr foFsName n
-    , fontWeight = getTypeFromAttr foFwName n 
-    , underline = getTypeFromAttr (toName StyleNS "text-underline-style") n
-    , textPosition = getTypeFromAttr (toName StyleNS "text-position") n
+      fontSize = getTypeFromAttr (toName FoNS "font-size") odtxml
+    , fontStyle = getTypeFromAttr (toName FoNS "font-style") odtxml
+    , fontWeight = getTypeFromAttr (toName FoNS "font-weight") odtxml
+    , underline = getTypeFromAttr (toName StyleNS "text-underline-style") odtxml
+    , textPosition = getTypeFromAttr (toName StyleNS "text-position") odtxml
   }
   toTextProps _ = Nothing
 
@@ -509,7 +510,7 @@ getStyleODTByFamily stylefamily odt1
       otherwise -> EmptyODT
   | ODTSeq odt2 odt3 <- odt1 = getStyleODTByFamily stylefamily odt2 <> getStyleODTByFamily stylefamily odt3
   | otherwise = EmptyODT
-      where stylefamilyAttrVal = getAttrText stylefamily
+      where stylefamilyAttrVal = toAttrText stylefamily
 
 -- Returns an ODTSeq (or single instance) of text styles
 getTextStylesODT :: ODT -> ODT
