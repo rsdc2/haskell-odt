@@ -42,6 +42,11 @@ import Text.ODT.ODTXML.Name
 class IsAttrText a where
   getAttrText :: a -> T.Text
 
+data FontSize =
+    FontSize T.Text
+  | NormalSize
+  deriving (Show, Eq)
+
 data FontStyle =
     NormalStyle
   | Italic
@@ -61,6 +66,10 @@ data TextPosition =
     TextPosition T.Text
   | NormalPosition
   deriving (Show, Eq)
+
+instance IsString FontSize where
+  fromString :: String -> FontSize
+  fromString s = FontSize . T.pack $ s   -- TODO make this check that format of string correct
 
 instance IsString FontStyle where
   fromString :: String -> FontStyle
@@ -88,7 +97,8 @@ instance IsString TextPosition where
       | otherwise = TextPosition . T.pack $ s
 
 data TextProps = TextProps {
-    fontStyle :: FontStyle
+    fontSize :: FontSize
+  , fontStyle :: FontStyle
   , fontWeight :: FontWeight
   , underline :: Underline
   , textPosition :: TextPosition
@@ -108,6 +118,7 @@ data ParaStyle =
   }
 
 class HasTextProps a where
+  getFontSize :: a -> FontSize
   getFontStyle :: a -> FontStyle
   getFontWeight :: a -> FontWeight
   getUnderline :: a -> Underline
@@ -118,19 +129,24 @@ class IsStyle a where
   toStyleAttrMap :: a -> Map.Map Name T.Text
 
 instance HasTextProps TextProps where
+  getFontSize = fontSize
   getFontStyle = fontStyle
   getFontWeight = fontWeight
   getUnderline = underline
   getTextPosition = textPosition
 
   getTextPropsAttrMap :: TextProps -> Map.Map Name T.Text
-  getTextPropsAttrMap textprops = Map.unions [  toTextPropAttrMap . getFontStyle $ textprops
+  getTextPropsAttrMap textprops = Map.unions [  
+                                        toTextPropAttrMap . getFontSize $ textprops
+                                      , toTextPropAttrMap . getFontStyle $ textprops
                                       , toTextPropAttrMap . getFontWeight $ textprops  
                                       , toTextPropAttrMap . getUnderline $ textprops
-                                      , toTextPropAttrMap . getTextPosition $ textprops  ]
-
+                                      , toTextPropAttrMap . getTextPosition $ textprops  
+                                      ]
 
 instance HasTextProps TextStyle where
+  getFontSize = fontSize . textTextProps
+
   getFontStyle :: TextStyle -> FontStyle
   getFontStyle = fontStyle . textTextProps 
 
@@ -148,6 +164,8 @@ instance HasTextProps TextStyle where
 
 
 instance HasTextProps ParaStyle where
+  getFontSize = fontSize . paraTextProps
+
   getFontStyle :: ParaStyle -> FontStyle
   getFontStyle = fontStyle . paraTextProps
 
@@ -166,22 +184,27 @@ instance HasTextProps ParaStyle where
 
 newTextProps :: TextProps 
 newTextProps = TextProps {
-    fontStyle = NormalStyle
+    fontSize = NormalSize
+  , fontStyle = NormalStyle
   , fontWeight = NormalWeight
   , underline = NoUnderline
   , textPosition = NormalPosition
 }
 
 newTextStyle :: TextStyle
-newTextStyle = TextStyle {    textTextProps = newTextProps
-                            , textStyleName = Nothing       }
+newTextStyle = TextStyle {    
+    textTextProps = newTextProps
+  , textStyleName = Nothing       
+  }
 
 newParaStyle :: ParaStyle
-newParaStyle = ParaStyle {    paraTextProps = newTextProps
-                            , paraStyleName = Nothing       
-                            , parentStyleName = "Standard"     }
+newParaStyle = ParaStyle {    
+    paraTextProps = newTextProps
+  , paraStyleName = Nothing       
+  , parentStyleName = "Standard"     
+  }
 
-
+-- TODO add fontsize
 instance Show TextStyle where
     show :: TextStyle -> String
     show ts = "TextStyle " <> "[" <> show fs <> "," <> show fw <> "," <> show u <> "," <> show tp <> "," <> show name <> "]"
@@ -201,13 +224,15 @@ instance Show ParaStyle where
               name = paraStyleName ts
 
 instance Eq TextStyle where
-    x == y = getFontStyle x == getFontStyle y 
+    x == y =       getFontSize x == getFontSize y
+                && getFontStyle x == getFontStyle y 
                 && getFontWeight x == getFontWeight y
                 && getUnderline x == getUnderline y
                 && getTextPosition x == getTextPosition y
     
 instance Eq ParaStyle where
-    x == y = getFontStyle x == getFontStyle y 
+    x == y =       getFontSize x == getFontSize y
+                && getFontStyle x == getFontStyle y 
                 && getFontWeight x == getFontWeight y
                 && getUnderline x == getUnderline y
                 && getTextPosition x == getTextPosition y
@@ -235,15 +260,20 @@ instance IsStyle StyleFamily where
   toStyleAttrMap :: StyleFamily -> Map.Map Name T.Text
   toStyleAttrMap sf = Map.fromList [(toName StyleNS "family", getAttrText sf)]
 
-instance IsAttrText FontWeight where
-  getAttrText :: FontWeight -> T.Text
-  getAttrText Bold = "bold"
-  getAttrText NormalWeight = "normal"
+instance IsAttrText FontSize where
+  getAttrText :: FontSize -> T.Text
+  getAttrText (FontSize txt) = txt
+  getAttrText NormalSize = "normal"
 
 instance IsAttrText FontStyle where
   getAttrText :: FontStyle -> T.Text
   getAttrText Italic = "italic"
   getAttrText NormalStyle = "normal"
+
+instance IsAttrText FontWeight where
+  getAttrText :: FontWeight -> T.Text
+  getAttrText Bold = "bold"
+  getAttrText NormalWeight = "normal"
 
 instance IsAttrText Underline where
   getAttrText :: Underline -> T.Text
@@ -253,29 +283,43 @@ instance IsAttrText Underline where
 instance IsAttrText TextPosition where
   getAttrText :: TextPosition -> T.Text
   getAttrText (TextPosition txt) = txt
-  getAttrText NormalPosition = "normal"
+  getAttrText NormalPosition = "normal" -- TODO work out what this should be
 
 -- Used in the creation of a new style node
+instance IsTextPropAttrMap FontSize where
+  toTextPropAttrMap :: FontSize -> Map.Map Name T.Text
+  toTextPropAttrMap NormalSize = Map.empty
+  toTextPropAttrMap fs = Map.fromList   [   
+      (toName StyleNS "font-size-asian",    getAttrText fs)
+    , (toName StyleNS "font-size-complex",  getAttrText fs)
+    , (toName FoNS    "font-size",          getAttrText fs) 
+    ]
+
 instance IsTextPropAttrMap FontStyle where
   toTextPropAttrMap :: FontStyle -> Map.Map Name T.Text
   toTextPropAttrMap NormalStyle = Map.empty
-  toTextPropAttrMap fs = Map.fromList   [   (toName StyleNS "font-style-asian",    getAttrText fs)
-                                          , (toName StyleNS "font-style-complex",  getAttrText fs)
-                                          , (toName FoNS    "font-style",          getAttrText fs) ]
+  toTextPropAttrMap fs = Map.fromList   [   
+      (toName StyleNS "font-style-asian",    getAttrText fs)
+    , (toName StyleNS "font-style-complex",  getAttrText fs)
+    , (toName FoNS    "font-style",          getAttrText fs) 
+    ]
 
 instance IsTextPropAttrMap FontWeight where
   toTextPropAttrMap :: FontWeight -> Map.Map Name T.Text
   toTextPropAttrMap NormalWeight = Map.empty
-  toTextPropAttrMap fw = Map.fromList   [   (toName StyleNS "font-weight-asian",    getAttrText fw)
-                                          , (toName StyleNS "font-weight-complex",  getAttrText fw)
-                                          , (toName FoNS "font-weight",             getAttrText fw) ]
+  toTextPropAttrMap fw = Map.fromList   [   
+      (toName StyleNS "font-weight-asian",    getAttrText fw)
+    , (toName StyleNS "font-weight-complex",  getAttrText fw)
+    , (toName FoNS "font-weight",             getAttrText fw) ]
+    
 
 instance IsTextPropAttrMap Underline where
   toTextPropAttrMap :: Underline -> Map.Map Name T.Text
   toTextPropAttrMap NoUnderline = Map.empty
-  toTextPropAttrMap u = Map.fromList   [    (toName StyleNS "text-underline-color", "font-color")
-                                          , (toName StyleNS "text-underline-width", "auto")
-                                          , (toName StyleNS "text-underline-style", getAttrText u) ]
+  toTextPropAttrMap u = Map.fromList   [    
+      (toName StyleNS "text-underline-color", "font-color")
+    , (toName StyleNS "text-underline-width", "auto")
+    , (toName StyleNS "text-underline-style", getAttrText u) ]
 
 instance IsTextPropAttrMap TextPosition where
   toTextPropAttrMap :: TextPosition -> Map.Map Name T.Text

@@ -2,7 +2,8 @@
 {-# LANGUAGE InstanceSigs #-}
 
 module Text.ODT.ODTXML.Name (
-      foFsName
+      foFontSizeName
+    , foFsName
     , foFwName
     , parentStyleNameName
     , pName
@@ -27,6 +28,9 @@ pName = toName TextNS "p"
 
 spanName :: Name
 spanName = toName TextNS "span"
+
+foFontSizeName :: Name
+foFontSizeName = toName FoNS "font-size"
 
 foFwName :: Name
 foFwName = toName FoNS "font-weight"

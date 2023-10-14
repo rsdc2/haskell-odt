@@ -327,9 +327,9 @@ instance HasTextStyles ODT where
         | ODTSeq odt2 odt3 <- getTextStylesODT $ odt1 = case toTextStyle odt2 == Just ts1 of
             True -> getAttrVal styleNameName odt2
             False -> getTextStyleName ts1 odt3 
-        | StyleNode StyleType n1 textprops <- getTextStylesODT odt1 = case toTextStyle (StyleNode StyleType n1 textprops) == Just ts1 of
-            True -> getAttrVal styleNameName n1
-            False -> error $ show odt1
+        | StyleNode StyleType n1 textprops <- getTextStylesODT odt1 = case toTextStyle (StyleNode StyleType n1 textprops) of
+            Just ts1 -> getAttrVal styleNameName n1
+            Nothing -> error $ show odt1
         | EmptyODT <- getTextStylesODT odt1 = error $ show odt1
         | otherwise = error $ show odt1
 
@@ -358,9 +358,9 @@ instance HasParaStyles ODT where
         | ODTSeq odt2 odt3 <- getParaStylesODT $ odt1 = case toParaStyle odt2 == Just ps1 of
             True -> getAttrVal styleNameName odt2
             False -> getParaStyleName ps1 odt3 
-        | StyleNode StyleType n1 textprops <- getParaStylesODT odt1 = case toParaStyle (StyleNode StyleType n1 textprops) == Just ps1 of
-            True -> getAttrVal styleNameName n1
-            False -> error $ show odt1
+        | StyleNode StyleType n1 textprops <- getParaStylesODT odt1 = case toParaStyle (StyleNode StyleType n1 textprops) of
+            Just ps1 -> getAttrVal styleNameName n1
+            Nothing -> error $ show odt1
         | EmptyODT <- getParaStylesODT odt1 = error $ show odt1
         | otherwise = error $ show odt1
 
@@ -378,7 +378,8 @@ instance MaybeTextProps ODT where
   toTextProps :: ODT -> Maybe TextProps
   toTextProps (StyleNode TextPropsNode n _) = 
     Just TextProps {
-      fontStyle = getTypeFromAttr foFsName n
+      fontSize = getTypeFromAttr foFontSizeName n
+    , fontStyle = getTypeFromAttr foFsName n
     , fontWeight = getTypeFromAttr foFwName n 
     , underline = getTypeFromAttr (toName StyleNS "text-underline-style") n
     , textPosition = getTypeFromAttr (toName StyleNS "text-position") n
@@ -410,7 +411,7 @@ instance MaybeParaStyle ODT where
               | StyleNode TextPropsNode n odt3 <- textpropsodt = textpropsodt
               | otherwise = error "Unknown error"
             textprops 
-              | Just tp <- toTextProps textpropsodt = 
+              | Just tp <- toTextProps textpropsodt = tp
                 -- If no <text-properties> node, applies the standard text props
               | Nothing <- toTextProps textpropsodt = newTextProps
               
@@ -428,7 +429,8 @@ instance MaybeTextStyle ODT where
           case isTextStyle odt1 of
               True -> Just TextStyle {
                             textTextProps = TextProps {
-                                fontStyle = getTypeFromAttr foFsName n2
+                                fontSize = getTypeFromAttr foFontSizeName n2
+                              , fontStyle = getTypeFromAttr foFsName n2
                               , fontWeight = getTypeFromAttr foFwName n2 
                               , underline = getTypeFromAttr (toName StyleNS "text-underline-style") n2
                               , textPosition = getTypeFromAttr (toName StyleNS "text-position") n2
