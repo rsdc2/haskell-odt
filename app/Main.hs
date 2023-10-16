@@ -6,6 +6,7 @@ import qualified Data.ByteString as B
 import qualified Data.Text as T
 import qualified Text.XML as X
 
+import Text.ODT.File
 import Text.ODT.XML.Prettify
 import qualified Text.ODT.Zip.Zip as Z 
 import Text.ODT.Utils.Types (
@@ -18,13 +19,8 @@ import qualified Text.ODT.Ops as ODT
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
 
-type Filepath = String 
-
 exampleFileName = "example2"
 
-path :: String -> Filepath
--- path s = "/data/programming/haskell/doctools-data/" <> s
-path s = "../doctools-data/" <> s
  
 readWriteMonoid :: IO ()
 readWriteMonoid = do
