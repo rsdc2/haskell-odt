@@ -1,15 +1,6 @@
-import AppendSpec
+import HUnitSpec
+import Test.HUnit
 
-
+-- cf. https://hackage.haskell.org/package/HUnit-1.6.2.0/docs/Test-HUnit-Text.html#v:runTestTTAndExit
 main :: IO ()
-main = do
-  boldItalicHappy <- appendBoldItalicSpecHappy
-  case boldItalicHappy of 
-    True -> putStrLn "\nOK"
-    False -> putStrLn "\nFailed"
-
-  boldItalicSad <- appendBoldItalicSpecSad
-  case boldItalicSad of 
-    True -> putStrLn "\nFailed"
-    False -> putStrLn "\nOK"
-
+main = runTestTTAndExit tests

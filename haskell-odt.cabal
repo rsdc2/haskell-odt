@@ -90,6 +90,7 @@ test-suite haskell-odt-test
   main-is: Spec.hs
   other-modules:
       AppendSpec
+      HUnitSpec
       Paths_haskell_odt
   autogen-modules:
       Paths_haskell_odt
@@ -97,7 +98,8 @@ test-suite haskell-odt-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      HUnit
+    , base >=4.7 && <5
     , bytestring
     , containers
     , directory
