@@ -41,22 +41,28 @@ loadArchive = do
 
   return archive
 
-appendBoldItalicSpecSad :: IO Bool
-appendBoldItalicSpecSad = do
-  
+boldItalicStyle :: TextStyle
+boldItalicStyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
+
+italicParaStyle :: ParaStyle
+italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
+
+appendBoldItalicTextStyleWithSpanSad :: IO Bool
+appendBoldItalicTextStyleWithSpanSad =  hasTextStyle boldItalicStyle . contentDoc <$> loadArchive
+
+appendBoldItalicTextStyleWithSpanHappy :: IO Bool
+appendBoldItalicTextStyleWithSpanHappy = do
   archive <- loadArchive
-  let boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
-  return $ hasTextStyle boldItalic . contentDoc $ archive
+  let boldItalicSpan = ODT.span boldItalicStyle "This is bold and italic text"
+  let newcontentdoc = contentDoc . appendODT boldItalicSpan $ archive
+  return $ hasTextStyle boldItalicStyle newcontentdoc
 
+appendItalicParaStyleWithParaSad :: IO Bool
+appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
 
-appendBoldItalicSpecHappy :: IO Bool
-appendBoldItalicSpecHappy = do
-  
+appendItalicParaStyleWithParaHappy :: IO Bool
+appendItalicParaStyleWithParaHappy = do
   archive <- loadArchive
-
-  let boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
-  let boldItalicODT = ODT.span boldItalic "This is bold and italic text"
-  let newcontentdoc = contentDoc . appendODT boldItalicODT $ archive
-
-  return $ hasTextStyle boldItalic newcontentdoc
-
+  let italicPara = ODT.p italicParaStyle "Italic para style"
+  let newcontentdoc = contentDoc . appendODT italicPara $ archive
+  return $ hasParaStyle italicParaStyle newcontentdoc
