@@ -1,5 +1,6 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE GADTs #-}
 
 module Text.ODT.ODT (
       getLastODT
@@ -93,14 +94,14 @@ data TextLeafType =
     | NoteCit
     deriving Show
 
-data ODT =
-      OfficeNode    OfficeNodeType  ODTXML  ODT
-    | TextNode      TextNodeType    ODTXML  ODT
-    | TextLeaf      TextLeafType    ODTXML
-    | StyleNode     StyleNodeType   ODTXML  ODT
-    | ODTSeq        ODT             ODT 
-    | MiscODT       ODTXML
-    | EmptyODT 
+data ODT where
+      OfficeNode    :: OfficeNodeType -> ODTXML -> ODT -> ODT
+      TextNode      :: TextNodeType -> ODTXML -> ODT -> ODT
+      TextLeaf      :: TextLeafType -> ODTXML -> ODT
+      StyleNode     :: StyleNodeType -> ODTXML -> ODT -> ODT
+      ODTSeq        :: ODT -> ODT -> ODT 
+      MiscODT       :: ODTXML -> ODT
+      EmptyODT      :: ODT
 
 instance Show ODT where
     show (TextLeaf    NoteCit   n     ) = show NoteCit
