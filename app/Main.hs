@@ -108,6 +108,9 @@ readWriteMonoid = do
     -- putStrLn $ show $ getLastODT newodt
     -- putStrLn $ show $ removeLastODT newodt
     -- putStrLn "\n"
+    let contentdoc = contentDoc archive
+    let contentodt = (getODT . contentDoc $ archive) <> newodt'
+    let archive' = archive {contentDoc = }
 
     -- let contentxmldoc' = toXMLDoc . contentDoc $ appendODT (fromList odtlist) archive
     let contentxmldoc' = toXMLDoc . contentDoc $ appendODT newodt' archive
