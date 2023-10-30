@@ -1,4 +1,5 @@
 {-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GADTs #-}
 
@@ -14,6 +15,7 @@ module Text.ODT.ODT (
     , textStyleNameInts
     , HasODT(..)
     , HasTextStyles(..)
+    , IsList(..)
     , IsNodes(..)
     , IsODT(..)
     , ODT(..)
@@ -30,6 +32,7 @@ import Text.XML
     , Prologue(..)
     , Miscellaneous(..) )
 
+import GHC.Exts (IsList(..))
 import Data.Maybe
 import qualified Data.Text as T
 import qualified Data.Map as Map
@@ -95,13 +98,13 @@ data TextLeafType =
     deriving Show
 
 data ODT where
-      OfficeNode    :: OfficeNodeType -> ODTXML -> ODT -> ODT
-      TextNode      :: TextNodeType -> ODTXML -> ODT -> ODT
-      TextLeaf      :: TextLeafType -> ODTXML -> ODT
-      StyleNode     :: StyleNodeType -> ODTXML -> ODT -> ODT
-      ODTSeq        :: ODT -> ODT -> ODT 
-      MiscODT       :: ODTXML -> ODT
-      EmptyODT      :: ODT
+    OfficeNode    :: OfficeNodeType -> ODTXML -> ODT -> ODT
+    TextNode      :: TextNodeType -> ODTXML -> ODT -> ODT
+    TextLeaf      :: TextLeafType -> ODTXML -> ODT
+    StyleNode     :: StyleNodeType -> ODTXML -> ODT -> ODT
+    ODTSeq        :: ODT -> ODT -> ODT 
+    MiscODT       :: ODTXML -> ODT
+    EmptyODT      :: ODT
 
 instance Show ODT where
     show (TextLeaf    NoteCit   n     ) = show NoteCit
@@ -197,7 +200,7 @@ instance Semigroup ODT where
     TextNode    (P ps)      n1 odt1 <> TextLeaf     Str         n2                  = TextNode (P ps) n1 (odt1 <> TextLeaf Str n2)
     
     -- Appending to Span nodes
-    TextNode    (Span textstyle)        n1 odt1 <> TextLeaf     Str         n       = ODTSeq (TextNode (Span textstyle) n1 odt1) (TextLeaf Str n) 
+    TextNode    (Span textstyle)        n1 odt1 <> TextLeaf     Str         n       = TextNode (Span textstyle) n1 (odt1 <> TextLeaf Str n) 
     TextLeaf    Str n1              <> TextLeaf     Str         n2                  = ODTSeq (TextLeaf Str n1) (TextLeaf Str n2)
     
     -- EMPTY NODES
@@ -222,6 +225,22 @@ instance Semigroup ODT where
 instance Monoid ODT where
     mempty :: ODT
     mempty = EmptyODT
+
+instance IsList ODT where
+    type Item ODT = ODT
+
+    toList :: ODT -> [ODT]
+    toList (ODTSeq odt1 odt2) = toList odt1 <> toList odt2
+    toList EmptyODT = []
+    toList (OfficeNode typ odtxml odt) = OfficeNode typ odtxml EmptyODT : toList odt
+    toList (TextNode typ odtxml odt) = TextNode typ odtxml EmptyODT : toList odt
+    toList (TextLeaf typ odtxml) = [TextLeaf typ odtxml]
+    toList (StyleNode typ odtxml odt) = StyleNode typ odtxml EmptyODT : toList odt
+    toList (MiscODT odtxml) = [MiscODT odtxml]
+
+    fromList :: [ODT] -> ODT
+    fromList = mconcat
+
 
 -- classes based on ODT
 
@@ -594,3 +613,4 @@ toTextPropsODT :: (HasTextProps a) => a -> ODT
 toTextPropsODT style = StyleNode TextPropsNode odtxml EmptyODT
     where   attrs = getTextPropsAttrMap style
             odtxml = ODTXMLElem (toName StyleNS "text-properties") attrs
+

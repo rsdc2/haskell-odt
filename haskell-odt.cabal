@@ -28,6 +28,7 @@ library
       Text.ODT.Archive
       Text.ODT.Doc
       Text.ODT.File
+      Text.ODT.FindODT
       Text.ODT.ODT
       Text.ODT.ODTXML.Attr
       Text.ODT.ODTXML.Name

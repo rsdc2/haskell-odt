@@ -72,21 +72,31 @@ readWriteMonoid = do
     -- let archive = Archive {contentDoc = contentodtdoc, stylesDoc = appendODT newstyleodt stylesodtdoc} 
     -- let archive = Archive {contentDoc = contentodtdoc, stylesDoc = stylesodtdoc} 
     -- let newodt = ODT.span bold " some bold text"
-    let newodt = mconcat [ ODT.p newParaStyle "Normal parastyle text 1"
-                          , ODT.p italicPara "Italic para style"
-                          , ODT.p newParaStyle "Normal parastyle text 2"
-                          -- , ODT.p italicPara "Italic parastyle text"
-                          -- , ODT.p newParaStyle ""
-                          , ODT.span normal "Some normal text" 
-                        --   , ODT.str "This is a new string. "
-                          , ODT.span boldItalic "Some bold and italic text"
-                          , ODT.span underlineStyle "Some underlined text"
-                          , ODT.span bold " and some bold text." 
-                          , ODT.span newstyle " and newstyle text"
-                          , ODT.span footnoteAnchor " and footnote anchor text"
-                          -- , ODT.p newParaStyle ""
-                          ]
+    let odtlst = [ ODT.p newParaStyle ""
+                  , ODT.str "Normal parastyle text 1"
+                  , ODT.p italicPara "Italic para style"
+                  , ODT.p newParaStyle "Normal parastyle text 2"
+                  -- , ODT.p italicPara "Italic parastyle text"
+                  -- , ODT.p newParaStyle ""
+                  , ODT.span normal "Some normal text" 
+                --   , ODT.str "This is a new string. "
+                  , ODT.span boldItalic "Some bold and italic text"
+                  , ODT.span underlineStyle "Some underlined text"
+                  , ODT.span bold " and some bold text." 
+                  , ODT.str " and some bold text."
+                  , ODT.span newstyle " and newstyle text"
+                  , ODT.span footnoteAnchor " and footnote anchor text"
+                  -- , ODT.p newParaStyle ""
+                  ]
 
+    let newodt = mconcat odtlst
+
+    putStrLn $ show $ odtlst
+    putStrLn "\n"
+    putStrLn $ show $ toList . mconcat . toList $ newodt
+
+    -- let newodt' = newodt
+    let newodt' = mconcat . toList $ newodt
     -- let newodt = ODT.p <> ODT.span bold "bold text" <> ODT.span italic "italic text" <> ODT.span newstyle "newstyle text"
     
 
@@ -100,7 +110,7 @@ readWriteMonoid = do
     -- putStrLn "\n"
 
     -- let contentxmldoc' = toXMLDoc . contentDoc $ appendODT (fromList odtlist) archive
-    let contentxmldoc' = toXMLDoc . contentDoc $ appendODT newodt  archive
+    let contentxmldoc' = toXMLDoc . contentDoc $ appendODT newodt' archive
 
     let stylesxmldoc' = toXMLDoc . stylesDoc $ archive
 
