@@ -124,6 +124,8 @@ instance Show ODT where
 instance Semigroup ODT where
     (<>) :: ODT -> ODT -> ODT
 
+    -- TODO find out why not roundtripping styles properly in IsList
+
     -- APPEND STYLES TO DOCUMENT
     OfficeNode AutoStyles  n1 odt1 <> StyleNode StyleType n2 odt2        
         | Nothing <- style = autostyles
