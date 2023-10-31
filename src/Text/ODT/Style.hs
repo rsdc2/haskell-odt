@@ -322,16 +322,16 @@ instance IsStyle ParaStyle where
 
 -- Used when assigning text to a particular style
 instance IsNodeStyleAttrMap TextStyle where
-    toNodeStyleAttrMap :: TextStyle -> Map.Map Name T.Text
-    toNodeStyleAttrMap ts
-        | Nothing <- textStyleName ts = Map.empty
-        | Just name <- textStyleName ts = Map.fromList [ (toName TextNS "style-name", name) ]
+  toNodeStyleAttrMap :: TextStyle -> Map.Map Name T.Text
+  toNodeStyleAttrMap ts
+      | Nothing <- textStyleName ts = Map.empty
+      | Just name <- textStyleName ts = Map.fromList [ (toName TextNS "style-name", name) ]
 
 instance IsNodeStyleAttrMap ParaStyle where
-    toNodeStyleAttrMap :: ParaStyle -> Map.Map Name T.Text
-    toNodeStyleAttrMap ps
-        | Nothing <- paraStyleName ps = Map.empty
-        | Just name <- paraStyleName ps = Map.fromList [ (toName TextNS "style-name", name) ]
+  toNodeStyleAttrMap :: ParaStyle -> Map.Map Name T.Text
+  toNodeStyleAttrMap ps
+      | Nothing <- paraStyleName ps = Map.empty
+      | Just name <- paraStyleName ps = Map.fromList [ (toName TextNS "style-name", name) ]
 
 -- For generating style attributes in a style definition
 class HasTextStyles a where

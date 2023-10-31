@@ -129,15 +129,33 @@ readWriteMonoid = do
 
 
     let contentodt' = contentodt
-    print contentodt
+    -- print contentodt
 
+    let autostylesodt = getStylesODT contentodt
+    let autostyles = filter isTextStyle $ toList autostylesodt
+    
     putStrLn "\n"
-    print contentodt'
+    print autostylesodt
+    putStrLn "\n"
+
+    -- putStrLn "\n"
+    -- print contentodt'
+
+    -- putStrLn "\n"
+    -- print $ toList contentodt'
+
+    let contentodt'' = mconcat . toList $ contentodt'
 
     putStrLn "\n"
     print $ toList contentodt'
+    putStrLn "\n"
+    print $ toList . mconcat . toList $ contentodt'
+    putStrLn "\n"
 
-    let contentodt'' = mconcat . toList $ contentodt'
+    let autostylesodt' = getStylesODT contentodt''
+    putStrLn "\n"
+    print autostylesodt'
+    putStrLn "\n"
 
     let contentodtdoc' = contentodtdoc {odt = contentodt''}
     -- let contentodtdoc' = appendODT newodt contentodtdoc

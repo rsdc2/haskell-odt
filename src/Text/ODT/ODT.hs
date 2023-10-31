@@ -114,10 +114,10 @@ instance Show ODT where
     show (TextNode    typ       _ odt ) = show typ <> " (" <> show odt <> ")"
     -- show (StyleNode  StyleType  _ odt )  = show StyleType <> " (" <> show odt <> ")"
     show (StyleNode  TextPropsNode n odt )  = show TextPropsNode <> " (" <> show odt <> ")"
-    show (StyleNode  typ       _ odt )  = show typ <> " (" <> show odt <> ")"
+    show (StyleNode  typ n odt)  = show typ <> "(" <> (show . getAttrs $ n) <> "\n\t\t" <> show odt <> " "  <> ")"
     show (OfficeNode  typ       _ odt ) = show typ <> " (" <> show odt <> ")"
     show (MiscODT               n     ) = "MiscODT:" <> (T.unpack $ getLocalName n) 
-    show (ODTSeq      odt1    odt2  )   = "ODTSeq " <> "(" <> show odt1 <> ", " <> show odt2 <> ")"
+    show (ODTSeq      odt1    odt2  )   = "ODTSeq " <> "(" <> show odt1 <> ",\n\t" <> show odt2 <> ")"
     show EmptyODT = "_"
 
 -- Monoid instances
@@ -127,18 +127,18 @@ instance Semigroup ODT where
     -- TODO find out why not roundtripping styles properly in IsList
 
     -- APPEND STYLES TO DOCUMENT
-    OfficeNode AutoStyles  n1 odt1 <> StyleNode StyleType n2 odt2        
+    OfficeNode AutoStyles n1 odt1 <> StyleNode StyleType n2 odt2        
         | Nothing <- style = autostyles
         | Just (Left textstyle) <- style = case hasTextStyle textstyle autostyles of
-            True -> autostyles  
+            True -> autostyles
             False -> OfficeNode AutoStyles n1 (odt1 <> styleODT)
         | Just (Right parastyle) <- style = case hasParaStyle parastyle autostyles of
-            True -> autostyles  
+            True -> autostyles
             False -> OfficeNode AutoStyles n1 (odt1 <> styleODT)
             
         where autostyles = OfficeNode AutoStyles n1 odt1
               styleODT = StyleNode StyleType n2 odt2
-              style = toStyle $ styleODT   
+              style = toStyle styleODT   
 
     OfficeNode  DocStyles  n1 odt1 <> StyleNode StyleType n2 odt2 = OfficeNode DocStyles n1 $ odt1 <> StyleNode StyleType n2 odt2
     
@@ -150,15 +150,14 @@ instance Semigroup ODT where
                 nextStyleName = nextAutoStyleName styleODT odt1
                 n2' = setAttrVal styleNameName nextStyleName n2
 
+    ODTSeq (OfficeNode Styles n1 odt1) (odt2) <> StyleNode StyleType n3 odt3        = ODTSeq (OfficeNode Styles n1 odt1 <> StyleNode StyleType n3 odt3) (odt2)
+    ODTSeq (OfficeNode AutoStyles n1 odt1) (odt2) <> StyleNode StyleType n3 odt3    = ODTSeq (OfficeNode AutoStyles n1 odt1 <> StyleNode StyleType n3 odt3) (odt2)
+
     StyleNode StyleType n1 odt1 <> StyleNode StyleType n2 odt2 = ODTSeq (StyleNode StyleType n1 odt1) (StyleNode StyleType n2 odt2)
     StyleNode TextPropsNode n1 odt1 <> StyleNode StyleType n2 odt2 = ODTSeq (StyleNode TextPropsNode n1 odt1) (StyleNode StyleType n2 odt2)
     StyleNode StyleType n1 odt1 <> StyleNode TextPropsNode n2 odt2 = StyleNode StyleType n1 (odt1 <> StyleNode TextPropsNode n2 odt2)
     StyleNode ParaProps n1 odt1 <> StyleNode TextPropsNode n2 odt2 = ODTSeq (StyleNode ParaProps n1 odt1) (StyleNode TextPropsNode n2 odt2)
     MiscODT n1 <> StyleNode typ n2 odt2 = ODTSeq (MiscODT n1) (StyleNode typ n2 odt2)
-
-    ODTSeq (OfficeNode Styles n1 odt1) (odt2) <> StyleNode StyleType n3 odt3        = ODTSeq (OfficeNode Styles n1 odt1 <> StyleNode StyleType n3 odt3) (odt2)
-    ODTSeq (OfficeNode AutoStyles n1 odt1) (odt2) <> StyleNode StyleType n3 odt3    = ODTSeq (OfficeNode AutoStyles n1 odt1 <> StyleNode StyleType n3 odt3) (odt2)
-
 
     -- FONT FACE DECLS
     OfficeNode FontFaceDecls n1 odt1 <> StyleNode FontFace n2 odt2 = OfficeNode FontFaceDecls n1 (odt1 <> StyleNode FontFace n2 odt2)
@@ -451,7 +450,6 @@ instance MaybeParaStyle ODT where
       | getAttrVal styleFamilyName odt == "paragraph" = True
       | otherwise = False
 
-
   toParaStyle :: ODT -> Maybe ParaStyle
   toParaStyle (StyleNode StyleType n1 odt2) = 
         case isParaStyle odt1 of
@@ -511,10 +509,10 @@ instance MaybeStyle ODT where
 
   toStyle :: ODT -> Maybe (Either TextStyle ParaStyle)
   toStyle odt 
-    | Nothing <- toTextStyle odt = case toParaStyle odt of
+    | Nothing <- toParaStyle odt = case toTextStyle odt of
         Nothing -> Nothing
-        Just parastyle -> Just (Right parastyle)
-    | Just textstyle <- toTextStyle odt = Just (Left textstyle)
+        Just textstyle -> Just (Left textstyle)
+    | Just parastyle <- toParaStyle odt = Just (Right parastyle)
 
 styleToODT :: (IsStyle a, HasTextProps a) => a -> ODT
 styleToODT style = StyleNode StyleType odtxml odt
