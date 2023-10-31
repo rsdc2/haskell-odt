@@ -21,34 +21,48 @@ import Text.ODT.Style
 
 exampleFileName = "example2"
 
- 
-readWriteMonoid :: IO ()
-readWriteMonoid = do
+
+unzipFiles :: IO ()
+unzipFiles = do
     -- Unzip
     Z.unzip (path $ exampleFileName <> ".odt") (path $ "/" <> exampleFileName)
 
-    -- Read files
-    contentxmldoc <- X.readFile X.def (path $ exampleFileName <> "/content.xml")
-    stylesxmldoc <- X.readFile X.def (path $ exampleFileName <> "/styles.xml")
-
-    -- Write uglified files to data/
-    X.writeFile X.def (path "content1.xml") contentxmldoc
-    X.writeFile X.def (path "styles1.xml") stylesxmldoc
+    -- -- Write uglified files to data/
+    -- X.writeFile X.def (path "content1.xml") contentxmldoc
+    -- X.writeFile X.def (path "styles1.xml") stylesxmldoc
 
     -- Produce a prettified version of the original files
     prettifyFile (path $ exampleFileName <> "/styles.xml") (path "styles2.xml")
     prettifyFile (path "content1.xml") (path "content2.xml")
 
-    -- Append to the word document
-    let contentodtdoc = fromXMLDoc contentxmldoc
-    let stylesodtdoc = fromXMLDoc stylesxmldoc
 
-    print stylesodtdoc 
-    putStrLn "\n"
+writeODT :: Doc -> Doc -> IO ()
+writeODT contentdoc stylesdoc = do
 
-    let contentodt = odtFromODTDoc contentodtdoc
-    print contentodt
+    let contentxmldoc = toXMLDoc contentdoc
+    let stylesxmldoc = toXMLDoc stylesdoc
 
+    -- -- Read files
+    -- contentxmldoc <- X.readFile X.def (path $ exampleFileName <> "/content.xml")
+    -- stylesxmldoc <- X.readFile X.def (path $ exampleFileName <> "/styles.xml")
+
+    -- Write modified documents back to file
+    X.writeFile X.def (path "content3.xml") contentxmldoc
+    X.writeFile X.def (path $ exampleFileName <> "/content.xml") contentxmldoc
+    X.writeFile X.def (path $ exampleFileName <> "/styles.xml") stylesxmldoc
+    X.writeFile X.def (path "styles3.xml") stylesxmldoc
+
+    -- Produce a prettified version of the files
+    prettifyFile (path "content3.xml") (path "content4.xml")
+    prettifyFile (path "styles3.xml") (path "styles4.xml")
+
+    -- Zip modified files
+    Z.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.odt")
+    Z.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.zip")
+
+
+getNewODT :: ODT
+getNewODT = do
     let italic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}}
     let underlineStyle = newTextStyle {textTextProps = newTextProps {underline = Solid}}
     let bold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}}
@@ -59,19 +73,11 @@ readWriteMonoid = do
 
     let italicPara = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
     let italicParaODT = toODT italicPara
-    putStrLn $ "\nitalicParaODT: " <> show italicParaODT <> "\n"
+    -- putStrLn $ "\nitalicParaODT: " <> show italicParaODT <> "\n"
 
     let newstyleodt = toODT newstyle
     let italicParaODT = toODT italicPara
 
-    let archive = Archive {
-        -- contentDoc = appendODT italicParaODT contentodtdoc
-        contentDoc = contentodtdoc
-      , stylesDoc = appendODT newstyleodt . appendODT italicParaODT $ stylesodtdoc  -- . appendODT italicParaODT $ 
-    } 
-    -- let archive = Archive {contentDoc = contentodtdoc, stylesDoc = appendODT newstyleodt stylesodtdoc} 
-    -- let archive = Archive {contentDoc = contentodtdoc, stylesDoc = stylesodtdoc} 
-    -- let newodt = ODT.span bold " some bold text"
     let odtlst = [ ODT.p newParaStyle ""
                   , ODT.str "Normal parastyle text 1"
                   , ODT.p italicPara "Italic para style"
@@ -90,47 +96,49 @@ readWriteMonoid = do
                   ]
 
     let newodt = mconcat odtlst
+    let newodt' = mconcat . toList $ newodt 
+    newodt'
 
-    putStrLn $ show $ odtlst
-    putStrLn "\n"
-    putStrLn $ show $ toList . mconcat . toList $ newodt
+
+ 
+readWriteMonoid :: IO ()
+readWriteMonoid = do
+
+    unzipFiles
+
+    -- Read files
+    contentxmldoc <- X.readFile X.def (path $ exampleFileName <> "/content.xml")
+    stylesxmldoc <- X.readFile X.def (path $ exampleFileName <> "/styles.xml")
+
+    -- Append to the word document
+    let contentodtdoc = fromXMLDoc contentxmldoc
+    let stylesodtdoc = fromXMLDoc stylesxmldoc
+    let contentodt = getODT contentodtdoc
+
+
+    -- putStrLn $ show $ odtlst
+    -- putStrLn "\n"
+    -- putStrLn $ show $ toList . mconcat . toList $ newodt
 
     -- let newodt' = newodt
-    let newodt' = mconcat . toList $ newodt
-    -- let newodt = ODT.p <> ODT.span bold "bold text" <> ODT.span italic "italic text" <> ODT.span newstyle "newstyle text"
+    -- let newodt = mconcat . toList $ getNewODT
+    let newodt = getNewODT
+
+
+    let contentodt' = contentodt <> newodt
+    print contentodt
+    putStrLn "\n"
+    print contentodt'
+
+    let contentodt'' = mconcat . toList $ contentodt'
+
+    let contentodtdoc' = contentodtdoc {odt = contentodt''}
+    -- let contentodtdoc' = appendODT newodt contentodtdoc
+    -- let stylesxmldoc' = toXMLDoc . stylesDoc $ archive
+
+    writeODT contentodtdoc' stylesodtdoc
     
 
-    -- let newodt = ODT.p <> ODT.span boldItalic "Some bold and italic text" <> ODT.span bold " and some bold text" <> ODT.span footnoteAnchor " and footnote anchor text"
-    -- let newodt = fromList [ODT.p, ODT.span boldItalic "Some bold and italic text", ODT.span bold " and some bold text"]
-    -- let newodt = mconcat [ODT.p, ODT.span boldItalic "Some bold and italic text", ODT.span bold " and some bold text"]
-
-    -- putStrLn "newodt: \n"
-    -- putStrLn $ show $ getLastODT newodt
-    -- putStrLn $ show $ removeLastODT newodt
-    -- putStrLn "\n"
-    let contentdoc = contentDoc archive
-    let contentodt = (getODT . contentDoc $ archive) <> newodt'
-    let archive' = archive {contentDoc = }
-
-    -- let contentxmldoc' = toXMLDoc . contentDoc $ appendODT (fromList odtlist) archive
-    let contentxmldoc' = toXMLDoc . contentDoc $ appendODT newodt' archive
-
-    let stylesxmldoc' = toXMLDoc . stylesDoc $ archive
-
-    -- Write modified documents back to file
-    X.writeFile X.def (path "content3.xml") contentxmldoc'
-    X.writeFile X.def (path $ exampleFileName <> "/content.xml") contentxmldoc'
-    X.writeFile X.def (path $ exampleFileName <> "/styles.xml") stylesxmldoc'
-    X.writeFile X.def (path "styles3.xml") stylesxmldoc'
-
-    -- Produce a prettified version of the files
-    prettifyFile (path "content3.xml") (path "content4.xml")
-    prettifyFile (path "styles3.xml") (path "styles4.xml")
-
-    -- Zip modified files
-    Z.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.odt")
-    Z.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.zip")
-    -- Z.zip (path "example2") (path "modified.zip")
 
 main :: IO ()
 main = do
