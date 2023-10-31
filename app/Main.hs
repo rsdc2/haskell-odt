@@ -27,9 +27,6 @@ unzipFiles = do
     -- Unzip
     Z.unzip (path $ exampleFileName <> ".odt") (path $ "/" <> exampleFileName)
 
-    -- -- Write uglified files to data/
-    -- X.writeFile X.def (path "content1.xml") contentxmldoc
-    -- X.writeFile X.def (path "styles1.xml") stylesxmldoc
 
     -- Produce a prettified version of the original files
     prettifyFile (path $ exampleFileName <> "/styles.xml") (path "styles2.xml")
@@ -40,6 +37,8 @@ writeODT :: Doc -> Doc -> IO ()
 writeODT contentdoc stylesdoc = do
 
     let contentxmldoc = toXMLDoc contentdoc
+    -- putStrLn "\n"
+    -- print contentxmldoc
     let stylesxmldoc = toXMLDoc stylesdoc
 
     -- -- Read files
@@ -110,6 +109,10 @@ readWriteMonoid = do
     contentxmldoc <- X.readFile X.def (path $ exampleFileName <> "/content.xml")
     stylesxmldoc <- X.readFile X.def (path $ exampleFileName <> "/styles.xml")
 
+    -- Write uglified files to data/
+    X.writeFile X.def (path "content1.xml") contentxmldoc
+    X.writeFile X.def (path "styles1.xml") stylesxmldoc
+
     -- Append to the word document
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
@@ -125,10 +128,14 @@ readWriteMonoid = do
     let newodt = getNewODT
 
 
-    let contentodt' = contentodt <> newodt
+    let contentodt' = contentodt
     print contentodt
+
     putStrLn "\n"
     print contentodt'
+
+    putStrLn "\n"
+    print $ toList contentodt'
 
     let contentodt'' = mconcat . toList $ contentodt'
 

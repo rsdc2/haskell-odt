@@ -62,7 +62,7 @@ instance HasODT Doc where
 instance IsXMLDoc Doc where 
     -- TODO: other combinations
     toXMLDoc :: Doc -> Document
-    toXMLDoc (Doc prlg eplg (OfficeNode DocContent (ODTXMLElem name attrs) odt)) = Document prlg (Element name attrs $ toNodes odt) eplg
+    toXMLDoc (Doc prlg eplg (OfficeNode DocContent (ODTXMLElem name attrs) odt)) = Document prlg (Element (toName OfficeNS "document-content") attrs $ toNodes odt) eplg
     toXMLDoc (Doc prlg eplg (OfficeNode DocStyles (ODTXMLElem name attrs) odt)) = Document prlg (Element name attrs $ toNodes odt) eplg
     toXMLDoc doc = error $ show doc 
     -- toXMLDocument (Doc prlg eplg (OfficeNode typ odtxml odt)) = Document prlg () eplg
