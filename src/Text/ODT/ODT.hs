@@ -75,6 +75,7 @@ data OfficeNodeType =
 
 data StyleNodeType =
       DefStyle
+    | FontFace
     | GraphicProps
     | ParaProps
     | StyleType
@@ -90,6 +91,7 @@ data TextNodeType =
     | Note 
     | NoteBody 
     | SequenceDecls
+    | SequenceDecl
     deriving Show
 
 data TextLeafType =
@@ -146,11 +148,21 @@ instance Semigroup ODT where
                 nextStyleName = nextAutoStyleName styleODT odt1
                 n2' = setAttrVal styleNameName nextStyleName n2
 
-    StyleNode   StyleType   n1 odt1 <> StyleNode    StyleType   n2 odt2             = ODTSeq (StyleNode StyleType n1 odt1) (StyleNode StyleType n2 odt2)
+    StyleNode StyleType n1 odt1 <> StyleNode StyleType n2 odt2 = ODTSeq (StyleNode StyleType n1 odt1) (StyleNode StyleType n2 odt2)
+    StyleNode TextPropsNode n1 odt1 <> StyleNode StyleType n2 odt2 = ODTSeq (StyleNode TextPropsNode n1 odt1) (StyleNode StyleType n2 odt2)
+    StyleNode StyleType n1 odt1 <> StyleNode TextPropsNode n2 odt2 = StyleNode StyleType n1 (odt1 <> StyleNode TextPropsNode n2 odt2)
 
     ODTSeq (OfficeNode Styles n1 odt1) (odt2) <> StyleNode StyleType n3 odt3        = ODTSeq (OfficeNode Styles n1 odt1 <> StyleNode StyleType n3 odt3) (odt2)
     ODTSeq (OfficeNode AutoStyles n1 odt1) (odt2) <> StyleNode StyleType n3 odt3    = ODTSeq (OfficeNode AutoStyles n1 odt1 <> StyleNode StyleType n3 odt3) (odt2)
 
+
+    -- FONT FACE DECLS
+    OfficeNode FontFaceDecls n1 odt1 <> StyleNode FontFace n2 odt2 = OfficeNode FontFaceDecls n1 (odt1 <> StyleNode FontFace n2 odt2)
+    StyleNode FontFace n1 odt1 <> StyleNode FontFace n2 odt2 = ODTSeq (StyleNode FontFace n1 odt1) (StyleNode FontFace n2 odt2)
+
+    -- SEQUENCE DECLS
+    TextNode SequenceDecls n1 odt1 <> TextNode SequenceDecl n2 odt2 = TextNode SequenceDecls n1 (odt1 <> TextNode SequenceDecl n2 odt2)
+    TextNode SequenceDecl n1 odt1 <> TextNode SequenceDecl n2 odt2 = ODTSeq (TextNode SequenceDecl n1 odt1) (TextNode SequenceDecl n2 odt2) 
 
     -- APPENDING / PREPENDING TEXT
     -- Feed elements of ODTSeq to DocContent individually
@@ -177,6 +189,7 @@ instance Semigroup ODT where
                 n2' = setAttrVal textStyleNameName textstylename n2 
 
     -- APPENDING / PREPENDING TEXT TO OFFICE NODES
+    OfficeNode  Body n1 odt1 <> OfficeNode OfficeTextNode n2 odt2 = OfficeNode Body n1 (odt1 <> OfficeNode OfficeTextNode n2 odt2)
     OfficeNode  OfficeTextNode    n1 odt1 <> TextNode     textType    n2 odt2       = OfficeNode OfficeTextNode n1 (odt1 <> TextNode textType n2 odt2)
     TextNode    textType          n2 odt2 <> OfficeNode   OfficeTextNode    n1 odt1 = OfficeNode OfficeTextNode n1 (TextNode textType n2 odt2 <> odt1)
     
@@ -202,7 +215,14 @@ instance Semigroup ODT where
     -- Appending to Span nodes
     TextNode    (Span textstyle)        n1 odt1 <> TextLeaf     Str         n       = TextNode (Span textstyle) n1 (odt1 <> TextLeaf Str n) 
     TextLeaf    Str n1              <> TextLeaf     Str         n2                  = ODTSeq (TextLeaf Str n1) (TextLeaf Str n2)
-    
+
+
+    -- Interface between automatic-styles and body
+    StyleNode styletype n1 odt1 <> OfficeNode Body n2 odt2 = ODTSeq (StyleNode styletype n1 odt1) (OfficeNode Body n2 odt2)
+
+    -- MISC NODES
+    MiscODT odtxml1 <> MiscODT odtxml2 = ODTSeq (MiscODT odtxml1) (MiscODT odtxml2) 
+
     -- EMPTY NODES
     EmptyODT                        <> odt                                          = odt
     odt                             <> EmptyODT                                     = odt
@@ -257,23 +277,25 @@ class HasODT a where
 instance IsODT Node where
     toODT :: Node -> ODT 
     toODT n 
-        | hasName       "automatic-styles"  officeNS  n = OfficeNode  AutoStyles  n' odt
-        | hasName       "body"              officeNS  n = OfficeNode  Body        n' odt
+        | hasName       "automatic-styles"  officeNS  n = OfficeNode  AutoStyles n' odt
+        | hasName       "body"              officeNS  n = OfficeNode  Body n' odt
         | hasName       "document-styles"   officeNS  n = OfficeNode  DocStyles n' odt
         | hasName       "font-face-decls"   officeNS  n = OfficeNode  FontFaceDecls n' odt
-        | hasName       "master-styles"     officeNS  n = OfficeNode  MasterStyles      n' odt
-        | hasName       "scripts"           officeNS  n = OfficeNode  Scripts      n' odt
-        | hasName       "styles"            officeNS  n = OfficeNode  Styles      n' odt
-        | hasName       "text"              officeNS  n = OfficeNode  OfficeTextNode          n' odt
-        | hasName       "note"              textNS    n = TextNode    Note              n' odt
-        | hasName       "note-body"         textNS    n = TextNode    NoteBody          n' odt
-        | hasName       "note-citation"     textNS    n = TextLeaf    NoteCit           n'
-        | hasLocalName  "NodeContent"                 n = TextLeaf    Str         n'
-        | hasName       "p"                 textNS    n = TextNode    (P Nothing)          n' odt
-        | hasName       "span"              textNS    n = TextNode    (Span Nothing)       n' odt
-        | hasName       "sequence-decls"    textNS    n = TextNode   SequenceDecls       n' odt
-        | hasName       "style"             styleNS   n = StyleNode  StyleType   n' odt
-        | hasName       "text-properties"   styleNS   n = StyleNode  TextPropsNode   n' odt
+        | hasName       "font-face"         styleNS   n = StyleNode   FontFace n' odt
+        | hasName       "master-styles"     officeNS  n = OfficeNode  MasterStyles n' odt
+        | hasName       "scripts"           officeNS  n = OfficeNode  Scripts n' odt
+        | hasName       "styles"            officeNS  n = OfficeNode  Styles n' odt
+        | hasName       "text"              officeNS  n = OfficeNode  OfficeTextNode n' odt
+        | hasName       "note"              textNS    n = TextNode    Note n' odt
+        | hasName       "note-body"         textNS    n = TextNode    NoteBody n' odt
+        | hasName       "note-citation"     textNS    n = TextLeaf    NoteCit n'
+        | hasLocalName  "NodeContent"                 n = TextLeaf    Str n'
+        | hasName       "p"                 textNS    n = TextNode    (P Nothing) n' odt
+        | hasName       "span"              textNS    n = TextNode    (Span Nothing) n' odt
+        | hasName       "sequence-decls"    textNS    n = TextNode    SequenceDecls n' odt
+        | hasName       "sequence-decl"     textNS    n = TextNode    SequenceDecl n' odt
+        | hasName       "style"             styleNS   n = StyleNode   StyleType n' odt
+        | hasName       "text-properties"   styleNS   n = StyleNode   TextPropsNode n' odt
         | otherwise                                     = MiscODT     (ODTXMLOrig $ n)
         where 
             n' = toODTXML n
