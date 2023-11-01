@@ -57,6 +57,7 @@ import Text.Read
 
 type Id = T.Text
 type Parent = Node
+type AlwaysInclude = Bool
 
 -- Types
 
@@ -78,7 +79,7 @@ data StyleNodeType =
     | FontFace
     | GraphicProps
     | ParaProps
-    | StyleType
+    | StyleType AlwaysInclude
     | TabStops
     | TableProps
     | TableRowProps
@@ -127,7 +128,12 @@ instance Semigroup ODT where
     -- TODO find out why not roundtripping styles properly in IsList
 
     -- APPEND STYLES TO DOCUMENT
-    OfficeNode AutoStyles n1 odt1 <> StyleNode StyleType n2 odt2        
+    OfficeNode AutoStyles n1 odt1 <> StyleNode (StyleType True) n2 odt2 =
+        OfficeNode AutoStyles n1 (odt1 <> styleODT)
+
+        where styleODT = StyleNode (StyleType False) n2 odt2
+
+    OfficeNode AutoStyles n1 odt1 <> StyleNode (StyleType False) n2 odt2        
         | Nothing <- style = autostyles
         | Just (Left textstyle) <- style = case hasTextStyle textstyle autostyles of
             True -> autostyles
@@ -137,124 +143,164 @@ instance Semigroup ODT where
             False -> OfficeNode AutoStyles n1 (odt1 <> styleODT)
             
         where autostyles = OfficeNode AutoStyles n1 odt1
-              styleODT = StyleNode StyleType n2 odt2
+              styleODT = StyleNode (StyleType False) n2 odt2
               style = toStyle styleODT   
 
-    OfficeNode  DocStyles  n1 odt1 <> StyleNode StyleType n2 odt2 = OfficeNode DocStyles n1 $ odt1 <> StyleNode StyleType n2 odt2
+    OfficeNode DocStyles n1 odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2 = 
+        OfficeNode DocStyles n1 $ odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2
     
     -- TODO check for styles with the same name 
-    OfficeNode  Styles  n1 odt1 <> StyleNode StyleType n2 odt2 = OfficeNode Styles n1 $ ODTSeq (StyleNode StyleType n2 odt2) odt1
+    OfficeNode Styles n1 odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2 = 
+        OfficeNode Styles n1 $ ODTSeq (StyleNode (StyleType alwaysInclude) n2 odt2) odt1
 
-    OfficeNode  officeType  n1 odt1 <> StyleNode    StyleType   n2 odt2             = OfficeNode officeType n1 (odt1 <> StyleNode    StyleType   n2' odt2) 
-        where   styleODT = StyleNode    StyleType   n2 odt2
+    OfficeNode officeType n1 odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2 = 
+        OfficeNode officeType n1 (odt1 <> newStyleODT) 
+        
+        where   styleODT = StyleNode (StyleType alwaysInclude) n2 odt2
                 nextStyleName = nextAutoStyleName styleODT odt1
                 n2' = setAttrVal styleNameName nextStyleName n2
+                newStyleODT = StyleNode (StyleType alwaysInclude) n2' odt2
 
-    ODTSeq (OfficeNode Styles n1 odt1) (odt2) <> StyleNode StyleType n3 odt3        = ODTSeq (OfficeNode Styles n1 odt1 <> StyleNode StyleType n3 odt3) (odt2)
-    ODTSeq (OfficeNode AutoStyles n1 odt1) (odt2) <> StyleNode StyleType n3 odt3    = ODTSeq (OfficeNode AutoStyles n1 odt1 <> StyleNode StyleType n3 odt3) (odt2)
+    ODTSeq (OfficeNode Styles n1 odt1) (odt2) <> StyleNode (StyleType alwaysInclude) n3 odt3 = 
+        ODTSeq (OfficeNode Styles n1 odt1 <> StyleNode (StyleType alwaysInclude) n3 odt3) (odt2)
 
-    StyleNode StyleType n1 odt1 <> StyleNode StyleType n2 odt2 = ODTSeq (StyleNode StyleType n1 odt1) (StyleNode StyleType n2 odt2)
-    StyleNode TextPropsNode n1 odt1 <> StyleNode StyleType n2 odt2 = ODTSeq (StyleNode TextPropsNode n1 odt1) (StyleNode StyleType n2 odt2)
-    StyleNode StyleType n1 odt1 <> StyleNode TextPropsNode n2 odt2 = StyleNode StyleType n1 (odt1 <> StyleNode TextPropsNode n2 odt2)
-    StyleNode ParaProps n1 odt1 <> StyleNode TextPropsNode n2 odt2 = ODTSeq (StyleNode ParaProps n1 odt1) (StyleNode TextPropsNode n2 odt2)
+    ODTSeq (OfficeNode AutoStyles n1 odt1) (odt2) <> StyleNode (StyleType alwaysInclude) n3 odt3 = 
+        ODTSeq (OfficeNode AutoStyles n1 odt1 <> StyleNode (StyleType alwaysInclude) n3 odt3) (odt2)
+
+    StyleNode (StyleType alwaysInclude1) n1 odt1 <> StyleNode (StyleType alwaysInclude2) n2 odt2 = 
+        ODTSeq (StyleNode (StyleType alwaysInclude1) n1 odt1) (StyleNode (StyleType alwaysInclude2) n2 odt2)
+    StyleNode TextPropsNode n1 odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2 = 
+        ODTSeq (StyleNode TextPropsNode n1 odt1) (StyleNode (StyleType alwaysInclude) n2 odt2)
+    StyleNode (StyleType alwaysInclude) n1 odt1 <> StyleNode TextPropsNode n2 odt2 = 
+        StyleNode (StyleType alwaysInclude) n1 (odt1 <> StyleNode TextPropsNode n2 odt2)
+    StyleNode ParaProps n1 odt1 <> StyleNode TextPropsNode n2 odt2 = 
+        ODTSeq (StyleNode ParaProps n1 odt1) (StyleNode TextPropsNode n2 odt2)
     MiscODT n1 <> StyleNode typ n2 odt2 = ODTSeq (MiscODT n1) (StyleNode typ n2 odt2)
 
     -- FONT FACE DECLS
-    OfficeNode FontFaceDecls n1 odt1 <> StyleNode FontFace n2 odt2 = OfficeNode FontFaceDecls n1 (odt1 <> StyleNode FontFace n2 odt2)
-    StyleNode FontFace n1 odt1 <> StyleNode FontFace n2 odt2 = ODTSeq (StyleNode FontFace n1 odt1) (StyleNode FontFace n2 odt2)
+    OfficeNode FontFaceDecls n1 odt1 <> StyleNode FontFace n2 odt2 = 
+        OfficeNode FontFaceDecls n1 (odt1 <> StyleNode FontFace n2 odt2)
+    StyleNode FontFace n1 odt1 <> StyleNode FontFace n2 odt2 = 
+        ODTSeq (StyleNode FontFace n1 odt1) (StyleNode FontFace n2 odt2)
 
     -- SEQUENCE DECLS
-    TextNode SequenceDecls n1 odt1 <> TextNode SequenceDecl n2 odt2 = TextNode SequenceDecls n1 (odt1 <> TextNode SequenceDecl n2 odt2)
-    TextNode SequenceDecl n1 odt1 <> TextNode SequenceDecl n2 odt2 = ODTSeq (TextNode SequenceDecl n1 odt1) (TextNode SequenceDecl n2 odt2) 
+    TextNode SequenceDecls n1 odt1 <> TextNode SequenceDecl n2 odt2 = 
+        TextNode SequenceDecls n1 (odt1 <> TextNode SequenceDecl n2 odt2)
+    TextNode SequenceDecl n1 odt1 <> TextNode SequenceDecl n2 odt2 = 
+        ODTSeq (TextNode SequenceDecl n1 odt1) (TextNode SequenceDecl n2 odt2) 
 
     -- APPENDING / PREPENDING TEXT
     -- Feed elements of ODTSeq to DocContent individually
-    OfficeNode DocContent n1 odt1 <> OfficeNode typ n2 odt2 = OfficeNode DocContent n2 (odt1 <> OfficeNode typ n2 odt2)
-    OfficeNode  DocContent  n1 odt1 <> ODTSeq odt2 odt3                             = (OfficeNode DocContent n1 odt1 <> odt2) <> odt3 
-    (ODTSeq odt1 odt2) <> OfficeNode  DocContent  n3 odt3                           = odt1 <> removeLastODT odt2 <> getLastODT odt2 <> OfficeNode DocContent n3 odt3
+    OfficeNode DocContent n1 odt1 <> OfficeNode typ n2 odt2 = 
+        OfficeNode DocContent n2 (odt1 <> OfficeNode typ n2 odt2)
+    OfficeNode  DocContent  n1 odt1 <> ODTSeq odt2 odt3 = 
+        (OfficeNode DocContent n1 odt1 <> odt2) <> odt3 
+    (ODTSeq odt1 odt2) <> OfficeNode  DocContent  n3 odt3 = 
+        odt1 <> removeLastODT odt2 <> getLastODT odt2 <> OfficeNode DocContent n3 odt3
 
     -- Style carried with the Span is added to the document before adding the TextNode
-    OfficeNode  DocContent  n1 odt1 <> TextNode (P (Just parastyle)) n2 odt2     = docContent' <> TextNode (P Nothing) n2' odt2
+    OfficeNode  DocContent  n1 odt1 <> TextNode (P (Just parastyle)) n2 odt2     = 
+        docContent' <> TextNode (P Nothing) n2' odt2
         where   parastyleodt = toODT parastyle
                 docContent' = OfficeNode DocContent  n1 odt1 <> parastyleodt
                 parastylename = getParaStyleName parastyle docContent'
                 n2' = setAttrVal textStyleNameName parastylename n2 
 
-    OfficeNode  DocContent  n1 odt1 <> TextNode (Span (Just textstyle)) n2 odt2     = docContent' <> TextNode (Span Nothing) n2' odt2
+    OfficeNode  DocContent  n1 odt1 <> TextNode (Span (Just textstyle)) n2 odt2     = 
+        docContent' <> TextNode (Span Nothing) n2' odt2
         where   textstyleodt = toODT textstyle
                 docContent' = OfficeNode DocContent  n1 odt1 <> textstyleodt
                 textstylename = getTextStyleName textstyle docContent'
                 n2' = setAttrVal textStyleNameName textstylename n2 
 
-    TextNode (Span (Just textstyle)) n2 odt2  <> OfficeNode  DocContent  n1 odt1   = (TextNode (Span Nothing) n2' odt2) <> docContent'
+    TextNode (Span (Just textstyle)) n2 odt2  <> OfficeNode  DocContent  n1 odt1   = 
+        (TextNode (Span Nothing) n2' odt2) <> docContent'
         where   textstyleodt = toODT textstyle
                 docContent' = OfficeNode DocContent  n1 odt1 <> textstyleodt
                 textstylename = getTextStyleName textstyle docContent'
                 n2' = setAttrVal textStyleNameName textstylename n2 
 
     -- APPENDING / PREPENDING TEXT TO OFFICE NODES
-    OfficeNode  Body n1 EmptyODT <> OfficeNode OfficeTextNode n2 odt2 = OfficeNode Body n1 (OfficeNode OfficeTextNode n2 odt2)
-    OfficeNode  OfficeTextNode    n1 odt1 <> TextNode     textType    n2 odt2       = OfficeNode OfficeTextNode n1 (odt1 <> TextNode textType n2 odt2)
-    TextNode    textType          n2 odt2 <> OfficeNode   OfficeTextNode    n1 odt1 = OfficeNode OfficeTextNode n1 (TextNode textType n2 odt2 <> odt1)
+    OfficeNode  Body n1 EmptyODT <> OfficeNode OfficeTextNode n2 odt2 = 
+        OfficeNode Body n1 (OfficeNode OfficeTextNode n2 odt2)
+    OfficeNode OfficeTextNode    n1 odt1 <> TextNode     textType    n2 odt2       = 
+        OfficeNode OfficeTextNode n1 (odt1 <> TextNode textType n2 odt2)
+    TextNode textType n2 odt2 <> OfficeNode OfficeTextNode n1 odt1 = 
+        OfficeNode OfficeTextNode n1 (TextNode textType n2 odt2 <> odt1)
     
-    OfficeNode  officeType  n1 odt1 <> TextNode     textType    n2 odt2             = OfficeNode officeType n1 (odt1 <> TextNode textType n2 odt2)
-    TextNode    textType    n2 odt2 <> OfficeNode   officeType  n1 odt1             = OfficeNode officeType n1 (TextNode textType n2 odt2 <> odt1)
-    TextNode    textType    n1 odt1 <> ODTSeq   (OfficeNode OfficeTextNode n2 odt2) odt3 = ODTSeq   (OfficeNode OfficeTextNode n2 $ TextNode    textType    n1 odt1 <> odt2) odt3
-    TextNode    textType    n1 odt1 <> ODTSeq   (OfficeNode officeType n2 odt2) odt3 = ODTSeq   (OfficeNode officeType n2 odt2) $ TextNode    textType    n1 odt1 <> odt3
+    OfficeNode officeType n1 odt1 <> TextNode     textType    n2 odt2             = 
+        OfficeNode officeType n1 (odt1 <> TextNode textType n2 odt2)
+    TextNode textType n2 odt2 <> OfficeNode   officeType  n1 odt1             = 
+        OfficeNode officeType n1 (TextNode textType n2 odt2 <> odt1)
+    TextNode    textType    n1 odt1 <> ODTSeq   (OfficeNode OfficeTextNode n2 odt2) odt3 = 
+        ODTSeq   (OfficeNode OfficeTextNode n2 $ TextNode textType n1 odt1 <> odt2) odt3
+    TextNode    textType    n1 odt1 <> ODTSeq   (OfficeNode officeType n2 odt2) odt3 = 
+        ODTSeq   (OfficeNode officeType n2 odt2) $ TextNode    textType    n1 odt1 <> odt3
 
-    OfficeNode  officeType  n1 odt1 <> TextLeaf     textType    n2                  = OfficeNode officeType n1 (odt1 <> TextLeaf textType n2) 
+    OfficeNode  officeType  n1 odt1 <> TextLeaf     textType    n2 = 
+        OfficeNode officeType n1 (odt1 <> TextLeaf textType n2) 
 
     -- APPENDING / PREPENDING TEXT TO TEXT
     -- Insert new text after sequence-decls
-    TextNode    textType    n1 odt1 <> TextNode     SequenceDecls    n2 odt2        = ODTSeq (TextNode SequenceDecls n2 odt2) (TextNode textType n1 odt1) 
+    TextNode    textType    n1 odt1 <> TextNode     SequenceDecls    n2 odt2        = 
+        ODTSeq (TextNode SequenceDecls n2 odt2) (TextNode textType n1 odt1) 
 
     -- Appending to P nodes
-    TextNode    (P ps1)     n1 odt1 <> TextNode (P ps2) n2 odt2             = ODTSeq (TextNode (P ps1) n1 odt1) (TextNode (P ps2) n2 odt2)
+    TextNode    (P ps1)     n1 odt1 <> TextNode (P ps2) n2 odt2             = 
+        ODTSeq (TextNode (P ps1) n1 odt1) (TextNode (P ps2) n2 odt2)
     -- Only adds Span into P if there is no style information to get from the document level
-    TextNode    (P ps)      n1 odt1 <> TextNode     (Span Nothing)        n2 odt2   = TextNode (P ps) n1 (odt1 <> TextNode (Span Nothing) n2 odt2)
+    TextNode    (P ps)      n1 odt1 <> TextNode     (Span Nothing)        n2 odt2   = 
+        TextNode (P ps) n1 (odt1 <> TextNode (Span Nothing) n2 odt2)
     -- If there is style information, wrap in ODTSeq so that waits until meets an element that can get style information from
-    TextNode    (P ps)      n1 odt1 <> TextNode     (Span textstyle)        n2 odt2 = ODTSeq (TextNode (P ps) n1 odt1) (TextNode (Span textstyle) n2 odt2)
-    TextNode    (P ps)      n1 odt1 <> TextLeaf     Str         n2                  = TextNode (P ps) n1 (odt1 <> TextLeaf Str n2)
+    TextNode    (P ps)      n1 odt1 <> TextNode     (Span textstyle)        n2 odt2 = 
+        ODTSeq (TextNode (P ps) n1 odt1) (TextNode (Span textstyle) n2 odt2)
+    TextNode    (P ps)      n1 odt1 <> TextLeaf     Str         n2                  = 
+        TextNode (P ps) n1 (odt1 <> TextLeaf Str n2)
     
     -- Appending to Span nodes
-    TextNode    (Span textstyle)        n1 odt1 <> TextLeaf     Str         n       = TextNode (Span textstyle) n1 (odt1 <> TextLeaf Str n) 
-    TextLeaf    Str n1              <> TextLeaf     Str         n2                  = ODTSeq (TextLeaf Str n1) (TextLeaf Str n2)
-
+    TextNode    (Span textstyle)        n1 odt1 <> TextLeaf     Str         n       = 
+        TextNode (Span textstyle) n1 (odt1 <> TextLeaf Str n) 
+    TextLeaf    Str n1              <> TextLeaf     Str         n2                  = 
+        ODTSeq (TextLeaf Str n1) (TextLeaf Str n2)
 
     -- INTERFACES BETWEEEN SECTIONS
     -- Interface between scripts and font-face-decls
-    OfficeNode Scripts n1 odt1 <> OfficeNode FontFaceDecls n2 odt2 = ODTSeq (OfficeNode Scripts n1 odt1) (OfficeNode FontFaceDecls n2 odt2)
+    OfficeNode Scripts n1 odt1 <> OfficeNode FontFaceDecls n2 odt2 = 
+        ODTSeq (OfficeNode Scripts n1 odt1) (OfficeNode FontFaceDecls n2 odt2)
 
     -- Interface between font-face-decls and automatic-styles
-    StyleNode styletype n1 odt1 <> OfficeNode AutoStyles n2 odt2 = ODTSeq (StyleNode styletype n1 odt1) (OfficeNode AutoStyles n2 odt2)
-    OfficeNode FontFaceDecls n1 odt1 <> OfficeNode AutoStyles n2 odt2 = ODTSeq (OfficeNode FontFaceDecls n1 odt1) (OfficeNode AutoStyles n2 odt2)
+    StyleNode styletype n1 odt1 <> OfficeNode AutoStyles n2 odt2 = 
+        ODTSeq (StyleNode styletype n1 odt1) (OfficeNode AutoStyles n2 odt2)
+    OfficeNode FontFaceDecls n1 odt1 <> OfficeNode AutoStyles n2 odt2 = 
+        ODTSeq (OfficeNode FontFaceDecls n1 odt1) (OfficeNode AutoStyles n2 odt2)
 
     -- Interface between automatic-styles and body
-    StyleNode styletype n1 odt1 <> OfficeNode Body n2 odt2 = ODTSeq (StyleNode styletype n1 odt1) (OfficeNode Body n2 odt2)
-    OfficeNode AutoStyles n1 odt1 <> OfficeNode Body n2 odt2 = ODTSeq (OfficeNode AutoStyles n1 odt1) (OfficeNode Body n2 odt2)
-
+    StyleNode styletype n1 odt1 <> OfficeNode Body n2 odt2 = 
+        ODTSeq (StyleNode styletype n1 odt1) (OfficeNode Body n2 odt2)
+    OfficeNode AutoStyles n1 odt1 <> OfficeNode Body n2 odt2 = 
+        ODTSeq (OfficeNode AutoStyles n1 odt1) (OfficeNode Body n2 odt2)
 
     -- MISC NODES
     MiscODT odtxml1 <> MiscODT odtxml2 = ODTSeq (MiscODT odtxml1) (MiscODT odtxml2) 
 
     -- EMPTY NODES
-    EmptyODT                        <> odt                                          = odt
-    odt                             <> EmptyODT                                     = odt
+    EmptyODT <> odt = odt
+    odt <> EmptyODT = odt
     
     -- GENERAL RULES
-    (ODTSeq odt1 odt2)                <> odt3                                         = ODTSeq odt1 (odt2 <> odt3)
-    odt1                            <> TextNode     (P ps)           n odt2              = ODTSeq odt1 (TextNode (P ps) n odt2)
-    odt1                            <> TextNode     (Span textstyle)   n odt2       = ODTSeq odt1 (TextNode (Span textstyle) n odt2)
+    (ODTSeq odt1 odt2) <> odt3 = ODTSeq odt1 (odt2 <> odt3)
+    odt1 <> TextNode (P ps) n odt2 = ODTSeq odt1 (TextNode (P ps) n odt2)
+    odt1 <> TextNode (Span textstyle) n odt2 = ODTSeq odt1 (TextNode (Span textstyle) n odt2)
     
     -- TODO: insert a pattern for OfficeNode Text <> TextNode and TextNode OfficeNode
 
     -- When an ODTSeq is appended to an ODT, append each element individually
     -- This is what allows style names etc. to be imparted to Span nodes before appending
     -- TODO test if this is still needed: in practice appending is done to the document
-    odt1                            <> ODTSeq       odt2        odt3                = (odt1 <> odt2) <> odt3
+    odt1 <> ODTSeq odt2 odt3 = (odt1 <> odt2) <> odt3
 
     -- ERROR: NO PATTERN MATCH
-    odt1                            <> odt2                                         = error ("No pattern for \n\t" <> show odt1 <> "\n\t" <> show odt2)
+    odt1 <> odt2 = error ("No pattern for \n\t" <> show odt1 <> "\n\t" <> show odt2)
 
 instance Monoid ODT where
     mempty :: ODT
@@ -269,6 +315,7 @@ instance IsList ODT where
     toList (OfficeNode typ odtxml odt) = OfficeNode typ odtxml EmptyODT : toList odt
     toList (TextNode typ odtxml odt) = TextNode typ odtxml EmptyODT : toList odt
     toList (TextLeaf typ odtxml) = [TextLeaf typ odtxml]
+    toList (StyleNode (StyleType False) odtxml odt) = StyleNode (StyleType True) odtxml EmptyODT : toList odt
     toList (StyleNode typ odtxml odt) = StyleNode typ odtxml EmptyODT : toList odt
     toList (MiscODT odtxml) = [MiscODT odtxml]
 
@@ -308,7 +355,7 @@ instance IsODT Node where
         | hasName       "sequence-decl"     textNS    n = TextNode    SequenceDecl n' odt
         | hasName       "span"              textNS    n = TextNode    (Span Nothing) n' odt
         | hasName       "styles"            officeNS  n = OfficeNode  Styles n' odt
-        | hasName       "style"             styleNS   n = StyleNode   StyleType n' odt
+        | hasName       "style"             styleNS   n = StyleNode   (StyleType False) n' odt
         | hasName       "text"              officeNS  n = OfficeNode  OfficeTextNode n' odt
         | hasName       "text-properties"   styleNS   n = StyleNode   TextPropsNode n' odt
         | otherwise                                     = MiscODT     (ODTXMLOrig $ n)
@@ -385,9 +432,12 @@ instance HasTextStyles ODT where
         | ODTSeq odt2 odt3 <- getTextStylesODT $ odt1 = case toTextStyle odt2 == Just ts1 of
             True -> getAttrVal styleNameName odt2
             False -> getTextStyleName ts1 odt3 
-        | StyleNode StyleType n1 textprops <- getTextStylesODT odt1 = case toTextStyle (StyleNode StyleType n1 textprops) == Just ts1 of
-            True -> getAttrVal styleNameName n1
-            False -> error $ show $ toTextStyle (StyleNode StyleType n1 textprops)-- show ts1
+
+        | StyleNode (StyleType alwaysInclude) n1 textprops <- getTextStylesODT odt1 = 
+            case toTextStyle (StyleNode (StyleType alwaysInclude) n1 textprops) == Just ts1 of            
+              True -> getAttrVal styleNameName n1
+              False -> error $ show $ toTextStyle (StyleNode (StyleType alwaysInclude) n1 textprops)-- show ts1
+
         | EmptyODT <- getTextStylesODT odt1 = error $ show odt1
         | otherwise = error $ show odt1
 
@@ -396,7 +446,8 @@ instance HasTextStyles ODT where
         | ODTSeq odt2 odt3 <- getTextStylesODT $ odt1 = case toTextStyle odt2 == Just ts1 of
             True -> True
             False -> hasTextStyle ts1 odt3
-        | StyleNode StyleType n1 textprops <- getTextStylesODT odt1 = toTextStyle (StyleNode StyleType n1 textprops) == Just ts1
+        | StyleNode (StyleType alwaysInclude) n1 textprops <- getTextStylesODT odt1 = 
+            toTextStyle (StyleNode (StyleType alwaysInclude) n1 textprops) == Just ts1
         | EmptyODT <- getTextStylesODT odt1 = False
         | otherwise = False
 
@@ -416,9 +467,10 @@ instance HasParaStyles ODT where
         | ODTSeq odt2 odt3 <- getParaStylesODT $ odt1 = case toParaStyle odt2 == Just ps1 of
             True -> getAttrVal styleNameName odt2
             False -> getParaStyleName ps1 odt3 
-        | StyleNode StyleType n1 textprops <- getParaStylesODT odt1 = case toParaStyle (StyleNode StyleType n1 textprops) == Just ps1 of
-            True -> getAttrVal styleNameName n1
-            False -> error $ show odt1
+        | StyleNode (StyleType alwaysInclude) n1 textprops <- getParaStylesODT odt1 = 
+            case toParaStyle (StyleNode (StyleType alwaysInclude) n1 textprops) == Just ps1 of
+              True -> getAttrVal styleNameName n1
+              False -> error $ show odt1
         | EmptyODT <- getParaStylesODT odt1 = error $ show odt1
         | otherwise = error $ show odt1
 
@@ -427,7 +479,8 @@ instance HasParaStyles ODT where
         | ODTSeq odt2 odt3 <- getParaStylesODT $ odt1 = case toParaStyle odt2 == Just ps1 of
             True -> True
             False -> hasParaStyle ps1 odt3
-        | StyleNode StyleType n1 textprops <- getParaStylesODT odt1 = toParaStyle (StyleNode StyleType n1 textprops) == Just ps1
+        | StyleNode (StyleType alwaysInclude) n1 textprops <- getParaStylesODT odt1 = 
+            toParaStyle (StyleNode (StyleType alwaysInclude) n1 textprops) == Just ps1
         | EmptyODT <- getParaStylesODT odt1 = False
         | otherwise = False
 
@@ -450,8 +503,9 @@ instance MaybeParaStyle ODT where
       | getAttrVal styleFamilyName odt == "paragraph" = True
       | otherwise = False
 
+  -- TODO: make this the same as toTextStyle
   toParaStyle :: ODT -> Maybe ParaStyle
-  toParaStyle (StyleNode StyleType n1 odt2) = 
+  toParaStyle (StyleNode (StyleType alwaysInclude) n1 odt2) = 
         case isParaStyle odt1 of
             True -> Just ParaStyle {
                           paraTextProps = textprops
@@ -460,7 +514,7 @@ instance MaybeParaStyle ODT where
                     }
             False -> Nothing
 
-      where odt1 = StyleNode StyleType n1 odt2
+      where odt1 = StyleNode (StyleType alwaysInclude) n1 odt2
             textpropsodt = getTextPropsODT odt2
             textpropsodt'   -- Include this stage to ensure that only one <text-properties> node is returned
               | ODTSeq x y <- textpropsodt = error "More than one <text-properties> node"
@@ -482,7 +536,7 @@ instance MaybeTextStyle ODT where
 
   toTextStyle :: ODT -> Maybe TextStyle
   toTextStyle odt1
-      | StyleNode StyleType n1 (StyleNode TextPropsNode n2 _) <- odt1 = 
+      | StyleNode (StyleType alwaysInclude) n1 (StyleNode TextPropsNode n2 _) <- odt1 = 
           case isTextStyle odt1 of
               True -> Just TextStyle {
                             textTextProps = TextProps {
@@ -515,7 +569,7 @@ instance MaybeStyle ODT where
     | Just parastyle <- toParaStyle odt = Just (Right parastyle)
 
 styleToODT :: (IsStyle a, HasTextProps a) => a -> ODT
-styleToODT style = StyleNode StyleType odtxml odt
+styleToODT style = StyleNode (StyleType False) odtxml odt
     where attrs = toStyleAttrMap style
           odtxml = ODTXMLElem (toName StyleNS "style") attrs
           odt = toTextPropsODT style
@@ -553,7 +607,8 @@ getTextPropsODT odt1
 getStylesODT :: ODT -> ODT
 getStylesODT odt1
   | OfficeNode typ n odt2 <- odt1 = getStylesODT odt2
-  | StyleNode StyleType n odt2 <- odt1 = StyleNode StyleType n odt2
+  | StyleNode (StyleType alwaysInclude) n odt2 <- odt1 = 
+      StyleNode (StyleType alwaysInclude) n odt2
   | ODTSeq odt2 odt3 <- odt1 = getStylesODT odt2 <> getStylesODT odt3
   | otherwise = EmptyODT
 
@@ -561,8 +616,8 @@ getStylesODT odt1
 getStyleODTByFamily :: StyleFamily -> ODT -> ODT
 getStyleODTByFamily stylefamily odt1 
   | OfficeNode typ n odt2 <- odt1 = getStyleODTByFamily stylefamily odt2
-  | StyleNode StyleType n odt2 <- odt1 = case getAttrVal styleFamilyName n of
-      stylefamilyAttrVal -> StyleNode StyleType n odt2
+  | StyleNode (StyleType alwaysInclude) n odt2 <- odt1 = case getAttrVal styleFamilyName n of
+      stylefamilyAttrVal -> StyleNode (StyleType alwaysInclude) n odt2
       otherwise -> EmptyODT
   | ODTSeq odt2 odt3 <- odt1 = getStyleODTByFamily stylefamily odt2 <> getStyleODTByFamily stylefamily odt3
   | otherwise = EmptyODT
@@ -617,7 +672,7 @@ nextAutoStyleName styleODT odt = case getStyleFamily styleODT of
 -- This is used for naming styles that don't appear in auto-styles
 lastAutoStyleName :: StyleFamily -> ODT -> T.Text
 lastAutoStyleName sf odt 
-    | StyleNode StyleType n _ <- styles = getAttrVal styleNameName $ n
+    | StyleNode (StyleType _) n _ <- styles = getAttrVal styleNameName $ n
     | ODTSeq odt1 odt2 <- styles = lastTextStyleName odt2
     | EmptyODT <- styles = ""
     | otherwise = ""
@@ -632,7 +687,8 @@ lastParaStyleName = lastAutoStyleName ParaFamily
 -- extracts all the int parts of TextStyle names
 autoStyleNameInts :: StyleFamily -> ODT -> [Int]
 autoStyleNameInts sf odt1 
-  | StyleNode StyleType n _ <- styles = catMaybes [readAutoStyleNameAsInt sf . T.unpack . getAttrVal styleNameName $ n]
+  | StyleNode (StyleType _) n _ <- styles = 
+      catMaybes [readAutoStyleNameAsInt sf . T.unpack . getAttrVal styleNameName $ n]
   | ODTSeq odt2 odt3 <- styles = autoStyleNameInts sf odt2 <> autoStyleNameInts sf odt3
   | EmptyODT <- styles = []
   | otherwise = []

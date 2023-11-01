@@ -52,6 +52,7 @@ writeODT contentdoc stylesdoc = do
     X.writeFile X.def (path "styles3.xml") stylesxmldoc
 
     -- Produce a prettified version of the files
+    prettifyFile (path "content1.xml") (path "content2.xml")
     prettifyFile (path "content3.xml") (path "content4.xml")
     prettifyFile (path "styles3.xml") (path "styles4.xml")
 
