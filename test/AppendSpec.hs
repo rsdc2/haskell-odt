@@ -44,8 +44,14 @@ loadArchive = do
 boldItalicStyle :: TextStyle
 boldItalicStyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
 
+boldItalicSpan :: ODT
+boldItalicSpan = ODT.span boldItalicStyle "This is bold and italic text"
+
 italicParaStyle :: ParaStyle
 italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
+
+italicPara :: ODT
+italicPara = ODT.p italicParaStyle "Italic para style"
 
 appendBoldItalicTextStyleWithSpanSad :: IO Bool
 appendBoldItalicTextStyleWithSpanSad =  hasTextStyle boldItalicStyle . contentDoc <$> loadArchive
@@ -53,8 +59,13 @@ appendBoldItalicTextStyleWithSpanSad =  hasTextStyle boldItalicStyle . contentDo
 appendBoldItalicTextStyleWithSpanHappy :: IO Bool
 appendBoldItalicTextStyleWithSpanHappy = do
   archive <- loadArchive
-  let boldItalicSpan = ODT.span boldItalicStyle "This is bold and italic text"
   let newcontentdoc = contentDoc . appendODT boldItalicSpan $ archive
+  return $ hasTextStyle boldItalicStyle newcontentdoc
+
+prependBoldItalicTextStyleWithSpanHappy :: IO Bool
+prependBoldItalicTextStyleWithSpanHappy = do
+  archive <- loadArchive
+  let newcontentdoc = contentDoc . prependODT boldItalicSpan $ archive
   return $ hasTextStyle boldItalicStyle newcontentdoc
 
 appendItalicParaStyleWithParaSad :: IO Bool
@@ -63,6 +74,11 @@ appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$
 appendItalicParaStyleWithParaHappy :: IO Bool
 appendItalicParaStyleWithParaHappy = do
   archive <- loadArchive
-  let italicPara = ODT.p italicParaStyle "Italic para style"
   let newcontentdoc = contentDoc . appendODT italicPara $ archive
+  return $ hasParaStyle italicParaStyle newcontentdoc
+
+prependItalicParaStyleWithParaHappy :: IO Bool
+prependItalicParaStyleWithParaHappy = do
+  archive <- loadArchive
+  let newcontentdoc = contentDoc . prependODT italicPara $ archive
   return $ hasParaStyle italicParaStyle newcontentdoc
