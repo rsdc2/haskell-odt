@@ -125,14 +125,15 @@ instance Show ODT where
 instance Semigroup ODT where
     (<>) :: ODT -> ODT -> ODT
 
-    -- TODO find out why not roundtripping styles properly in IsList
-
     -- APPEND STYLES TO DOCUMENT
+    -- AlwaysInclude is set to True
     OfficeNode AutoStyles n1 odt1 <> StyleNode (StyleType True) n2 odt2 =
         OfficeNode AutoStyles n1 (odt1 <> styleODT)
-
         where styleODT = StyleNode (StyleType False) n2 odt2
 
+    -- AlwaysInclude set to False
+    -- Find out if the style is already listed
+    -- Only add if a new style
     OfficeNode AutoStyles n1 odt1 <> StyleNode (StyleType False) n2 odt2        
         | Nothing <- style = autostyles
         | Just (Left textstyle) <- style = case hasTextStyle textstyle autostyles of
@@ -305,6 +306,8 @@ instance Semigroup ODT where
 instance Monoid ODT where
     mempty :: ODT
     mempty = EmptyODT
+
+    mappend = (<>)
 
 instance IsList ODT where
     type Item ODT = ODT
