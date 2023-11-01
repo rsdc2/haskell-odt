@@ -76,11 +76,8 @@ instance HasODT Doc where
 instance IsXMLDoc Doc where 
     -- TODO: other combinations
     toXMLDoc :: Doc -> Document
-    -- TODO: find out why default name for DocContent is "body"
-    -- TODO: find out why office version not included 
     toXMLDoc (Doc prlg eplg (OfficeNode DocContent (ODTXMLElem name attrs) odt)) = 
-        Document prlg (Element (toName OfficeNS "document-content") attrs $ toNodes odt) eplg
-        -- error $ show attrs
+        Document prlg (Element name attrs $ toNodes odt) eplg
     toXMLDoc (Doc prlg eplg (OfficeNode DocStyles (ODTXMLElem name attrs) odt)) = 
         Document prlg (Element name attrs $ toNodes odt) eplg
     toXMLDoc doc = error $ show doc 
@@ -88,7 +85,6 @@ instance IsXMLDoc Doc where
 
     fromXMLDoc :: Document -> Doc
     fromXMLDoc (Document prlg elem eplg) = 
-        -- error $ show elem
         Doc prlg eplg $ toODT elem 
 
 instance HasTextStyles Doc where
