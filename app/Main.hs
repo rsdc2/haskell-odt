@@ -117,51 +117,14 @@ readWriteMonoid = do
     -- Append to the word document
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
-    
+
     let contentodt = getODT contentodtdoc
-
-
-    -- putStrLn $ show $ odtlst
-    -- putStrLn "\n"
-    -- putStrLn $ show $ toList . mconcat . toList $ newodt
-
-    -- let newodt' = newodt
-    -- let newodt = mconcat . toList $ getNewODT
-    let newodt = getNewODT
-
-
-    let contentodt' = contentodt
-    -- print contentodt
-
-    let autostylesodt = getStylesODT contentodt
-    let autostyles = filter isTextStyle $ toList autostylesodt
-    
-    -- putStrLn "\n"
-    -- print autostylesodt
-    -- putStrLn "\n"
-
-    -- putStrLn "\n"
-    -- print contentodt'
-
-    -- putStrLn "\n"
-    -- print $ toList contentodt'
-
-    let contentodt'' = mconcat . toList $ contentodt'
-
-    -- putStrLn "\n"
-    -- print $ toList contentodt'
-    -- putStrLn "\n"
-    -- print $ toList . mconcat . toList $ contentodt'
-    -- putStrLn "\n"
-
-    let autostylesodt' = getStylesODT contentodt''
-    -- putStrLn "\n"
-    -- print autostylesodt'
-    -- putStrLn "\n"
-
-    let contentodtdoc' = contentodtdoc {odt = contentodt''}
-    -- let contentodtdoc' = appendODT newodt contentodtdoc
-    -- let stylesxmldoc' = toXMLDoc . stylesDoc $ archive
+    -- print $ getAttrs contentodt
+    let contentodt' = mconcat . toList $ contentodt
+    -- print $ getAttrs contentodt'
+    print $ toList contentodt
+    let contentodtdoc' = contentodtdoc {odt = contentodt'}
+    -- print $ getAttrs contentodtdoc'
 
     writeODT contentodtdoc' stylesodtdoc
     

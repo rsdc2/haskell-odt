@@ -116,7 +116,7 @@ instance Show ODT where
     -- show (StyleNode  StyleType  _ odt )  = show StyleType <> " (" <> show odt <> ")"
     show (StyleNode  TextPropsNode n odt )  = show TextPropsNode <> " (" <> show odt <> ")"
     show (StyleNode  typ n odt)  = show typ <> "(" <> (show . getAttrs $ n) <> "\n\t\t" <> show odt <> " "  <> ")"
-    show (OfficeNode  typ       _ odt ) = show typ <> " (" <> show odt <> ")"
+    show (OfficeNode  typ       n odt ) = show typ <> " (" <> (show . getAttrs $ n) <> show odt <> ")"
     show (MiscODT               n     ) = "MiscODT:" <> (T.unpack $ getLocalName n) 
     show (ODTSeq      odt1    odt2  )   = "ODTSeq " <> "(" <> show odt1 <> ",\n\t" <> show odt2 <> ")"
     show EmptyODT = "_"
@@ -193,7 +193,7 @@ instance Semigroup ODT where
     -- APPENDING / PREPENDING TEXT
     -- Feed elements of ODTSeq to DocContent individually
     OfficeNode DocContent n1 odt1 <> OfficeNode typ n2 odt2 = 
-        OfficeNode DocContent n2 (odt1 <> OfficeNode typ n2 odt2)
+        OfficeNode DocContent n1 (odt1 <> OfficeNode typ n2 odt2)
     OfficeNode  DocContent  n1 odt1 <> ODTSeq odt2 odt3 = 
         (OfficeNode DocContent n1 odt1 <> odt2) <> odt3 
     (ODTSeq odt1 odt2) <> OfficeNode  DocContent  n3 odt3 = 
