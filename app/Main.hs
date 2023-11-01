@@ -117,6 +117,7 @@ readWriteMonoid = do
     -- Append to the word document
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
+    
     let contentodt = getODT contentodtdoc
 
 
@@ -135,9 +136,9 @@ readWriteMonoid = do
     let autostylesodt = getStylesODT contentodt
     let autostyles = filter isTextStyle $ toList autostylesodt
     
-    putStrLn "\n"
-    print autostylesodt
-    putStrLn "\n"
+    -- putStrLn "\n"
+    -- print autostylesodt
+    -- putStrLn "\n"
 
     -- putStrLn "\n"
     -- print contentodt'
@@ -147,16 +148,16 @@ readWriteMonoid = do
 
     let contentodt'' = mconcat . toList $ contentodt'
 
-    putStrLn "\n"
-    print $ toList contentodt'
-    putStrLn "\n"
-    print $ toList . mconcat . toList $ contentodt'
-    putStrLn "\n"
+    -- putStrLn "\n"
+    -- print $ toList contentodt'
+    -- putStrLn "\n"
+    -- print $ toList . mconcat . toList $ contentodt'
+    -- putStrLn "\n"
 
     let autostylesodt' = getStylesODT contentodt''
-    putStrLn "\n"
-    print autostylesodt'
-    putStrLn "\n"
+    -- putStrLn "\n"
+    -- print autostylesodt'
+    -- putStrLn "\n"
 
     let contentodtdoc' = contentodtdoc {odt = contentodt''}
     -- let contentodtdoc' = appendODT newodt contentodtdoc

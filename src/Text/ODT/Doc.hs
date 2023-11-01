@@ -4,6 +4,7 @@
 module Text.ODT.Doc (
     insertNewODT
   , Doc(..)
+  , HasAttrs(..)
   , IsXMLDoc(..)
   , odtFromXMLDoc
   , odtFromODTDoc
@@ -49,6 +50,19 @@ data Doc =
 instance Show Doc where
     show (Doc _ _ odt) = "Doc " <> "(" <> (show odt) <> ")" 
 
+instance HasAttrs Doc where
+    getAttrs :: Doc -> Map.Map Name T.Text
+    getAttrs = getAttrs . getODT
+
+    getAttrVal :: Name -> Doc -> T.Text
+    getAttrVal name = fromMaybe "" . Map.lookup name . getAttrs
+
+    hasAttrVal :: Name -> T.Text -> Doc -> Bool
+    hasAttrVal name text doc = getAttrVal name doc == text
+
+    setAttrVal :: Name -> T.Text -> Doc -> Doc
+    setAttrVal attrname attrval doc = doc -- placeholder; TODO needs proper treatment
+
 instance HasODT Doc where
     getODT :: Doc -> ODT
     getODT (Doc _ _ odt) = odt
@@ -64,13 +78,18 @@ instance IsXMLDoc Doc where
     toXMLDoc :: Doc -> Document
     -- TODO: find out why default name for DocContent is "body"
     -- TODO: find out why office version not included 
-    toXMLDoc (Doc prlg eplg (OfficeNode DocContent (ODTXMLElem name attrs) odt)) = Document prlg (Element (toName OfficeNS "document-content") attrs $ toNodes odt) eplg
-    toXMLDoc (Doc prlg eplg (OfficeNode DocStyles (ODTXMLElem name attrs) odt)) = Document prlg (Element name attrs $ toNodes odt) eplg
+    toXMLDoc (Doc prlg eplg (OfficeNode DocContent (ODTXMLElem name attrs) odt)) = 
+        Document prlg (Element (toName OfficeNS "document-content") attrs $ toNodes odt) eplg
+        -- error $ show attrs
+    toXMLDoc (Doc prlg eplg (OfficeNode DocStyles (ODTXMLElem name attrs) odt)) = 
+        Document prlg (Element name attrs $ toNodes odt) eplg
     toXMLDoc doc = error $ show doc 
     -- toXMLDocument (Doc prlg eplg (OfficeNode typ odtxml odt)) = Document prlg () eplg
 
     fromXMLDoc :: Document -> Doc
-    fromXMLDoc (Document prlg elem eplg) = Doc prlg eplg $ toODT elem 
+    fromXMLDoc (Document prlg elem eplg) = 
+        -- error $ show elem
+        Doc prlg eplg $ toODT elem 
 
 instance HasTextStyles Doc where
     getTextStyles :: Doc -> [TextStyle]
