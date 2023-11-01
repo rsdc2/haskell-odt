@@ -291,7 +291,8 @@ instance Semigroup ODT where
     -- GENERAL RULES
     (ODTSeq odt1 odt2) <> odt3 = ODTSeq odt1 (odt2 <> odt3)
     odt1 <> TextNode (P ps) n odt2 = ODTSeq odt1 (TextNode (P ps) n odt2)
-    odt1 <> TextNode (Span textstyle) n odt2 = ODTSeq odt1 (TextNode (Span textstyle) n odt2)
+    odt1 <> TextNode (Span textstyle) n odt2 = 
+        ODTSeq odt1 (TextNode (Span textstyle) n odt2)
     
     -- TODO: insert a pattern for OfficeNode Text <> TextNode and TextNode OfficeNode
 
