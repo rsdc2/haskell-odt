@@ -118,13 +118,10 @@ readWriteMonoid = do
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
 
-    let contentodt = getODT contentodtdoc
-    -- print $ getAttrs contentodt
+    let contentodt = getODT contentodtdoc <> getNewODT
     let contentodt' = mconcat . toList $ contentodt
-    -- print $ getAttrs contentodt'
-    print $ toList contentodt
+
     let contentodtdoc' = contentodtdoc {odt = contentodt'}
-    -- print $ getAttrs contentodtdoc'
 
     writeODT contentodtdoc' stylesodtdoc
     

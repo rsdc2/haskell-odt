@@ -221,6 +221,14 @@ instance Semigroup ODT where
                 textstylename = getTextStyleName textstyle docContent'
                 n2' = setAttrVal textStyleNameName textstylename n2 
 
+    TextNode (P (Just parastyle)) n2 odt2  <> OfficeNode  DocContent  n1 odt1   = 
+        (TextNode (Span Nothing) n2' odt2) <> docContent'
+        where   parastyleodt = toODT parastyle
+                docContent' = OfficeNode DocContent  n1 odt1 <> parastyleodt
+                parastylename = getParaStyleName parastyle docContent'
+                n2' = setAttrVal textStyleNameName parastylename n2 
+
+
     -- APPENDING / PREPENDING TEXT TO OFFICE NODES
     OfficeNode  Body n1 EmptyODT <> OfficeNode OfficeTextNode n2 odt2 = 
         OfficeNode Body n1 (OfficeNode OfficeTextNode n2 odt2)
@@ -252,7 +260,8 @@ instance Semigroup ODT where
     -- Only adds Span into P if there is no style information to get from the document level
     TextNode    (P ps)      n1 odt1 <> TextNode     (Span Nothing)        n2 odt2   = 
         TextNode (P ps) n1 (odt1 <> TextNode (Span Nothing) n2 odt2)
-    -- If there is style information, wrap in ODTSeq so that waits until meets an element that can get style information from
+    -- If there is style information, wrap in ODTSeq so that waits until 
+    -- meets an element that can get style information from
     TextNode    (P ps)      n1 odt1 <> TextNode     (Span textstyle)        n2 odt2 = 
         ODTSeq (TextNode (P ps) n1 odt1) (TextNode (Span textstyle) n2 odt2)
     TextNode    (P ps)      n1 odt1 <> TextLeaf     Str         n2                  = 
@@ -265,6 +274,8 @@ instance Semigroup ODT where
         ODTSeq (TextLeaf Str n1) (TextLeaf Str n2)
 
     -- INTERFACES BETWEEEN SECTIONS
+    -- Relevant to mconcat
+
     -- Interface between scripts and font-face-decls
     OfficeNode Scripts n1 odt1 <> OfficeNode FontFaceDecls n2 odt2 = 
         ODTSeq (OfficeNode Scripts n1 odt1) (OfficeNode FontFaceDecls n2 odt2)
