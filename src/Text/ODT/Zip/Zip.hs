@@ -23,12 +23,12 @@ appendDirs dir fpios = do
 
 zipWordDir :: Folderpath -> Filepath -> IO ()
 zipWordDir fpIn fpOut = do
-    archive <- Z.addFilesToArchive [Z.OptLocation "" False] Z.emptyArchive ["data/test/[Content_Types].xml"] 
-    archive <- Z.addFilesToArchive [Z.OptRecursive, Z.OptLocation "_rels/" False] archive ["data/test/_rels/"] 
-    archive <- Z.addFilesToArchive [Z.OptRecursive, Z.OptLocation "word/_rels/" False] archive ["data/test/word/_rels/"] 
-    archive <- Z.addFilesToArchive [Z.OptLocation "word/" False] archive =<< (appendDirs "data/test/word/" $ listDirectory "data/test/word/")
-    archive <- Z.addFilesToArchive [Z.OptRecursive, Z.OptLocation "docProps/" False] archive ["data/test/docProps/"] 
-    let bytestring = Z.fromArchive archive
+    archive1 <- Z.addFilesToArchive [Z.OptLocation "" False] Z.emptyArchive ["data/test/[Content_Types].xml"] 
+    archive2 <- Z.addFilesToArchive [Z.OptRecursive, Z.OptLocation "_rels/" False] archive1 ["data/test/_rels/"] 
+    archive3 <- Z.addFilesToArchive [Z.OptRecursive, Z.OptLocation "word/_rels/" False] archive2 ["data/test/word/_rels/"] 
+    archive4 <- Z.addFilesToArchive [Z.OptLocation "word/" False] archive3 =<< (appendDirs "data/test/word/" $ listDirectory "data/test/word/")
+    archive5 <- Z.addFilesToArchive [Z.OptRecursive, Z.OptLocation "docProps/" False] archive4 ["data/test/docProps/"] 
+    let bytestring = Z.fromArchive archive5
     B.writeFile fpOut bytestring
 
 zipODTDir :: Folderpath -> Filepath -> IO ()

@@ -77,7 +77,6 @@ getNewODT = do
     -- putStrLn $ "\nitalicParaODT: " <> show italicParaODT <> "\n"
 
     let newstyleodt = toODT newstyle
-    let italicParaODT = toODT italicPara
 
     let odtlst = [ ODT.p newParaStyle ""
                   , ODT.str "Normal parastyle text 1"
