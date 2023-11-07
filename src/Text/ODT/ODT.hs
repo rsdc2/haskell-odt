@@ -214,13 +214,7 @@ instance Semigroup ODT where
                 textstylename = getTextStyleName textstyle docContent'
                 n2' = setAttrVal textStyleNameName textstylename n2 
 
-    TextNode (Span (Just textstyle)) n2 odt2  <> OfficeNode  DocContent  n1 odt1   = 
-        (TextNode (Span Nothing) n2' odt2) <> docContent'
-        where   textstyleodt = toODT textstyle
-                docContent' = OfficeNode DocContent  n1 odt1 <> textstyleodt
-                textstylename = getTextStyleName textstyle docContent'
-                n2' = setAttrVal textStyleNameName textstylename n2 
-
+    -- TODO: switch n1 and n2
     TextNode (P (Just parastyle)) n2 odt2  <> OfficeNode  DocContent  n1 odt1   = 
         (TextNode (P Nothing) n2' odt2) <> docContent'
         where   parastyleodt = toODT parastyle
@@ -228,15 +222,35 @@ instance Semigroup ODT where
                 parastylename = getParaStyleName parastyle docContent'
                 n2' = setAttrVal textStyleNameName parastylename n2 
 
+    TextNode (Span (Just textstyle)) n2 odt2  <> OfficeNode  DocContent  n1 odt1   = 
+        (TextNode (Span Nothing) n2' odt2) <> docContent'
+        where   textstyleodt = toODT textstyle
+                docContent' = OfficeNode DocContent  n1 odt1 <> textstyleodt
+                textstylename = getTextStyleName textstyle docContent'
+                n2' = setAttrVal textStyleNameName textstylename n2 
+
+    -- TextLeaf Str n1  <> OfficeNode DocContent n2 odt2   = 
+    --     TextLeaf Str n1 <> odt2
+
+
 
     -- APPENDING / PREPENDING TEXT TO OFFICE NODES
     OfficeNode  Body n1 EmptyODT <> OfficeNode OfficeTextNode n2 odt2 = 
         OfficeNode Body n1 (OfficeNode OfficeTextNode n2 odt2)
+
+    -- OfficeNode OfficeTextNode <> TextNode
     OfficeNode OfficeTextNode    n1 odt1 <> TextNode     textType    n2 odt2       = 
         OfficeNode OfficeTextNode n1 (odt1 <> TextNode textType n2 odt2)
     TextNode textType n2 odt2 <> OfficeNode OfficeTextNode n1 odt1 = 
         OfficeNode OfficeTextNode n1 (TextNode textType n2 odt2 <> odt1)
-    
+
+    -- OfficeNode OfficeTextNode <> TextLeaf
+    OfficeNode OfficeTextNode    n1 odt1 <> TextLeaf typ n2       = 
+        OfficeNode OfficeTextNode n1 (odt1 <> TextLeaf typ n2)
+    TextLeaf typ n2 <> OfficeNode OfficeTextNode n1 odt1 = 
+        OfficeNode OfficeTextNode n1 (TextLeaf typ n2 <> odt1)
+
+    -- TODO: put TextLeaf here
     OfficeNode officeType n1 odt1 <> TextNode     textType    n2 odt2             = 
         OfficeNode officeType n1 (odt1 <> TextNode textType n2 odt2)
     TextNode textType n2 odt2 <> OfficeNode   officeType  n1 odt1             = 
@@ -246,6 +260,13 @@ instance Semigroup ODT where
     TextNode    textType    n1 odt1 <> ODTSeq   (OfficeNode officeType n2 odt2) odt3 = 
         ODTSeq   (OfficeNode officeType n2 odt2) $ TextNode    textType    n1 odt1 <> odt3
 
+    -- TextLeaf prepend
+    TextLeaf typ n2 <> OfficeNode   officeType  n1 odt1             = 
+        OfficeNode officeType n1 (TextLeaf typ n2 <> odt1)
+    TextLeaf  typ n1 <> ODTSeq   (OfficeNode officeType n2 odt2) odt3 = 
+        ODTSeq   (OfficeNode officeType n2 odt2) $ TextLeaf typ n1 <> odt3
+
+
     OfficeNode  officeType  n1 odt1 <> TextLeaf     textType    n2 = 
         OfficeNode officeType n1 (odt1 <> TextLeaf textType n2) 
 
@@ -253,6 +274,9 @@ instance Semigroup ODT where
     -- Insert new text after sequence-decls
     TextNode    textType    n1 odt1 <> TextNode     SequenceDecls    n2 odt2        = 
         ODTSeq (TextNode SequenceDecls n2 odt2) (TextNode textType n1 odt1) 
+    TextLeaf    textType    n1 <> TextNode     SequenceDecls    n2 odt2        = 
+        ODTSeq (TextNode SequenceDecls n2 odt2) (TextLeaf textType n1) 
+
 
     -- Appending to P nodes
     TextNode    (P ps1)     n1 odt1 <> TextNode (P ps2) n2 odt2             = 
@@ -266,10 +290,11 @@ instance Semigroup ODT where
         ODTSeq (TextNode (P ps) n1 odt1) (TextNode (Span textstyle) n2 odt2)
     TextNode    (P ps)      n1 odt1 <> TextLeaf     Str         n2                  = 
         TextNode (P ps) n1 (odt1 <> TextLeaf Str n2)
-    
+
     -- Appending to Span nodes
-    TextNode    (Span textstyle)        n1 odt1 <> TextLeaf     Str         n       = 
-        TextNode (Span textstyle) n1 (odt1 <> TextLeaf Str n) 
+    TextNode    (Span textstyle)        n1 odt1 <> TextLeaf Str n = 
+        -- TextNode (Span textstyle) n1 (odt1 <> TextLeaf Str n) 
+        ODTSeq (TextNode (Span textstyle) n1 odt1) (TextLeaf Str n)
     TextLeaf    Str n1              <> TextLeaf     Str         n2                  = 
         ODTSeq (TextLeaf Str n1) (TextLeaf Str n2)
 
@@ -328,6 +353,8 @@ instance IsList ODT where
     toList (ODTSeq odt1 odt2) = toList odt1 <> toList odt2
     toList EmptyODT = []
     toList (OfficeNode typ odtxml odt) = OfficeNode typ odtxml EmptyODT : toList odt
+    -- Don't unpack spans
+    toList (TextNode (Span tstyle) odtxml odt) = [TextNode (Span tstyle) odtxml odt]
     toList (TextNode typ odtxml odt) = TextNode typ odtxml EmptyODT : toList odt
     toList (TextLeaf typ odtxml) = [TextLeaf typ odtxml]
     toList (StyleNode (StyleType False) odtxml odt) = StyleNode (StyleType True) odtxml EmptyODT : toList odt

@@ -89,7 +89,7 @@ getNewODT = do
                   , ODT.span boldItalic "Some bold and italic text"
                   , ODT.span underlineStyle "Some underlined text"
                   , ODT.span bold " and some bold text." 
-                  , ODT.str " and some bold text."
+                  , ODT.str " and some plain text."
                   , ODT.span newstyle " and newstyle text"
                   , ODT.span footnoteAnchor " and footnote anchor text"
                   -- , ODT.p newParaStyle ""
@@ -98,6 +98,7 @@ getNewODT = do
     -- let odtlst = [ODT.p italicPara "Italic para style"]
     let newodt = mconcat odtlst
     let newodt' = mconcat . toList $ newodt 
+
     newodt'
 
 
