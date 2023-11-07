@@ -16,6 +16,7 @@ import Text.ODT.Utils.Types (
 import Text.ODT.ODT
 import Text.ODT.Doc
 import Text.ODT.Archive
+import Text.ODT.Query
 import qualified Text.ODT.Ops as ODT
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
@@ -75,10 +76,18 @@ appendItalicParaStyleWithParaHappy :: IO Bool
 appendItalicParaStyleWithParaHappy = do
   archive <- loadArchive
   let newcontentdoc = contentDoc . appendODT italicPara $ archive
-  return $ hasParaStyle italicParaStyle newcontentdoc
+
+  let origParaCount = length . getParas . getODT . contentDoc $ archive
+  let newParaCount = length . getParas . getODT $ newcontentdoc
+
+  return $ hasParaStyle italicParaStyle newcontentdoc && newParaCount == origParaCount + 1
 
 prependItalicParaStyleWithParaHappy :: IO Bool
 prependItalicParaStyleWithParaHappy = do
   archive <- loadArchive
   let newcontentdoc = contentDoc . prependODT italicPara $ archive
-  return $ hasParaStyle italicParaStyle newcontentdoc
+
+  let origParaCount = length . getParas . getODT . contentDoc $ archive
+  let newParaCount = length . getParas . getODT $ newcontentdoc
+
+  return $ hasParaStyle italicParaStyle newcontentdoc && newParaCount == origParaCount + 1

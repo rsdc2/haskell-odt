@@ -15,6 +15,7 @@ import Text.ODT.Utils.Types (
 import Text.ODT.ODT
 import Text.ODT.Doc
 import Text.ODT.Archive
+import Text.ODT.Query
 import qualified Text.ODT.Ops as ODT
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
@@ -95,6 +96,7 @@ getNewODT = do
                   -- , ODT.p newParaStyle ""
                   ]
 
+    -- let odtlst = [ODT.p italicPara "Italic para style"]
     let newodt = mconcat odtlst
     let newodt' = mconcat . toList $ newodt 
     newodt'
@@ -118,7 +120,11 @@ readWriteMonoid = do
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
 
-    let contentodt = getODT contentodtdoc <> getNewODT
+    let contentodt = getNewODT <> getODT contentodtdoc
+
+    print $ show . length . getParas $ contentodt
+    -- print contentodt 
+
     let contentodt' = mconcat . toList $ contentodt
 
     let contentodtdoc' = contentodtdoc {odt = contentodt'}

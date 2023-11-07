@@ -222,7 +222,7 @@ instance Semigroup ODT where
                 n2' = setAttrVal textStyleNameName textstylename n2 
 
     TextNode (P (Just parastyle)) n2 odt2  <> OfficeNode  DocContent  n1 odt1   = 
-        (TextNode (Span Nothing) n2' odt2) <> docContent'
+        (TextNode (P Nothing) n2' odt2) <> docContent'
         where   parastyleodt = toODT parastyle
                 docContent' = OfficeNode DocContent  n1 odt1 <> parastyleodt
                 parastylename = getParaStyleName parastyle docContent'
