@@ -258,17 +258,19 @@ instance Semigroup ODT where
     TextNode    textType    n1 odt1 <> ODTSeq   (OfficeNode OfficeTextNode n2 odt2) odt3 = 
         ODTSeq   (OfficeNode OfficeTextNode n2 $ TextNode textType n1 odt1 <> odt2) odt3
     TextNode    textType    n1 odt1 <> ODTSeq   (OfficeNode officeType n2 odt2) odt3 = 
-        ODTSeq   (OfficeNode officeType n2 odt2) $ TextNode    textType    n1 odt1 <> odt3
+        ODTSeq   (OfficeNode officeType n2 odt2) (TextNode    textType    n1 odt1 <> odt3)
 
     -- TextLeaf prepend
     TextLeaf typ n2 <> OfficeNode   officeType  n1 odt1             = 
         OfficeNode officeType n1 (TextLeaf typ n2 <> odt1)
     TextLeaf  typ n1 <> ODTSeq   (OfficeNode officeType n2 odt2) odt3 = 
-        ODTSeq   (OfficeNode officeType n2 odt2) $ TextLeaf typ n1 <> odt3
+        ODTSeq   (OfficeNode officeType n2 odt2) (TextLeaf typ n1 <> odt3)
 
-
-    OfficeNode  officeType  n1 odt1 <> TextLeaf     textType    n2 = 
-        OfficeNode officeType n1 (odt1 <> TextLeaf textType n2) 
+    -- TextLeaf append
+    OfficeNode   officeType  n1 odt1 <> TextLeaf typ n2            = 
+        OfficeNode officeType n1 (odt1 <> TextLeaf typ n2)
+    ODTSeq (OfficeNode officeType n2 odt2) odt3 <> TextLeaf typ n1 = 
+        ODTSeq (OfficeNode officeType n2 odt2) (odt3 <> TextLeaf typ n1)
 
     -- APPENDING / PREPENDING TEXT TO TEXT
     -- Insert new text after sequence-decls
@@ -291,7 +293,7 @@ instance Semigroup ODT where
     TextNode    (P ps)      n1 odt1 <> TextLeaf     Str         n2                  = 
         TextNode (P ps) n1 (odt1 <> TextLeaf Str n2)
 
-    -- Appending to Span nodes
+    -- Appending / Prepending Str to Span nodes
     TextNode    (Span textstyle)        n1 odt1 <> TextLeaf Str n = 
         -- TextNode (Span textstyle) n1 (odt1 <> TextLeaf Str n) 
         ODTSeq (TextNode (Span textstyle) n1 odt1) (TextLeaf Str n)

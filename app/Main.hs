@@ -120,7 +120,7 @@ readWriteMonoid = do
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
 
-    let contentodt = getNewODT <> getODT contentodtdoc
+    let contentodt = getODT contentodtdoc <> getNewODT
 
     print $ show . length . getParas $ contentodt
     -- print contentodt 
