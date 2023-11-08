@@ -60,14 +60,18 @@ appendBoldItalicTextStyleWithSpanSad =  hasTextStyle boldItalicStyle . contentDo
 appendBoldItalicTextStyleWithSpanHappy :: IO Bool
 appendBoldItalicTextStyleWithSpanHappy = do
   archive <- loadArchive
-  let newcontentdoc = contentDoc . appendODT boldItalicSpan $ archive
-  return $ hasTextStyle boldItalicStyle newcontentdoc
+  let origcontentdoc = contentDoc archive
+  let newcontentdoc = appendODT boldItalicSpan origcontentdoc
+  return $ not (hasTextStyle boldItalicStyle origcontentdoc)
+            && hasTextStyle boldItalicStyle newcontentdoc
 
 prependBoldItalicTextStyleWithSpanHappy :: IO Bool
 prependBoldItalicTextStyleWithSpanHappy = do
   archive <- loadArchive
-  let newcontentdoc = contentDoc . prependODT boldItalicSpan $ archive
-  return $ hasTextStyle boldItalicStyle newcontentdoc
+  let origcontentdoc = contentDoc archive
+  let newcontentdoc = prependODT boldItalicSpan origcontentdoc
+  return $ not (hasTextStyle boldItalicStyle origcontentdoc)
+            && hasTextStyle boldItalicStyle newcontentdoc
 
 appendItalicParaStyleWithParaSad :: IO Bool
 appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
@@ -75,19 +79,25 @@ appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$
 appendItalicParaStyleWithParaHappy :: IO Bool
 appendItalicParaStyleWithParaHappy = do
   archive <- loadArchive
-  let newcontentdoc = contentDoc . appendODT italicPara $ archive
+  let origcontentdoc = contentDoc archive
+  let newcontentdoc = appendODT italicPara origcontentdoc
 
-  let origParaCount = length . getParas . getODT . contentDoc $ archive
+  let origParaCount = length . getParas . getODT $ origcontentdoc
   let newParaCount = length . getParas . getODT $ newcontentdoc
 
-  return $ hasParaStyle italicParaStyle newcontentdoc && newParaCount == origParaCount + 1
+  return $ not (hasParaStyle italicParaStyle origcontentdoc)
+              && hasParaStyle italicParaStyle newcontentdoc 
+              && newParaCount == origParaCount + 1
 
 prependItalicParaStyleWithParaHappy :: IO Bool
 prependItalicParaStyleWithParaHappy = do
   archive <- loadArchive
-  let newcontentdoc = contentDoc . prependODT italicPara $ archive
+  let origcontentdoc = contentDoc archive
+  let newcontentdoc = prependODT italicPara origcontentdoc
 
-  let origParaCount = length . getParas . getODT . contentDoc $ archive
+  let origParaCount = length . getParas . getODT $ origcontentdoc
   let newParaCount = length . getParas . getODT $ newcontentdoc
 
-  return $ hasParaStyle italicParaStyle newcontentdoc && newParaCount == origParaCount + 1
+  return $  not (hasParaStyle italicParaStyle origcontentdoc)
+              && hasParaStyle italicParaStyle newcontentdoc 
+              && newParaCount == origParaCount + 1
