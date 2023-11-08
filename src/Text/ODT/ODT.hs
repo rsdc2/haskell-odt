@@ -377,6 +377,11 @@ class HasODT a where
     prependODT :: ODT -> a -> a
     appendODT :: ODT -> a -> a
 
+instance HasODT ODT where
+    getODT = id
+    prependODT odt1 odt2 = odt1 <> odt2
+    appendODT odt1 odt2 = odt2 <> odt1
+ 
 -- IsODT instances
 
 instance IsODT Node where

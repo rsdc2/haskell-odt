@@ -64,6 +64,7 @@ appendBoldItalicTextStyleWithSpanHappy = do
   let newcontentdoc = appendODT boldItalicSpan origcontentdoc
   return $ not (hasTextStyle boldItalicStyle origcontentdoc)
             && hasTextStyle boldItalicStyle newcontentdoc
+            && spanCount newcontentdoc == spanCount origcontentdoc + 1
 
 prependBoldItalicTextStyleWithSpanHappy :: IO Bool
 prependBoldItalicTextStyleWithSpanHappy = do
@@ -72,6 +73,7 @@ prependBoldItalicTextStyleWithSpanHappy = do
   let newcontentdoc = prependODT boldItalicSpan origcontentdoc
   return $ not (hasTextStyle boldItalicStyle origcontentdoc)
             && hasTextStyle boldItalicStyle newcontentdoc
+            && spanCount newcontentdoc == spanCount origcontentdoc + 1
 
 appendItalicParaStyleWithParaSad :: IO Bool
 appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
@@ -82,12 +84,9 @@ appendItalicParaStyleWithParaHappy = do
   let origcontentdoc = contentDoc archive
   let newcontentdoc = appendODT italicPara origcontentdoc
 
-  let origParaCount = length . getParas . getODT $ origcontentdoc
-  let newParaCount = length . getParas . getODT $ newcontentdoc
-
   return $ not (hasParaStyle italicParaStyle origcontentdoc)
               && hasParaStyle italicParaStyle newcontentdoc 
-              && newParaCount == origParaCount + 1
+              && paraCount newcontentdoc == paraCount origcontentdoc + 1
 
 prependItalicParaStyleWithParaHappy :: IO Bool
 prependItalicParaStyleWithParaHappy = do
@@ -95,9 +94,6 @@ prependItalicParaStyleWithParaHappy = do
   let origcontentdoc = contentDoc archive
   let newcontentdoc = prependODT italicPara origcontentdoc
 
-  let origParaCount = length . getParas . getODT $ origcontentdoc
-  let newParaCount = length . getParas . getODT $ newcontentdoc
-
   return $  not (hasParaStyle italicParaStyle origcontentdoc)
               && hasParaStyle italicParaStyle newcontentdoc 
-              && newParaCount == origParaCount + 1
+              && paraCount newcontentdoc == paraCount origcontentdoc + 1

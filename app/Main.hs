@@ -78,20 +78,21 @@ getNewODT = do
 
     let newstyleodt = toODT newstyle
 
-    let odtlst = [ ODT.p newParaStyle ""
-                  , ODT.str "Normal parastyle text 1"
-                  , ODT.p italicPara "Italic para style"
-                  , ODT.p newParaStyle "Normal parastyle text 2"
-                  -- , ODT.p italicPara "Italic parastyle text"
-                  -- , ODT.p newParaStyle ""
-                  , ODT.span normal "Some normal text" 
-                --   , ODT.str "This is a new string. "
-                  , ODT.span boldItalic "Some bold and italic text"
-                  , ODT.span underlineStyle "Some underlined text"
-                  , ODT.span bold " and some bold text." 
-                  , ODT.str " and some plain text."
-                  , ODT.span newstyle " and newstyle text"
-                  , ODT.span footnoteAnchor " and footnote anchor text"
+    let odtlst = [ 
+                -- ODT.p newParaStyle ""
+                --   , ODT.str "Normal parastyle text 1"
+                --   , ODT.p italicPara "Italic para style"
+                --   , ODT.p newParaStyle "Normal parastyle text 2"
+                --   -- , ODT.p italicPara "Italic parastyle text"
+                --   -- , ODT.p newParaStyle ""
+                --   , ODT.span normal "Some normal text" 
+                -- --   , ODT.str "This is a new string. "
+                --   , ODT.span boldItalic "Some bold and italic text"
+                --   , ODT.span underlineStyle "Some underlined text"
+                --   , ODT.span bold " and some bold text." 
+                --   , ODT.str " and some plain text."
+                --   , ODT.span newstyle " and newstyle text"
+                  ODT.span footnoteAnchor " and footnote anchor text"
                   -- , ODT.p newParaStyle ""
                   ]
 
@@ -120,9 +121,11 @@ readWriteMonoid = do
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
 
+    print $ show . spanCount $ getODT contentodtdoc
+
     let contentodt = getODT contentodtdoc <> getNewODT
 
-    print $ show . length . getParas $ contentodt
+    print $ show . spanCount $ contentodt
     -- print contentodt 
 
     let contentodt' = mconcat . toList $ contentodt
