@@ -46,19 +46,24 @@ testText :: T.Text
 testText = "test text"
 
 boldItalicStyle :: TextStyle
-boldItalicStyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
+boldItalicStyle = newTextStyle 
+  { textTextProps = newTextProps {fontStyle = Italic
+  , fontWeight = Bold, fontSize = ""} }
 
 boldItalicSpan :: ODT
 boldItalicSpan = ODT.span boldItalicStyle testText
 
 italicParaStyle :: ParaStyle
-italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
+italicParaStyle = newParaStyle 
+  { paraTextProps = newTextProps {fontStyle = Italic}
+  , paraStyleName = Just "italicPara" }
 
 italicPara :: ODT
 italicPara = ODT.p italicParaStyle testText
 
 appendBoldItalicTextStyleWithSpanSad :: IO Bool
-appendBoldItalicTextStyleWithSpanSad =  hasTextStyle boldItalicStyle . contentDoc <$> loadArchive
+appendBoldItalicTextStyleWithSpanSad = 
+  hasTextStyle boldItalicStyle . contentDoc <$> loadArchive
 
 appendBoldItalicTextStyleWithSpanHappy :: IO Bool
 appendBoldItalicTextStyleWithSpanHappy = do
@@ -83,7 +88,8 @@ prependBoldItalicTextStyleWithSpanHappy = do
             && getText new == testText <> getText orig
 
 appendItalicParaStyleWithParaSad :: IO Bool
-appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
+appendItalicParaStyleWithParaSad = 
+  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
 
 appendItalicParaStyleWithParaHappy :: IO Bool
 appendItalicParaStyleWithParaHappy = do
