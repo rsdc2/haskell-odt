@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Text.ODT
       Text.ODT.Archive
       Text.ODT.Doc
       Text.ODT.File

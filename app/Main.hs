@@ -128,7 +128,7 @@ readWriteMonoid = do
     let contentodt = getODT contentodtdoc <> getNewODT
 
     print $ show . paraCount $ contentodt
-    print $ getText contentodt 
+    print $ getText . getLastPara $ contentodt 
 
     let contentodt' = mconcat . toList $ contentodt
 

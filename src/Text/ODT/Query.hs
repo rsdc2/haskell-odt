@@ -1,7 +1,14 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Text.ODT.Query where
+module Text.ODT.Query (
+      getFirstPara
+    , getLastPara
+    , getParas
+    , getText
+    , getSpans
+    , paraCount
+    , spanCount ) where
 
 import Text.ODT.ODT
 import Text.ODT.ODTXML.ODTXML
