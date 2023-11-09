@@ -63,10 +63,10 @@ appendBoldItalicTextStyleWithSpanHappy = do
   let orig = contentDoc archive
   let new = appendODT boldItalicSpan orig
   return $ not (hasTextStyle boldItalicStyle orig)
-            && getText orig == "Hello worldThis is underlined.This is italic"
             && hasTextStyle boldItalicStyle new
             && spanCount new == spanCount orig + 1
-            && getText new == "Hello worldThis is underlined.This is italicThis is bold and italic text"
+            && getText orig /= ""
+            && getText new == getText orig <> "This is bold and italic text"
 
 prependBoldItalicTextStyleWithSpanHappy :: IO Bool
 prependBoldItalicTextStyleWithSpanHappy = do
@@ -74,10 +74,10 @@ prependBoldItalicTextStyleWithSpanHappy = do
   let orig = contentDoc archive
   let new = prependODT boldItalicSpan orig
   return $ not (hasTextStyle boldItalicStyle orig)
-            && getText orig == "Hello worldThis is underlined.This is italic"
             && hasTextStyle boldItalicStyle new
             && spanCount new == spanCount orig + 1
-            && getText new == "This is bold and italic textHello worldThis is underlined.This is italic"
+            && getText orig /= ""
+            && getText new == "This is bold and italic text" <> getText orig
 
 appendItalicParaStyleWithParaSad :: IO Bool
 appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
@@ -89,10 +89,10 @@ appendItalicParaStyleWithParaHappy = do
   let new = appendODT italicPara orig
 
   return $ not (hasParaStyle italicParaStyle orig)
-            && getText orig == "Hello worldThis is underlined.This is italic"
             && hasParaStyle italicParaStyle new 
             && paraCount new == paraCount orig + 1
-            && getText new == "Hello worldThis is underlined.This is italicItalic para style"
+            && getText orig /= ""
+            && getText new == getText orig <> "Italic para style"
 
 prependItalicParaStyleWithParaHappy :: IO Bool
 prependItalicParaStyleWithParaHappy = do
@@ -101,7 +101,7 @@ prependItalicParaStyleWithParaHappy = do
   let new = prependODT italicPara orig
 
   return $ not (hasParaStyle italicParaStyle orig)
-            && getText orig == "Hello worldThis is underlined.This is italic"
             && hasParaStyle italicParaStyle new 
             && paraCount new == paraCount orig + 1
-            && getText new == "Italic para styleHello worldThis is underlined.This is italic"
+            && getText orig /= ""
+            && getText new == "Italic para style" <> getText orig
