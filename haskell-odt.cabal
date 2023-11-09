@@ -59,6 +59,7 @@ library
     , bytestring
     , containers
     , directory
+    , extra
     , text
     , xml
     , xml-conduit
@@ -79,6 +80,7 @@ executable haskell-odt-exe
     , bytestring
     , containers
     , directory
+    , extra
     , haskell-odt
     , text
     , xml
@@ -91,7 +93,10 @@ test-suite haskell-odt-test
   main-is: Spec.hs
   other-modules:
       AppendSpec
+      ConstantsSpec
       HUnitSpec
+      QuerySpec
+      UtilsSpec
       Paths_haskell_odt
   autogen-modules:
       Paths_haskell_odt
@@ -104,6 +109,7 @@ test-suite haskell-odt-test
     , bytestring
     , containers
     , directory
+    , extra
     , haskell-odt
     , text
     , xml

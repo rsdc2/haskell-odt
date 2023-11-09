@@ -2,7 +2,6 @@
 
 module AppendSpec where
 
-
 import qualified Data.ByteString as B
 import qualified Data.Text as T
 import qualified Text.XML as X
@@ -21,45 +20,7 @@ import qualified Text.ODT.Ops as ODT
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
 
-exampleFileName = "example"
-inputPath = "test/files/input/"
-
-loadArchive :: IO Archive
-loadArchive = do
-  Z.unzip (inputPath <> exampleFileName <> ".odt") (inputPath <> exampleFileName)
-
-  -- Read files
-  contentxmldoc <- X.readFile X.def (inputPath <> exampleFileName <> "/content.xml")
-  stylesxmldoc <- X.readFile X.def (inputPath <> exampleFileName <> "/styles.xml")
-
-  let contentodtdoc = fromXMLDoc contentxmldoc
-  let stylesodtdoc = fromXMLDoc stylesxmldoc
-
-  let archive = Archive {
-      contentDoc = contentodtdoc
-    , stylesDoc = stylesodtdoc
-  } 
-
-  return archive
-
-testText :: T.Text
-testText = "test text"
-
-boldItalicStyle :: TextStyle
-boldItalicStyle = newTextStyle 
-  { textTextProps = newTextProps {fontStyle = Italic
-  , fontWeight = Bold, fontSize = ""} }
-
-boldItalicSpan :: ODT
-boldItalicSpan = ODT.span boldItalicStyle testText
-
-italicParaStyle :: ParaStyle
-italicParaStyle = newParaStyle 
-  { paraTextProps = newTextProps {fontStyle = Italic}
-  , paraStyleName = Just "italicPara" }
-
-italicPara :: ODT
-italicPara = ODT.p italicParaStyle testText
+import ConstantsSpec
 
 appendBoldItalicTextStyleWithSpanSad :: IO Bool
 appendBoldItalicTextStyleWithSpanSad = 
@@ -114,3 +75,4 @@ prependItalicParaStyleWithParaHappy = do
             && paraCount new == paraCount orig + 1
             && getText orig /= ""
             && getText new == testText <> getText orig
+

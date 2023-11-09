@@ -28,6 +28,7 @@ dependencies:
 - xml 
 - xml-conduit
 - zip-archive
+- extra
 
 ghc-options:
 - -Wall

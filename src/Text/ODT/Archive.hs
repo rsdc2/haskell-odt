@@ -49,6 +49,6 @@ instance HasODT Archive where
         where textstylename = getTextStyleName textstyle stylesdoc 
               n' = setAttrVal textStyleNameName textstylename n       
 
-    prependODT (ODTSeq odt1 odt2) archive  = prependODT odt1 $ prependODT (removeLastODT odt2) $ prependODT (getLastODT odt2) $ archive  
+    prependODT (ODTSeq odt1 odt2) archive = prependODT odt1 $ prependODT (removeLastODT odt2) $ prependODT (getLastODT odt2) $ archive  
 
     prependODT odt  (Archive contentdoc stylesdoc)  = Archive (prependODT odt contentdoc) stylesdoc
