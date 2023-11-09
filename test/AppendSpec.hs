@@ -21,16 +21,16 @@ import qualified Text.ODT.Ops as ODT
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
 
-exampleFileName = "example2"
-
+exampleFileName = "example"
+inputPath = "test/files/input/"
 
 loadArchive :: IO Archive
 loadArchive = do
-  Z.unzip (path $ exampleFileName <> ".odt") (path $ "/" <> exampleFileName)
+  Z.unzip (inputPath <> exampleFileName <> ".odt") (inputPath <> exampleFileName)
 
   -- Read files
-  contentxmldoc <- X.readFile X.def (path $ exampleFileName <> "/content.xml")
-  stylesxmldoc <- X.readFile X.def (path $ exampleFileName <> "/styles.xml")
+  contentxmldoc <- X.readFile X.def (inputPath <> exampleFileName <> "/content.xml")
+  stylesxmldoc <- X.readFile X.def (inputPath <> exampleFileName <> "/styles.xml")
 
   let contentodtdoc = fromXMLDoc contentxmldoc
   let stylesodtdoc = fromXMLDoc stylesxmldoc
