@@ -60,20 +60,24 @@ appendBoldItalicTextStyleWithSpanSad =  hasTextStyle boldItalicStyle . contentDo
 appendBoldItalicTextStyleWithSpanHappy :: IO Bool
 appendBoldItalicTextStyleWithSpanHappy = do
   archive <- loadArchive
-  let origcontentdoc = contentDoc archive
-  let newcontentdoc = appendODT boldItalicSpan origcontentdoc
-  return $ not (hasTextStyle boldItalicStyle origcontentdoc)
-            && hasTextStyle boldItalicStyle newcontentdoc
-            && spanCount newcontentdoc == spanCount origcontentdoc + 1
+  let orig = contentDoc archive
+  let new = appendODT boldItalicSpan orig
+  return $ not (hasTextStyle boldItalicStyle orig)
+            && getText orig == "Hello worldThis is underlined.This is italic"
+            && hasTextStyle boldItalicStyle new
+            && spanCount new == spanCount orig + 1
+            && getText new == "Hello worldThis is underlined.This is italicThis is bold and italic text"
 
 prependBoldItalicTextStyleWithSpanHappy :: IO Bool
 prependBoldItalicTextStyleWithSpanHappy = do
   archive <- loadArchive
-  let origcontentdoc = contentDoc archive
-  let newcontentdoc = prependODT boldItalicSpan origcontentdoc
-  return $ not (hasTextStyle boldItalicStyle origcontentdoc)
-            && hasTextStyle boldItalicStyle newcontentdoc
-            && spanCount newcontentdoc == spanCount origcontentdoc + 1
+  let orig = contentDoc archive
+  let new = prependODT boldItalicSpan orig
+  return $ not (hasTextStyle boldItalicStyle orig)
+            && getText orig == "Hello worldThis is underlined.This is italic"
+            && hasTextStyle boldItalicStyle new
+            && spanCount new == spanCount orig + 1
+            && getText new == "This is bold and italic textHello worldThis is underlined.This is italic"
 
 appendItalicParaStyleWithParaSad :: IO Bool
 appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
@@ -81,19 +85,23 @@ appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$
 appendItalicParaStyleWithParaHappy :: IO Bool
 appendItalicParaStyleWithParaHappy = do
   archive <- loadArchive
-  let origcontentdoc = contentDoc archive
-  let newcontentdoc = appendODT italicPara origcontentdoc
+  let orig = contentDoc archive
+  let new = appendODT italicPara orig
 
-  return $ not (hasParaStyle italicParaStyle origcontentdoc)
-              && hasParaStyle italicParaStyle newcontentdoc 
-              && paraCount newcontentdoc == paraCount origcontentdoc + 1
+  return $ not (hasParaStyle italicParaStyle orig)
+            && getText orig == "Hello worldThis is underlined.This is italic"
+            && hasParaStyle italicParaStyle new 
+            && paraCount new == paraCount orig + 1
+            && getText new == "Hello worldThis is underlined.This is italicItalic para style"
 
 prependItalicParaStyleWithParaHappy :: IO Bool
 prependItalicParaStyleWithParaHappy = do
   archive <- loadArchive
-  let origcontentdoc = contentDoc archive
-  let newcontentdoc = prependODT italicPara origcontentdoc
+  let orig = contentDoc archive
+  let new = prependODT italicPara orig
 
-  return $  not (hasParaStyle italicParaStyle origcontentdoc)
-              && hasParaStyle italicParaStyle newcontentdoc 
-              && paraCount newcontentdoc == paraCount origcontentdoc + 1
+  return $ not (hasParaStyle italicParaStyle orig)
+            && getText orig == "Hello worldThis is underlined.This is italic"
+            && hasParaStyle italicParaStyle new 
+            && paraCount new == paraCount orig + 1
+            && getText new == "Italic para styleHello worldThis is underlined.This is italic"

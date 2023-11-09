@@ -71,11 +71,12 @@ getNewODT = do
     let normal = newTextStyle 
     let newstyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
     let footnoteAnchor = newTextStyle {textTextProps = newTextProps {textPosition = "super 58%"}}
+    let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
     let italicPara = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
     let italicParaODT = toODT italicPara
     -- putStrLn $ "\nitalicParaODT: " <> show italicParaODT <> "\n"
-
+    let italicPara = ODT.p italicParaStyle "Italic para style"
     let newstyleodt = toODT newstyle
 
     let odtlst = [ 
@@ -92,7 +93,8 @@ getNewODT = do
                 --   , ODT.span bold " and some bold text." 
                 --   , ODT.str " and some plain text."
                 --   , ODT.span newstyle " and newstyle text"
-                  ODT.span footnoteAnchor " and footnote anchor text"
+                --   ODT.span footnoteAnchor " and footnote anchor text"
+                    italicPara
                   -- , ODT.p newParaStyle ""
                   ]
 
@@ -121,12 +123,12 @@ readWriteMonoid = do
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
 
-    print $ show . spanCount $ getODT contentodtdoc
+    print $ show . paraCount $ getODT contentodtdoc
 
     let contentodt = getODT contentodtdoc <> getNewODT
 
-    print $ show . spanCount $ contentodt
-    -- print contentodt 
+    print $ show . paraCount $ contentodt
+    print $ getText contentodt 
 
     let contentodt' = mconcat . toList $ contentodt
 
