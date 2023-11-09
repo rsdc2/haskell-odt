@@ -6,7 +6,18 @@ module Text.ODT.Query where
 import Text.ODT.ODT
 import Text.ODT.ODTXML.ODTXML
 import qualified Data.Text as T
+import qualified Data.List as L
+import qualified Data.List.Extra as Le
 
+getFirstPara :: HasODT a => a -> ODT
+getFirstPara x = case L.uncons . getParas . getODT $ x of
+    Nothing -> EmptyODT
+    Just (x, _) -> x
+
+getLastPara :: HasODT a => a -> ODT
+getLastPara x = case Le.unsnoc . getParas . getODT $ x of
+    Nothing -> EmptyODT
+    Just (_, x) -> x
 
 getParas :: HasODT a => a -> [ODT]
 getParas x
