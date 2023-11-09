@@ -42,17 +42,20 @@ loadArchive = do
 
   return archive
 
+testText :: T.Text
+testText = "test text"
+
 boldItalicStyle :: TextStyle
 boldItalicStyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
 
 boldItalicSpan :: ODT
-boldItalicSpan = ODT.span boldItalicStyle "This is bold and italic text"
+boldItalicSpan = ODT.span boldItalicStyle testText
 
 italicParaStyle :: ParaStyle
 italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
 italicPara :: ODT
-italicPara = ODT.p italicParaStyle "Italic para style"
+italicPara = ODT.p italicParaStyle testText
 
 appendBoldItalicTextStyleWithSpanSad :: IO Bool
 appendBoldItalicTextStyleWithSpanSad =  hasTextStyle boldItalicStyle . contentDoc <$> loadArchive
@@ -66,7 +69,7 @@ appendBoldItalicTextStyleWithSpanHappy = do
             && hasTextStyle boldItalicStyle new
             && spanCount new == spanCount orig + 1
             && getText orig /= ""
-            && getText new == getText orig <> "This is bold and italic text"
+            && getText new == getText orig <> testText
 
 prependBoldItalicTextStyleWithSpanHappy :: IO Bool
 prependBoldItalicTextStyleWithSpanHappy = do
@@ -77,7 +80,7 @@ prependBoldItalicTextStyleWithSpanHappy = do
             && hasTextStyle boldItalicStyle new
             && spanCount new == spanCount orig + 1
             && getText orig /= ""
-            && getText new == "This is bold and italic text" <> getText orig
+            && getText new == testText <> getText orig
 
 appendItalicParaStyleWithParaSad :: IO Bool
 appendItalicParaStyleWithParaSad =  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
@@ -92,7 +95,7 @@ appendItalicParaStyleWithParaHappy = do
             && hasParaStyle italicParaStyle new 
             && paraCount new == paraCount orig + 1
             && getText orig /= ""
-            && getText new == getText orig <> "Italic para style"
+            && getText new == getText orig <> testText
 
 prependItalicParaStyleWithParaHappy :: IO Bool
 prependItalicParaStyleWithParaHappy = do
@@ -104,4 +107,4 @@ prependItalicParaStyleWithParaHappy = do
             && hasParaStyle italicParaStyle new 
             && paraCount new == paraCount orig + 1
             && getText orig /= ""
-            && getText new == "Italic para style" <> getText orig
+            && getText new == testText <> getText orig
