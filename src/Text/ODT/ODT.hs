@@ -73,7 +73,7 @@ data OfficeNodeType =
     | Style
     | Body
     | OfficeTextNode
-    deriving Show
+    deriving (Eq, Show)
 
 data StyleNodeType =
       DefStyle
@@ -85,7 +85,7 @@ data StyleNodeType =
     | TableProps
     | TableRowProps
     | TextPropsNode
-    deriving Show
+    deriving (Eq, Show)
 
 data TextNodeType = 
       P (Maybe ParaStyle)
@@ -94,12 +94,12 @@ data TextNodeType =
     | NoteBody 
     | SequenceDecls
     | SequenceDecl
-    deriving Show
+    deriving (Eq, Show)
 
 data TextLeafType =
       Str
     | NoteCit
-    deriving Show
+    deriving (Eq, Show)
 
 data ODT where
     OfficeNode    :: OfficeNodeType -> ODTXML -> ODT -> ODT
@@ -109,6 +109,7 @@ data ODT where
     ODTSeq        :: ODT -> ODT -> ODT 
     MiscODT       :: ODTXML -> ODT
     EmptyODT      :: ODT
+    deriving Eq
 
 instance Show ODT where
     show (TextLeaf    NoteCit   n     ) = show NoteCit

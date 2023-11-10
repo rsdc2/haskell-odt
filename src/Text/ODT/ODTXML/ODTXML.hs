@@ -33,6 +33,7 @@ data ODTXML =
       ODTXMLElem Name (Map.Map Name Text)
     | ODTXMLText T.Text
     | ODTXMLOrig Node
+    deriving Eq
 
 class IsODTXML a where
     toODTXML :: a -> ODTXML
