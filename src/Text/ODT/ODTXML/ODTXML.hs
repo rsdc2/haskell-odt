@@ -51,7 +51,8 @@ instance HasAttrs ODTXML where
 
     setAttrVal :: Name -> T.Text -> ODTXML -> ODTXML
     setAttrVal attrname attrval odtxml
-        | ODTXMLElem elemname attrs <- odtxml = ODTXMLElem elemname (Map.insert attrname attrval attrs)
+        | ODTXMLElem elemname attrs <- odtxml = 
+            ODTXMLElem elemname (Map.insert attrname attrval attrs)
         | otherwise = odtxml
 
 instance IsNode ODTXML where 
