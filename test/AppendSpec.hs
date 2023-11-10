@@ -65,6 +65,36 @@ prependItalicParaStyleWithParaHappy = do
             && getText orig /= ""
             && getText new == testText <> getText orig
 
+appendParaToArchive :: IO Bool
+appendParaToArchive = do
+  archive <- loadArchive
+  let archive' = appendODT italicPara archive
+  let cdoc = contentDoc archive'
+  let sdoc = stylesDoc archive'
+
+  return $ not (hasParaStyle italicParaStyle sdoc)
+            && hasParaStyle italicParaStyle cdoc
+
+-- Test that style that exists on stylesdoc is not chosen
+appendParaToArchive' :: IO Bool
+appendParaToArchive' = do
+  archive <- loadArchive
+  let cdoc = contentDoc archive
+  let sdoc = stylesDoc archive
+
+  let sdoc' = appendODT (toODT italicParaStyle) sdoc
+  let archive' = Archive {contentDoc = cdoc, stylesDoc = sdoc'}
+
+  let archive'' = appendODT italicPara archive'
+
+  let cdoc'' = contentDoc archive''
+  let sdoc'' = stylesDoc archive''  
+
+  return $ not (hasParaStyle italicParaStyle cdoc'')
+            && hasParaStyle italicParaStyle sdoc''
+
+-- TODO: test that 
+
 -- Test that appending directly to an ODT yields the same
 -- result as appending to a doc
 appendToODTEqAppendToDoc :: IO Bool
@@ -90,3 +120,4 @@ prependToODTEqAppendToDoc = do
   let odtodt = [italicPara, boldItalicSpan, italicPara, boldItalicSpan] <> odt
 
   return $ docodt == odtodt
+

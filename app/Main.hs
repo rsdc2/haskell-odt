@@ -23,6 +23,7 @@ import Text.ODT.Style
 exampleFileName = "example2"
 
 
+
 unzipFiles :: IO ()
 unzipFiles = do
     -- Unzip
@@ -62,47 +63,51 @@ writeODT contentdoc stylesdoc = do
     Z.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.zip")
 
 
-getNewODT :: ODT
-getNewODT = do
-    let italic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}}
-    let underlineStyle = newTextStyle {textTextProps = newTextProps {underline = Solid}}
-    let bold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}}
-    let boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
-    let normal = newTextStyle 
-    let newstyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
-    let footnoteAnchor = newTextStyle {textTextProps = newTextProps {textPosition = "super 58%"}}
-    let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
+-- getNewODT :: ODT
+-- getNewODT = do
+--     let italic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}}
+--     let underlineStyle = newTextStyle {textTextProps = newTextProps {underline = Solid}}
+--     let bold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}}
+--     let boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
+--     let normal = newTextStyle 
+--     let newstyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
+--     let footnoteAnchor = newTextStyle {textTextProps = newTextProps {textPosition = "super 58%"}}
+--     -- let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
+--     -- italicParaStyle :: ParaStyle
+--     let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
-    let italicPara = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
-    let italicParaODT = toODT italicPara
-    -- putStrLn $ "\nitalicParaODT: " <> show italicParaODT <> "\n"
-    let italicPara = ODT.p italicParaStyle "Italic para style"
-    let newstyleodt = toODT newstyle
+--     -- italicPara :: ODT
+--     let italicPara = ODT.p italicParaStyle "Italic para style"
 
-    let odtlst = [ 
-                -- ODT.p newParaStyle ""
-                --   , ODT.str "Normal parastyle text 1"
-                --   , ODT.p italicPara "Italic para style"
-                --   , ODT.p newParaStyle "Normal parastyle text 2"
-                --   -- , ODT.p italicPara "Italic parastyle text"
-                --   -- , ODT.p newParaStyle ""
-                --   , ODT.span normal "Some normal text" 
-                -- --   , ODT.str "This is a new string. "
-                --   , ODT.span boldItalic "Some bold and italic text"
-                --   , ODT.span underlineStyle "Some underlined text"
-                --   , ODT.span bold " and some bold text." 
-                --   , ODT.str " and some plain text."
-                --   , ODT.span newstyle " and newstyle text"
-                --   ODT.span footnoteAnchor " and footnote anchor text"
-                    italicPara
-                  -- , ODT.p newParaStyle ""
-                  ]
+--     let italicPara = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
+--     let italicParaODT = toODT italicPara
+--     -- putStrLn $ "\nitalicParaODT: " <> show italicParaODT <> "\n"
+--     let newstyleodt = toODT newstyle
 
-    -- let odtlst = [ODT.p italicPara "Italic para style"]
-    let newodt = mconcat odtlst
-    let newodt' = mconcat . toList $ newodt 
+--     let odtlst = [ 
+--                 -- ODT.p newParaStyle ""
+--                 --   , ODT.str "Normal parastyle text 1"
+--                 --   , ODT.p italicPara "Italic para style"
+--                 --   , ODT.p newParaStyle "Normal parastyle text 2"
+--                 --   -- , ODT.p italicPara "Italic parastyle text"
+--                 --   -- , ODT.p newParaStyle ""
+--                 --   , ODT.span normal "Some normal text" 
+--                 -- --   , ODT.str "This is a new string. "
+--                 --   , ODT.span boldItalic "Some bold and italic text"
+--                 --   , ODT.span underlineStyle "Some underlined text"
+--                 --   , ODT.span bold " and some bold text." 
+--                 --   , ODT.str " and some plain text."
+--                 --   , ODT.span newstyle " and newstyle text"
+--                 --   ODT.span footnoteAnchor " and footnote anchor text"
+--                     italicPara
+--                   -- , ODT.p newParaStyle ""
+--                   ]
 
-    newodt'
+--     -- let odtlst = [ODT.p italicPara "Italic para style"]
+--     let newodt = mconcat odtlst
+--     let newodt' = mconcat . toList $ newodt 
+
+--     italicPara
 
 
  
@@ -110,7 +115,11 @@ readWriteMonoid :: IO ()
 readWriteMonoid = do
 
     unzipFiles
+    -- italicParaStyle :: ParaStyle
+    let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
+    -- italicPara :: ODT
+    let italicPara = ODT.p italicParaStyle "Italic para style"
     -- Read files
     contentxmldoc <- X.readFile X.def (path $ exampleFileName <> "/content.xml")
     stylesxmldoc <- X.readFile X.def (path $ exampleFileName <> "/styles.xml")
@@ -123,12 +132,10 @@ readWriteMonoid = do
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
 
-    print $ show . paraCount $ getODT contentodtdoc
-
-    let contentodt = getODT contentodtdoc <> getNewODT
+    let contentodt = getODT contentodtdoc <> italicPara
 
     print $ show . paraCount $ contentodt
-    print $ getText . getLastPara $ contentodt 
+    print $ getText . getLastPara $ contentodt
 
     let contentodt' = mconcat . toList $ contentodt
 
@@ -136,7 +143,37 @@ readWriteMonoid = do
 
     writeODT contentodtdoc' stylesodtdoc
     
+readWriteMonoid' :: IO ()
+readWriteMonoid' = do
 
+    unzipFiles
+
+    -- Read files
+    contentxmldoc <- X.readFile X.def (path $ exampleFileName <> "/content.xml")
+    stylesxmldoc <- X.readFile X.def (path $ exampleFileName <> "/styles.xml")
+
+    -- Write uglified files to data/
+    X.writeFile X.def (path "content1.xml") contentxmldoc
+    X.writeFile X.def (path "styles1.xml") stylesxmldoc
+
+    -- italicParaStyle :: ParaStyle
+    let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
+
+    -- italicPara :: ODT
+    let italicPara = ODT.p italicParaStyle "Italic para style"
+
+
+    -- Append to the word document
+    let contentodtdoc = fromXMLDoc contentxmldoc
+    let stylesodtdoc = appendODT (toODT italicParaStyle) (fromXMLDoc stylesxmldoc )
+    
+    let archive = Archive {contentDoc = contentodtdoc, stylesDoc = stylesodtdoc}
+    let archive' = appendODT italicPara archive
+    
+    let contentodtdoc' = contentDoc archive'
+    let stylesodtdoc' = stylesDoc archive'
+
+    writeODT contentodtdoc' stylesodtdoc'
 
 main :: IO ()
 main = do

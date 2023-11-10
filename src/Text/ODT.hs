@@ -4,6 +4,7 @@ module Text.ODT (
     , HasODT(..)
     , HasParaStyles(..)
     , HasTextStyles(..)
+    , IsODT(..)
     , ODT(..)
     , getFirstPara
     , getLastPara
