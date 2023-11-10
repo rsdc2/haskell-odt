@@ -77,3 +77,16 @@ appendToODTEqAppendToDoc = do
   let odtodt = odt <> [italicPara, boldItalicSpan, italicPara, boldItalicSpan]
 
   return $ docodt == odtodt
+
+-- Test that appending directly to an ODT yields the same
+-- result as appending to a doc
+prependToODTEqAppendToDoc :: IO Bool
+prependToODTEqAppendToDoc = do
+  archive <- loadArchive
+  let doc = contentDoc archive
+  let odt = getODT doc
+
+  let docodt = getODT $ prependODT [italicPara, boldItalicSpan, italicPara, boldItalicSpan] doc
+  let odtodt = [italicPara, boldItalicSpan, italicPara, boldItalicSpan] <> odt
+
+  return $ docodt == odtodt

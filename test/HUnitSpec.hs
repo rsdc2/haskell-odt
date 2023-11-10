@@ -13,7 +13,8 @@ test4 = TestCase $ assertIOBoolSad "failure test4" appendItalicParaStyleWithPara
 test5 = TestCase $ assertIOBoolHappy "failure test5" prependBoldItalicTextStyleWithSpanHappy
 test6 = TestCase $ assertIOBoolHappy "failure test6" prependItalicParaStyleWithParaHappy
 test7 = TestCase $ assertIOBoolHappy "failure test7" appendToODTEqAppendToDoc
-test8 = TestCase $ assertIOBoolHappy "failure test8" lastParaHappy
+test8 = TestCase $ assertIOBoolHappy "failure test8" prependToODTEqAppendToDoc
+test20= TestCase $ assertIOBoolHappy "failure test20" lastParaHappy
 
 tests = TestList [
       TestLabel "test1" test1
@@ -23,4 +24,5 @@ tests = TestList [
     , TestLabel "test5" test5
     , TestLabel "test6" test6
     , TestLabel "test7" test7
-    , TestLabel "test8" test8]
+    , TestLabel "test8" test8
+    , TestLabel "test20" test8]
