@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedLists #-}
 
 module AppendSpec where
 
@@ -64,3 +65,15 @@ prependItalicParaStyleWithParaHappy = do
             && getText orig /= ""
             && getText new == testText <> getText orig
 
+-- Test that appending directly to an ODT yields the same
+-- result as appending to a doc
+appendToODTEqAppendToDoc :: IO Bool
+appendToODTEqAppendToDoc = do
+  archive <- loadArchive
+  let doc = contentDoc archive
+  let odt = getODT doc
+
+  let docodt = getODT $ appendODT [italicPara, boldItalicSpan, italicPara, boldItalicSpan] doc
+  let odtodt = odt <> [italicPara, boldItalicSpan, italicPara, boldItalicSpan]
+
+  return $ docodt == odtodt
