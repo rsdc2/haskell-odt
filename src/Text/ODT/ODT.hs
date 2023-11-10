@@ -1,6 +1,7 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE OverloadedStrings #-}
+-- {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE GADTs #-}
 
 module Text.ODT.ODT (
