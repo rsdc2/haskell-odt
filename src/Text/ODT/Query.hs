@@ -61,10 +61,17 @@ getSpans x
 -- Returns the names as stated on text elements
 -- of the styles used
 
-getParaStyleNames :: HasODT a => a -> [T.Text]
+-- Returns a list of the names of the styles 
+-- listed on the Paragraph elements
+-- NB different from getTextStyleName, which is a 
+-- function on TextStylesgetParaStyleNames :: HasODT a => a -> [T.Text]
 getParaStyleNames hasodt = getAttrVal stylename <$> (getParas . getODT $ hasodt)
     where stylename = toName TextNS "style-name"
 
+-- Returns a list of the names of the styles 
+-- listed on the Span elements
+-- NB different from getTextStyleName, which is a 
+-- function on TextStyles
 getTextStyleNames :: HasODT a => a -> [T.Text]
 getTextStyleNames hasodt = getAttrVal stylename <$> (getSpans . getODT $ hasodt)
     where stylename = toName TextNS "style-name"
