@@ -58,8 +58,10 @@ getSpans x
     | otherwise = []
     where odt = getODT x
 
--- Returns the names as stated on text elements
--- of the styles used
+--------------------------------------------------
+-- Returns the names as stated on text elements --
+-- of the styles used                           --
+--------------------------------------------------
 
 -- Returns a list of the names of the styles 
 -- listed on the Paragraph elements
