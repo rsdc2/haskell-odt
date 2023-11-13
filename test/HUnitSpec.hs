@@ -14,10 +14,10 @@ test5 = TestCase $ assertIOBoolHappy "failure test5" prependBoldItalicTextStyleW
 test6 = TestCase $ assertIOBoolHappy "failure test6" prependItalicParaStyleWithParaHappy
 test7 = TestCase $ assertIOBoolHappy "failure test7" appendToODTEqAppendToDoc
 test8 = TestCase $ assertIOBoolHappy "failure test8" prependToODTEqAppendToDoc
-test9 = TestCase $ assertIOBoolHappy "failure test9" appendParaToArchive
-test10 = TestCase $ assertIOBoolHappy "failure test10" appendParaToArchive'
+test9 = TestCase $ assertIOBoolHappy "Test appendParaToArchive failed" appendParaToArchive
+test10 = TestCase $ assertIOBoolHappy "Test appendParaToArchive' failed" appendParaToArchive'
 
-test20= TestCase $ assertIOBoolHappy "failure test20" lastParaHappy
+test20 = TestCase $ assertIOBoolHappy "Test lastParaHappy failed" lastParaHappy
 
 tests = TestList [
       TestLabel "test1" test1

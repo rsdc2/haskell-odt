@@ -4,7 +4,9 @@
 module Text.ODT.Query (
       getFirstPara
     , getLastPara
+    , getParaStyleNames
     , getParas
+    , getTextStyleNames
     , getText
     , getSpans
     , paraCount
@@ -12,9 +14,12 @@ module Text.ODT.Query (
 
 import Text.ODT.ODT
 import Text.ODT.ODTXML.ODTXML
+import Text.ODT.ODTXML.Name
+import Text.ODT.ODTXML.Namespace
 import qualified Data.Text as T
 import qualified Data.List as L
 import qualified Data.List.Extra as Le
+
 
 getFirstPara :: HasODT a => a -> ODT
 getFirstPara x = case L.uncons . getParas . getODT $ x of
@@ -52,6 +57,17 @@ getSpans x
     | OfficeNode _ _ children <- odt = getSpans children
     | otherwise = []
     where odt = getODT x
+
+-- Returns the names as stated on text elements
+-- of the styles used
+
+getParaStyleNames :: HasODT a => a -> [T.Text]
+getParaStyleNames hasodt = getAttrVal stylename <$> (getParas . getODT $ hasodt)
+    where stylename = toName TextNS "style-name"
+
+getTextStyleNames :: HasODT a => a -> [T.Text]
+getTextStyleNames hasodt = getAttrVal stylename <$> (getSpans . getODT $ hasodt)
+    where stylename = toName TextNS "style-name"
 
 paraCount :: HasODT a => a -> Int
 paraCount = length . getParas . getODT

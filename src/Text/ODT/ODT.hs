@@ -504,7 +504,7 @@ instance HasTextStyles ODT where
         | otherwise = False
 
 instance HasParaStyles ODT where
-    -- Returns a list of TextStyles from an ODT
+    -- Returns a list of ParaStyles contained in an ODT
     getParaStyles :: ODT -> [ParaStyle]
     getParaStyles odt1
         | Just ps <- toParaStyle autostyles = [ps]
@@ -514,6 +514,8 @@ instance HasParaStyles ODT where
         where   autostyles = getParaStylesODT odt1
                 stylename = Just . getAttrVal styleNameName $ odt1
 
+    -- Get the name of a style matching the specification
+    -- of ParaStyle from and ODT
     getParaStyleName :: ParaStyle -> ODT -> T.Text
     getParaStyleName ps1 odt1 
         | ODTSeq odt2 odt3 <- getParaStylesODT $ odt1 = case toParaStyle odt2 == Just ps1 of
@@ -526,6 +528,8 @@ instance HasParaStyles ODT where
         | EmptyODT <- getParaStylesODT odt1 = error $ show odt1
         | otherwise = error $ show odt1
 
+    -- Return True if the ODT contains a style matching the description
+    -- of ParaStyle
     hasParaStyle :: ParaStyle -> ODT -> Bool
     hasParaStyle ps1 odt1
         | ODTSeq odt2 odt3 <- getParaStylesODT $ odt1 = case toParaStyle odt2 == Just ps1 of
@@ -643,6 +647,11 @@ removeLastODT :: ODT -> ODT
 removeLastODT (ODTSeq odt1 EmptyODT) = odt1
 removeLastODT (ODTSeq odt1 odt2) = ODTSeq odt1 (removeLastODT odt2)
 removeLastODT odt = EmptyODT
+
+
+-------------------------
+-- STYLE ODT FUNCTIONS --
+-------------------------
 
 -- Returns an ODTSeq (or single instance) of styles
 -- i.e. <style:text-properties>

@@ -6,6 +6,7 @@ module AppendSpec where
 import qualified Data.ByteString as B
 import qualified Data.Text as T
 import qualified Text.XML as X
+import Data.Maybe (fromMaybe)
 
 import Text.ODT
 
@@ -76,6 +77,8 @@ appendParaToArchive = do
             && hasParaStyle italicParaStyle cdoc
 
 -- Test that style that exists on stylesdoc is not chosen
+-- And that the style name of the style in the text node
+-- is that of the styles doc, and not of the content doc
 appendParaToArchive' :: IO Bool
 appendParaToArchive' = do
   archive <- loadArchive
@@ -92,6 +95,7 @@ appendParaToArchive' = do
 
   return $ not (hasParaStyle italicParaStyle cdoc'')
             && hasParaStyle italicParaStyle sdoc''
+            && getParaStyleNames (getLastPara cdoc'') == [fromMaybe "" $ paraStyleName italicParaStyle]
 
 -- TODO: test that 
 

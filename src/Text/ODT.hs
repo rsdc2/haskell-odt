@@ -1,17 +1,20 @@
 module Text.ODT (
       Archive(..)
     , Doc(..)
+    , getFirstPara
+    , getLastPara
+    , getParas
+    , getParaStyleNames
+    , getSpans
+    , getText
+    , getTextStyleNames
     , HasODT(..)
     , HasParaStyles(..)
     , HasTextStyles(..)
     , IsODT(..)
     , ODT(..)
-    , getFirstPara
-    , getLastPara
-    , getParas
-    , getSpans
-    , getText
     , paraCount
+    , ParaStyle(..)
     , spanCount
     ) where
 
