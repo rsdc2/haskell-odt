@@ -4,10 +4,10 @@ module Text.ODT (
     , getFirstPara
     , getLastPara
     , getParas
-    , getParaStyleNames
+    , getParaStyleNamesFromParaNodes
     , getSpans
     , getText
-    , getTextStyleNames
+    , getTextStyleNamesFromParaNodes
     , HasODT(..)
     , HasParaStyles(..)
     , HasTextStyles(..)

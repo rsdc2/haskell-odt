@@ -358,8 +358,6 @@ class MaybeParaStyle a where
   toParaStyle :: a -> Maybe ParaStyle
   isParaStyle :: a -> Bool
 
-
-
 class MaybeStyle a where
   -- isStyle :: a -> Bool
   -- isStyleFamily :: StyleFamily -> a -> Bool

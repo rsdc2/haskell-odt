@@ -4,9 +4,9 @@
 module Text.ODT.Query (
       getFirstPara
     , getLastPara
-    , getParaStyleNames
+    , getParaStyleNamesFromParaNodes
     , getParas
-    , getTextStyleNames
+    , getTextStyleNamesFromParaNodes
     , getText
     , getSpans
     , paraCount
@@ -67,16 +67,16 @@ getSpans x
 -- listed on the Paragraph elements
 -- NB different from getTextStyleName, which is a 
 -- function on ParaStyle
-getParaStyleNames :: HasODT a => a -> [T.Text]
-getParaStyleNames hasodt = getAttrVal stylename <$> (getParas . getODT $ hasodt)
+getParaStyleNamesFromParaNodes :: HasODT a => a -> [T.Text]
+getParaStyleNamesFromParaNodes hasodt = getAttrVal stylename <$> (getParas . getODT $ hasodt)
     where stylename = toName TextNS "style-name"
 
 -- Returns a list of the names of the styles 
 -- listed on the Span elements
 -- NB different from getTextStyleName, which is a 
 -- function on TextStyle
-getTextStyleNames :: HasODT a => a -> [T.Text]
-getTextStyleNames hasodt = getAttrVal stylename <$> (getSpans . getODT $ hasodt)
+getTextStyleNamesFromParaNodes :: HasODT a => a -> [T.Text]
+getTextStyleNamesFromParaNodes hasodt = getAttrVal stylename <$> (getSpans . getODT $ hasodt)
     where stylename = toName TextNS "style-name"
 
 paraCount :: HasODT a => a -> Int
