@@ -66,6 +66,10 @@ prependItalicParaStyleWithParaHappy = do
             && getText orig /= ""
             && getText new == testText <> getText orig
 
+-- Test that style that exists on stylesdoc is chosen
+-- from the content doc
+-- And that the style name of the style in the text node
+-- is that of the content doc
 appendParaToArchive :: IO Bool
 appendParaToArchive = do
   archive <- loadArchive
@@ -75,8 +79,10 @@ appendParaToArchive = do
 
   return $ not (hasParaStyle italicParaStyle sdoc)
             && hasParaStyle italicParaStyle cdoc
+            && (head . T.unpack . head . getParaStyleNames . getLastPara $ cdoc) == 'P'
 
 -- Test that style that exists on stylesdoc is not chosen
+-- from the content doc
 -- And that the style name of the style in the text node
 -- is that of the styles doc, and not of the content doc
 appendParaToArchive' :: IO Bool
@@ -95,7 +101,7 @@ appendParaToArchive' = do
 
   return $ not (hasParaStyle italicParaStyle cdoc'')
             && hasParaStyle italicParaStyle sdoc''
-            && getParaStyleNames (getLastPara cdoc'') == [fromMaybe "" $ paraStyleName italicParaStyle]
+            && (head . getParaStyleNames . getLastPara $ cdoc'') == (fromMaybe "" $ paraStyleName italicParaStyle)
 
 -- TODO: test that 
 
