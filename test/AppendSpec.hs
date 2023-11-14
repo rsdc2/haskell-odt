@@ -109,7 +109,7 @@ appendStyleWithSameAttributesToStyleDocOnlyOnce = do
   archive <- loadArchive
   let sdoc = appendODT (toODT italicParaStyle) . stylesDoc $ archive
   let sdoc' = appendODT (toODT italicParaStyle) sdoc
-  return ((length . getParaStylesWithName "italicPara" $ sdoc') == 2)
+  return ((length . getParaStylesWithName "italicPara" $ sdoc') == 1)
 
 -- Test that appending directly to an ODT yields the same
 -- result as appending to a doc

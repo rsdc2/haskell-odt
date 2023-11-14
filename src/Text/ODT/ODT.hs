@@ -152,9 +152,10 @@ instance Semigroup ODT where
     OfficeNode DocStyles n1 odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2 = 
         OfficeNode DocStyles n1 $ odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2
     
+    -- Append style to styles doc
     -- TODO check for styles with the same name 
     OfficeNode Styles n1 odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2 = 
-        OfficeNode Styles n1 $ ODTSeq (StyleNode (StyleType alwaysInclude) n2 odt2) odt1
+        OfficeNode Styles n1 (ODTSeq (StyleNode (StyleType alwaysInclude) n2 odt2) odt1)
 
     OfficeNode officeType n1 odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2 = 
         OfficeNode officeType n1 (odt1 <> newStyleODT) 
