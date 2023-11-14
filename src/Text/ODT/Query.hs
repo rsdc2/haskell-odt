@@ -2,9 +2,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Text.ODT.Query (
-      getFirstPara
+      getFirstODT 
+    , getFirstPara
     , getLastPara
     , getParaStyleNamesFromParaNodes
+    , getParaStylesWithName
     , getParas
     , getTextStyleNamesFromParaNodes
     , getText
@@ -16,10 +18,16 @@ import Text.ODT.ODT
 import Text.ODT.ODTXML.ODTXML
 import Text.ODT.ODTXML.Name
 import Text.ODT.ODTXML.Namespace
+import Text.ODT.Style
 import qualified Data.Text as T
 import qualified Data.List as L
 import qualified Data.List.Extra as Le
 
+getFirstODT :: HasODT a => a -> ODT
+getFirstODT hasodt
+    | ODTSeq odt1 odt2 <- odt = odt1
+    | otherwise = odt
+    where odt = getODT hasodt 
 
 getFirstPara :: HasODT a => a -> ODT
 getFirstPara x = case L.uncons . getParas . getODT $ x of
@@ -62,6 +70,14 @@ getSpans x
 -- Returns the names as stated on text elements --
 -- of the styles used                           --
 --------------------------------------------------
+
+-- getParaStyleNamesFromParaStyleNodes :: HasODT a => a -> [T.Text]
+-- getParaStyleNamesFromParaStyleNodes hasodt = getAttrVal stylename <$> (getParaStyles . getODT $ hasodt)
+--     where stylename = toName StyleNS "name"
+
+
+getParaStylesWithName :: HasODT a => T.Text -> a -> [ParaStyle]
+getParaStylesWithName name hasodt = filter (\x -> paraStyleName x == Just name) (getParaStyles . getODT $ hasodt)
 
 -- Returns a list of the names of the styles 
 -- listed on the Paragraph elements

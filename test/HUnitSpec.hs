@@ -16,6 +16,7 @@ test7 = TestCase $ assertIOBoolHappy "failure test7" appendToODTEqAppendToDoc
 test8 = TestCase $ assertIOBoolHappy "failure test8" prependToODTEqAppendToDoc
 test9 = TestCase $ assertIOBoolHappy "Test appendParaToArchive failed" appendParaToArchive
 test10 = TestCase $ assertIOBoolHappy "Test appendParaToArchive' failed" appendParaToArchive'
+test11 = TestCase $ assertIOBoolHappy "Test appendStyleWithSameAttributesToStyleDocOnlyOnce failed" appendStyleWithSameAttributesToStyleDocOnlyOnce
 
 test20 = TestCase $ assertIOBoolHappy "Test lastParaHappy failed" lastParaHappy
 
@@ -30,4 +31,5 @@ tests = TestList [
     , TestLabel "test8" test8
     , TestLabel "test9" test9
     , TestLabel "test10" test10
+    , TestLabel "test11" test11
     , TestLabel "test20" test8]

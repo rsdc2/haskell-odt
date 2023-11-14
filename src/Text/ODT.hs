@@ -1,10 +1,12 @@
 module Text.ODT (
       Archive(..)
     , Doc(..)
+    , getFirstODT
     , getFirstPara
     , getLastPara
     , getParas
     , getParaStyleNamesFromParaNodes
+    , getParaStylesWithName
     , getSpans
     , getText
     , getTextStyleNamesFromParaNodes
