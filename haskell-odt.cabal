@@ -37,6 +37,8 @@ library
       Text.ODT.Ops
       Text.ODT.Query
       Text.ODT.Style
+      Text.ODT.Style.TextStyles
+      Text.ODT.Style.Types
       Text.ODT.Utils.List
       Text.ODT.Utils.Types
       Text.ODT.XML.Attrs

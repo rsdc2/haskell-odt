@@ -95,8 +95,10 @@ getTextStyleNamesFromParaNodes :: HasODT a => a -> [T.Text]
 getTextStyleNamesFromParaNodes hasodt = getAttrVal stylename <$> (getSpans . getODT $ hasodt)
     where stylename = toName TextNS "style-name"
 
+-- Counts the number of paragraphs in the HasODT item
 paraCount :: HasODT a => a -> Int
 paraCount = length . getParas . getODT
 
+-- Counts the number of spans in the HasODT item
 spanCount :: HasODT a => a -> Int
 spanCount = length . getSpans . getODT
