@@ -103,13 +103,15 @@ appendParaToArchive' = do
             && hasParaStyle italicParaStyle sdoc''
             && (head . getParaStyleNamesFromParaNodes . getLastPara $ cdoc'') == (fromMaybe "" $ paraStyleName italicParaStyle)
 
-
+-- Test that if you append a style to the styles doc
+-- if it has the same attributes
+-- it is only appended once
 appendStyleWithSameAttributesToStyleDocOnlyOnce :: IO Bool
 appendStyleWithSameAttributesToStyleDocOnlyOnce = do
   archive <- loadArchive
   let sdoc = appendODT (toODT italicParaStyle) . stylesDoc $ archive
   let sdoc' = appendODT (toODT italicParaStyle) sdoc
-  return ((length . getParaStylesWithName "italicPara" $ sdoc') == 1)
+  return $ (length . getParaStylesWithName "italicPara" $ sdoc') == 1
 
 -- Test that appending directly to an ODT yields the same
 -- result as appending to a doc
