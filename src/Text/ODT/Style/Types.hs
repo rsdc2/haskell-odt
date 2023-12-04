@@ -25,7 +25,7 @@ module Text.ODT.Style.Types (
     , TextPosition(..)
     , TextProps(..)
     , TextStyle(..)
-    , Underline(..)
+    , TextUnderline(..)
 ) where
 
 import Data.String ( IsString(..) )
@@ -60,7 +60,7 @@ data FontWeight =
   | Bold
   deriving (Show, Eq)
 
-data Underline =
+data TextUnderline =
     Solid 
   | NoUnderline
   deriving (Show, Eq)
@@ -74,7 +74,7 @@ data TextProps = TextProps {
     fontSize :: FontSize
   , fontStyle :: FontStyle
   , fontWeight :: FontWeight
-  , underline :: Underline
+  , textUnderline :: TextUnderline
   , textPosition :: TextPosition
 }
 
@@ -95,7 +95,7 @@ class HasTextProps a where
   getFontSize :: a -> FontSize
   getFontStyle :: a -> FontStyle
   getFontWeight :: a -> FontWeight
-  getUnderline :: a -> Underline
+  getUnderline :: a -> TextUnderline
   getTextPosition :: a -> TextPosition
   getTextPropsAttrMap :: a -> Map.Map Name T.Text
 
@@ -106,7 +106,7 @@ instance HasTextProps TextProps where
   getFontSize = fontSize
   getFontStyle = fontStyle
   getFontWeight = fontWeight
-  getUnderline = underline
+  getUnderline = textUnderline
   getTextPosition = textPosition
 
   getTextPropsAttrMap :: TextProps -> Map.Map Name T.Text
@@ -121,7 +121,7 @@ instance HasTextProps TextStyle where
   getFontSize = fontSize . textTextProps
   getFontStyle = fontStyle . textTextProps 
   getFontWeight = fontWeight . textTextProps
-  getUnderline = underline . textTextProps
+  getUnderline = textUnderline . textTextProps
   getTextPosition = textPosition . textTextProps
   getTextPropsAttrMap = getTextPropsAttrMap . textTextProps
 
@@ -129,7 +129,7 @@ instance HasTextProps ParaStyle where
   getFontSize = fontSize . paraTextProps
   getFontStyle = fontStyle . paraTextProps
   getFontWeight = fontWeight . paraTextProps
-  getUnderline = underline . paraTextProps
+  getUnderline = textUnderline . paraTextProps
   getTextPosition = textPosition . paraTextProps
   getTextPropsAttrMap = getTextPropsAttrMap . paraTextProps
 
@@ -139,7 +139,7 @@ newTextProps = TextProps {
     fontSize = NormalSize
   , fontStyle = NormalStyle
   , fontWeight = NormalWeight
-  , underline = NoUnderline
+  , textUnderline = NoUnderline
   , textPosition = NormalPosition
 }
 
@@ -246,12 +246,12 @@ instance IsAttrText FontWeight where
       | s == "bold" = Bold
       | otherwise = NormalWeight -- this is how it returns a normal weight if there is no attribute 
 
-instance IsAttrText Underline where
-  toAttrText :: Underline -> T.Text
+instance IsAttrText TextUnderline where
+  toAttrText :: TextUnderline -> T.Text
   toAttrText Solid = "solid"
   toAttrText NoUnderline = "none"
 
-  fromAttrText :: T.Text -> Underline
+  fromAttrText :: T.Text -> TextUnderline
   fromAttrText s 
       | s == "solid" = Solid
       | s == "none" = NoUnderline
@@ -298,13 +298,13 @@ instance IsTextPropAttrMap FontWeight where
     , (toName StyleNS "font-weight-complex",  toAttrText fw)
     , (toName FoNS "font-weight",             toAttrText fw) ]
 
-instance IsTextPropAttrMap Underline where
-  toTextPropAttrMap :: Underline -> Map.Map Name T.Text
+instance IsTextPropAttrMap TextUnderline where
+  toTextPropAttrMap :: TextUnderline -> Map.Map Name T.Text
   toTextPropAttrMap NoUnderline = Map.empty
   toTextPropAttrMap u = Map.fromList   [    
-      (toName StyleNS "text-underline-color", "font-color")
-    , (toName StyleNS "text-underline-width", "auto")
-    , (toName StyleNS "text-underline-style", toAttrText u) ]
+      (toName StyleNS "text-textUnderline-color", "font-color")
+    , (toName StyleNS "text-textUnderline-width", "auto")
+    , (toName StyleNS "text-textUnderline-style", toAttrText u) ]
 
 instance IsTextPropAttrMap TextPosition where
   toTextPropAttrMap :: TextPosition -> Map.Map Name T.Text

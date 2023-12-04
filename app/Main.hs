@@ -19,6 +19,7 @@ import Text.ODT.Query
 import qualified Text.ODT.Ops as ODT
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
+import qualified Text.ODT.Style.TextStyles as TextStyles
 
 exampleFileName = "example2"
 
@@ -59,7 +60,7 @@ writeODT contentdoc stylesdoc = do
 getNewODT :: ODT
 getNewODT = do
     -- let italic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}}
-    -- let underlineStyle = newTextStyle {textTextProps = newTextProps {underline = Solid}}
+    -- let underlineStyle = newTextStyle {textTextProps = newTextProps {textUnderline = Solid}}
     -- let bold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}}
     -- let boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
     -- let normal = newTextStyle 
@@ -84,11 +85,11 @@ getNewODT = do
                 -- --   , ODT.str "This is a new string. "
                 --   , ODT.span boldItalic "Some bold and italic text"
                 --   , ODT.span underlineStyle "Some underlined text"
-                --   , ODT.span bold " and some bold text." 
+                    ODT.span TextStyles.bold " and some bold text." 
                 --   , ODT.str " and some plain text."
                 --   , ODT.span newstyle " and newstyle text"
                 --   ODT.span footnoteAnchor " and footnote anchor text"
-                    italicPara
+                  , italicPara
                   -- , ODT.p newParaStyle ""
                   ]
 
@@ -118,7 +119,7 @@ readWriteMonoid = do
     let contentodtdoc = fromXMLDoc contentxmldoc
     let stylesodtdoc = fromXMLDoc stylesxmldoc
 
-    let contentodt = getODT contentodtdoc <> italicPara
+    let contentodt = getODT contentodtdoc <> getNewODT
 
     print $ show . paraCount $ contentodt
     print $ getText . getLastPara $ contentodt

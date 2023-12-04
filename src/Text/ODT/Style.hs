@@ -21,7 +21,7 @@ module Text.ODT.Style (
     , StyleFamily(..)
     , TextProps(..)
     , TextStyle(..)
-    , Underline(..)
+    , TextUnderline(..)
 ) where
 
 import Text.ODT.Style.Types

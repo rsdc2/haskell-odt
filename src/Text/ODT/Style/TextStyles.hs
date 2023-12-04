@@ -3,7 +3,7 @@
 module Text.ODT.Style.TextStyles (
       normal
     , italic
-    , underlineTextStyle
+    , underline
     , bold
     , boldItalic
     , footnoteAnchor
@@ -19,8 +19,8 @@ normal = newTextStyle
 italic :: TextStyle
 italic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}}
 
-underlineTextStyle :: TextStyle
-underlineTextStyle = newTextStyle {textTextProps = newTextProps {underline = Solid}}
+underline :: TextStyle
+underline = newTextStyle {textTextProps = newTextProps {textUnderline = Solid}}
 
 bold :: TextStyle
 bold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}}
