@@ -46,7 +46,7 @@ class IsAttrText a where
   fromAttrText :: T.Text -> a
 
 data FontSize =
-    FontSize T.Text
+    FontSize T.Text -- Text attribute e.g. "12 pt"
   | NormalSize
   deriving (Show, Eq)
 
@@ -63,6 +63,7 @@ data FontWeight =
 data TextUnderline =
     Solid 
   | NoUnderline
+  | TextUnderline T.Text
   deriving (Show, Eq)
 
 data TextPosition =
@@ -250,12 +251,13 @@ instance IsAttrText TextUnderline where
   toAttrText :: TextUnderline -> T.Text
   toAttrText Solid = "solid"
   toAttrText NoUnderline = "none"
+  toAttrText (TextUnderline txt) = txt
 
   fromAttrText :: T.Text -> TextUnderline
   fromAttrText s 
       | s == "solid" = Solid
       | s == "none" = NoUnderline
-      | otherwise = NoUnderline -- TODO replace with text so that preserves underlines that does not understand
+      | otherwise = TextUnderline s
 
 instance IsAttrText TextPosition where
   toAttrText :: TextPosition -> T.Text
@@ -300,7 +302,9 @@ instance IsTextPropAttrMap FontWeight where
 
 instance IsTextPropAttrMap TextUnderline where
   toTextPropAttrMap :: TextUnderline -> Map.Map Name T.Text
-  toTextPropAttrMap NoUnderline = Map.empty
+  -- toTextPropAttrMap NoUnderline = Map.empty
+  toTextPropAttrMap NoUnderline = Map.fromList   [    
+      (toName StyleNS "text-textUnderline-style", "none") ]
   toTextPropAttrMap u = Map.fromList   [    
       (toName StyleNS "text-textUnderline-color", "font-color")
     , (toName StyleNS "text-textUnderline-width", "auto")
