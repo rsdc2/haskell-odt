@@ -128,12 +128,13 @@ instance Semigroup ODT where
     (<>) :: ODT -> ODT -> ODT
 
     -- APPEND STYLES TO DOCUMENT
-    -- AlwaysInclude is set to True
+    -- If AlwaysInclude is set to True
+    -- content.xml
     OfficeNode AutoStyles n1 odt1 <> StyleNode (StyleType True) n2 odt2 =
         OfficeNode AutoStyles n1 (odt1 <> styleODT)
         where styleODT = StyleNode (StyleType False) n2 odt2
 
-    -- AlwaysInclude set to False
+    -- If AlwaysInclude set to False
     -- Find out if the style is already listed
     -- Only add if a new style
     OfficeNode AutoStyles n1 odt1 <> StyleNode (StyleType False) n2 odt2        
@@ -149,6 +150,7 @@ instance Semigroup ODT where
               styleODT = StyleNode (StyleType False) n2 odt2
               style = toStyle styleODT   
 
+    -- styles.xml
     OfficeNode DocStyles n1 odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2 = 
         OfficeNode DocStyles n1 $ odt1 <> StyleNode (StyleType alwaysInclude) n2 odt2
     
