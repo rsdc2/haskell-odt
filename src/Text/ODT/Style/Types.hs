@@ -71,6 +71,10 @@ data TextPosition =
   | NormalPosition
   deriving (Show, Eq)
 
+-- any other formatting on a text style description node
+data MiscTextStyle = MiscTextStyle Map.Map Name T.Text
+
+
 data TextProps = TextProps {
     fontSize :: FontSize
   , fontStyle :: FontStyle
