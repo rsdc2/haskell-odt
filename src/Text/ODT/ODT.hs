@@ -558,7 +558,7 @@ instance MaybeTextProps ODT where
       fontSize = getTypeFromAttr (toName FoNS "font-size") odtxml
     , fontStyle = getTypeFromAttr (toName FoNS "font-style") odtxml
     , fontWeight = getTypeFromAttr (toName FoNS "font-weight") odtxml
-    , textUnderline = getTypeFromAttr (toName StyleNS "text-textUnderline-style") odtxml
+    , textUnderline = getTypeFromAttr (toName StyleNS "text-underline-style") odtxml
     , textPosition = getTypeFromAttr (toName StyleNS "text-position") odtxml
   }
   toTextProps _ = Nothing
@@ -609,7 +609,7 @@ instance MaybeTextStyle ODT where
                                 fontSize = getTypeFromAttr foFontSizeName n2
                               , fontStyle = getTypeFromAttr foFsName n2
                               , fontWeight = getTypeFromAttr foFwName n2 
-                              , textUnderline = getTypeFromAttr (toName StyleNS "text-textUnderline-style") n2
+                              , textUnderline = getTypeFromAttr (toName StyleNS "text-underline-style") n2
                               , textPosition = getTypeFromAttr (toName StyleNS "text-position") n2
                             }
                           , textStyleName = Just . getAttrVal styleNameName $ odt1
