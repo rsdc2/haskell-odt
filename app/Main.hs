@@ -89,9 +89,11 @@ getNewODT = do
                 --   , ODT.str " and some plain text."
                 --   , ODT.span newstyle " and newstyle text"
                 --   ODT.span footnoteAnchor " and footnote anchor text"
-                    italicPara
+                    ODT.span TextStyles.underline " Some underlined text."
+                  , italicPara
                   , ODT.span TextStyles.boldItalic " and some bold italic text."
-                  , ODT.span TextStyles.normal " and some normal text"
+                  , ODT.span TextStyles.normal " And some normal text"
+                  , ODT.span TextStyles.underline " and some underlined text."
                   -- , ODT.p newParaStyle ""
                   ]
 

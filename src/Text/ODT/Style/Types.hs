@@ -61,7 +61,8 @@ data FontWeight =
   deriving (Show, Eq)
 
 data TextUnderline =
-    NoUnderline
+    Solid
+  | NoUnderline
   | TextUnderline T.Text
   deriving (Show, Eq)
 
@@ -252,12 +253,13 @@ instance IsString TextUnderline where
 
 instance IsAttrText TextUnderline where
   toAttrText :: TextUnderline -> T.Text
-  -- toAttrText Solid = "solid"
+  toAttrText Solid = "solid"
   toAttrText NoUnderline = "none"
   toAttrText (TextUnderline txt) = txt
 
   fromAttrText :: T.Text -> TextUnderline
   fromAttrText s 
+      | s == "solid" = Solid
       | s == "none" = NoUnderline
       | s == "" = NoUnderline
       | otherwise = TextUnderline s
@@ -307,8 +309,6 @@ instance IsTextPropAttrMap FontWeight where
 instance IsTextPropAttrMap TextUnderline where
   toTextPropAttrMap :: TextUnderline -> Map.Map Name T.Text
   toTextPropAttrMap NoUnderline = Map.empty
-  -- toTextPropAttrMap NoUnderline = Map.fromList   [    
-  --     (toName StyleNS "text-textUnderline-style", "none") ]
   toTextPropAttrMap u = Map.fromList   [    
       (toName StyleNS "text-underline-color", "font-color")
     , (toName StyleNS "text-underline-width", "auto")
