@@ -80,7 +80,9 @@ data StyleNodeType =
     | FontFace
     | GraphicProps
     | ParaProps
-    | StyleType AlwaysInclude
+    -- AlwaysInclude is there for when a document is converted to a list, 
+    -- to make sure that the style goes back in when concatenated
+    | StyleType AlwaysInclude   
     | TabStops
     | TableProps
     | TableRowProps
