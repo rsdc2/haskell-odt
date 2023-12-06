@@ -20,7 +20,7 @@ italic :: TextStyle
 italic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}}
 
 underline :: TextStyle
-underline = newTextStyle {textTextProps = newTextProps {textUnderline = "solid"}}
+underline = newTextStyle {textTextProps = newTextProps {textUnderline = Solid}}
 
 bold :: TextStyle
 bold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}}
