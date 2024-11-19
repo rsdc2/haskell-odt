@@ -7,7 +7,7 @@ module Text.ODT.Archive (
 ) where
 
 import Text.ODT.ODT
-import Text.ODT.Doc
+import Text.ODT.Doc hiding (odt)
 import Text.ODT.ODTXML.Name
 import Text.ODT.ODTXML.ODTXML
 import Text.ODT.Style

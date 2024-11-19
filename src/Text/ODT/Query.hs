@@ -21,7 +21,7 @@ import Text.ODT.ODTXML.Namespace
 import Text.ODT.Style
 import qualified Data.Text as T
 import qualified Data.List as L
-import qualified Data.List.Extra as Le
+import qualified Data.List.Extra as Extra
 
 getFirstODT :: HasODT a => a -> ODT
 getFirstODT hasodt
@@ -35,7 +35,7 @@ getFirstPara x = case L.uncons . getParas . getODT $ x of
     Just (x, _) -> x
 
 getLastPara :: HasODT a => a -> ODT
-getLastPara x = case Le.unsnoc . getParas . getODT $ x of
+getLastPara x = case Extra.unsnoc . getParas . getODT $ x of
     Nothing -> EmptyODT
     Just (_, x) -> x
 
