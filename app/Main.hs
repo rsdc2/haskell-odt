@@ -2,13 +2,13 @@
 
 module Main (main) where
 
-import qualified Data.ByteString as B
-import qualified Data.Text as T
-import qualified Text.XML as X
+import qualified Data.ByteString as ByteString
+import qualified Data.Text as Text
+import qualified Text.XML as XML
 
 import Text.ODT.File
 import Text.ODT.XML.Prettify
-import qualified Text.ODT.Zip.Zip as Z 
+import qualified Text.ODT.Zip.Zip as Zip 
 import Text.ODT.Utils.Types (
       IsText(..)
     , Stringable(..))
@@ -28,7 +28,7 @@ exampleFileName = "example2"
 unzipFiles :: IO ()
 unzipFiles = do
     -- Unzip
-    Z.unzip (path $ exampleFileName <> ".odt") (path $ "/" <> exampleFileName)
+    Zip.unzip (path $ exampleFileName <> ".odt") (path $ "/" <> exampleFileName)
 
     -- Produce a prettified version of the original files
     prettifyFile (path $ exampleFileName <> "/styles.xml") (path "styles2.xml")
@@ -42,10 +42,10 @@ writeODT contentdoc stylesdoc = do
     let stylesxmldoc = toXMLDoc stylesdoc
 
     -- Write modified documents back to file
-    X.writeFile X.def (path "content3.xml") contentxmldoc
-    X.writeFile X.def (path $ exampleFileName <> "/content.xml") contentxmldoc
-    X.writeFile X.def (path $ exampleFileName <> "/styles.xml") stylesxmldoc
-    X.writeFile X.def (path "styles3.xml") stylesxmldoc
+    XML.writeFile XML.def (path "content3.xml") contentxmldoc
+    XML.writeFile XML.def (path $ exampleFileName <> "/content.xml") contentxmldoc
+    XML.writeFile XML.def (path $ exampleFileName <> "/styles.xml") stylesxmldoc
+    XML.writeFile XML.def (path "styles3.xml") stylesxmldoc
 
     -- Produce a prettified version of the files
     prettifyFile (path "content1.xml") (path "content2.xml")
@@ -53,8 +53,8 @@ writeODT contentdoc stylesdoc = do
     prettifyFile (path "styles3.xml") (path "styles4.xml")
 
     -- Zip modified files
-    Z.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.odt")
-    Z.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.zip")
+    Zip.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.odt")
+    Zip.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.zip")
 
 
 getNewODT :: ODT
@@ -112,12 +112,12 @@ readWriteMonoid = do
     let italicPara = ODT.p italicParaStyle "Italic para style"
 
     -- Read files
-    contentxmldoc <- X.readFile X.def (path $ exampleFileName <> "/content.xml")
-    stylesxmldoc <- X.readFile X.def (path $ exampleFileName <> "/styles.xml")
+    contentxmldoc <- XML.readFile XML.def (path $ exampleFileName <> "/content.xml")
+    stylesxmldoc <- XML.readFile XML.def (path $ exampleFileName <> "/styles.xml")
 
     -- Write uglified files to data/
-    X.writeFile X.def (path "content1.xml") contentxmldoc
-    X.writeFile X.def (path "styles1.xml") stylesxmldoc
+    XML.writeFile XML.def (path "content1.xml") contentxmldoc
+    XML.writeFile XML.def (path "styles1.xml") stylesxmldoc
 
     -- Append to the word document
     let contentodtdoc = fromXMLDoc contentxmldoc
