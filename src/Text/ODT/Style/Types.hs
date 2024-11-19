@@ -72,7 +72,7 @@ data TextPosition =
   deriving (Show, Eq)
 
 -- any other formatting on a text style description node
-data MiscTextStyle = MiscTextStyle Map.Map Name T.Text
+-- data MiscTextStyle = MiscTextStyle Map.Map Name T.Text
 
 
 data TextProps = TextProps {
