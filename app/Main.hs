@@ -2,9 +2,11 @@
 
 module Main (main) where
 
-import qualified Data.ByteString as ByteString
-import qualified Data.Text as Text
+-- import qualified Data.ByteString as ByteString
+-- import qualified Data.Text as Text
 import qualified Text.XML as XML
+
+import Text.ODT.Zip.Utils (unzipFiles)
 
 import Text.ODT.File
 import Text.ODT.XML.Prettify
@@ -24,15 +26,14 @@ import qualified Text.ODT.Style.TextStyles as TextStyles
 exampleFileName = "example2"
 
 
+-- unzipFiles :: IO ()
+-- unzipFiles = do
+--     -- Unzip
+--     Zip.unzip (path $ exampleFileName <> ".odt") (path $ "/" <> exampleFileName)
 
-unzipFiles :: IO ()
-unzipFiles = do
-    -- Unzip
-    Zip.unzip (path $ exampleFileName <> ".odt") (path $ "/" <> exampleFileName)
-
-    -- Produce a prettified version of the original files
-    prettifyFile (path $ exampleFileName <> "/styles.xml") (path "styles2.xml")
-    prettifyFile (path "content1.xml") (path "content2.xml")
+--     -- Produce a prettified version of the original files
+--     prettifyFile (path $ exampleFileName <> "/styles.xml") (path "styles2.xml")
+--     prettifyFile (path "content1.xml") (path "content2.xml")
 
 -- Write a content doc and a styles doc to the designated path
 writeODT :: Doc -> Doc -> IO ()
@@ -106,7 +107,7 @@ getNewODT = do
 readWriteMonoid :: IO ()
 readWriteMonoid = do
 
-    unzipFiles
+    unzipFiles (path "") "example2" (path "example2")
     let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
     let italicPara = ODT.p italicParaStyle "Italic para style"
