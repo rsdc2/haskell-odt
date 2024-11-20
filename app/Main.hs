@@ -107,7 +107,7 @@ getNewODT = do
 readWriteMonoid :: IO ()
 readWriteMonoid = do
 
-    unzipFiles (path "") "example2" (path "example2")
+    unzipFiles "../doctools-data" "example2" "../doctools-data"
     let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
     let italicPara = ODT.p italicParaStyle "Italic para style"
