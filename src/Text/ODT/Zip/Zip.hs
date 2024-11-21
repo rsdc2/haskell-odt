@@ -21,6 +21,8 @@ appendDirs dir fpios = do
     let appended = appendDir dir <$> fps
     return appended
 
+-- Zip up a folder containing an .docx archive (fpIn)
+-- Write zip file to `fpOut`
 zipWordDir :: Folderpath -> Filepath -> IO ()
 zipWordDir fpIn fpOut = do
     archive1 <- Z.addFilesToArchive [Z.OptLocation "" False] Z.emptyArchive ["data/test/[Content_Types].xml"] 
@@ -31,6 +33,8 @@ zipWordDir fpIn fpOut = do
     let bytestring = Z.fromArchive archive5
     B.writeFile fpOut bytestring
 
+-- Zip up a folder containing an .odt archive (fpIn)
+-- Write zip file to `fpOut`
 zipODTDir :: Folderpath -> Filepath -> IO ()
 zipODTDir fpIn fpOut = do
     archive <- Z.addFilesToArchive [Z.OptRecursive, Z.OptVerbose, Z.OptLocation "" False] Z.emptyArchive [fpIn] 
@@ -48,7 +52,7 @@ zipODT fpIn contentfps fpOut = do
     let bytestring = Z.fromArchive newArchive
     B.writeFile fpOut bytestring
 
-
+-- Unzip fpIn to fpOut
 unzip :: Filepath -> Folderpath -> IO ()
 unzip fpIn fpOut = do
     archive <- Z.toArchive <$> B.readFile fpIn
