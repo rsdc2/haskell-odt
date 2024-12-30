@@ -1,6 +1,4 @@
-module Text.ODT.XML.Prettify
-    ( prettifyFile
-    ) where
+module Text.ODT.XML.Prettify ( prettifyFile ) where
 
 import qualified Text.XML.Light as XmlLight
 
@@ -10,9 +8,9 @@ type Filepath = String
 -- Write out a prettified XML file to the output path
 prettifyFile :: Filepath -> Filepath -> IO ()
 prettifyFile fpIn fpOut = do
-    s <- readFile fpIn
-    let element = XmlLight.parseXMLDoc s
-    let maybeS = XmlLight.ppElement <$> element
-    case maybeS of
+    xmlString <- readFile fpIn
+    let docElement = XmlLight.parseXMLDoc xmlString
+    let xmlStringPretty = XmlLight.ppElement <$> docElement
+    case xmlStringPretty of
         Nothing -> return ()
         Just x -> writeFile fpOut x
