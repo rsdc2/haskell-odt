@@ -20,6 +20,7 @@ unzipFiles odtpath filename dstpath = do
     prettifyFile (dstpath <> "/" <> filename <> "/content.xml") (dstpath <> "/prettified/content.xml")
 
 -- 
-prettifyODT :: Folderpath -> Filename -> Folderpath -> IO()
+prettifyODT :: Folderpath -> Filename -> Folderpath -> IO ()
 prettifyODT srcpath filename dstpath = do
-
+    
+    
