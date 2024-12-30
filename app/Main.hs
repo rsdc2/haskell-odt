@@ -2,38 +2,27 @@
 
 module Main (main) where
 
--- import qualified Data.ByteString as ByteString
--- import qualified Data.Text as Text
 import qualified Text.XML as XML
 
-import Text.ODT.Zip.Utils (unzipFiles)
+import Text.ODT.Zip.Utils ( unzipFilesAndPrettify )
 
-import Text.ODT.File
-import Text.ODT.XML.Prettify
+import Text.ODT.File ( path )
+import Text.ODT.XML.Prettify ( prettifyFile )
 import qualified Text.ODT.Zip.Zip as Zip 
-import Text.ODT.Utils.Types (
-      IsText(..)
-    , Stringable(..))
-import Text.ODT.ODT
-import Text.ODT.Doc
-import Text.ODT.Archive
-import Text.ODT.Query
+import Text.ODT.ODT ( IsList(toList), HasODT(getODT), ODT )
+import Text.ODT.Doc ( Doc(odt), IsXMLDoc(fromXMLDoc, toXMLDoc) )
+import Text.ODT.Query ( getLastPara, getText, paraCount )
 import qualified Text.ODT.Ops as ODT
-import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
+    ( ParaStyle(paraStyleName, paraTextProps),
+      newTextProps,
+      TextProps(fontStyle),
+      FontStyle(Italic),
+      newParaStyle )
 import qualified Text.ODT.Style.TextStyles as TextStyles
 
+exampleFileName :: String
 exampleFileName = "example2"
-
-
--- unzipFiles :: IO ()
--- unzipFiles = do
---     -- Unzip
---     Zip.unzip (path $ exampleFileName <> ".odt") (path $ "/" <> exampleFileName)
-
---     -- Produce a prettified version of the original files
---     prettifyFile (path $ exampleFileName <> "/styles.xml") (path "styles2.xml")
---     prettifyFile (path "content1.xml") (path "content2.xml")
 
 -- Write a content doc and a styles doc to the designated path
 writeODT :: Doc -> Doc -> IO ()
@@ -54,8 +43,8 @@ writeODT contentdoc stylesdoc = do
     prettifyFile (path "styles3.xml") (path "styles4.xml")
 
     -- Zip modified files
-    Zip.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.odt")
-    Zip.zipODT (path $ exampleFileName <> ".odt") ([path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"]) (path "modified.zip")
+    Zip.zipODT (path $ exampleFileName <> ".odt") [path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"] (path "modified.odt")
+    Zip.zipODT (path $ exampleFileName <> ".odt") [path $ exampleFileName <> "/content.xml", path $ exampleFileName <> "/styles.xml"] (path "modified.zip")
 
 
 getNewODT :: ODT
@@ -107,7 +96,7 @@ getNewODT = do
 readWriteMonoid :: IO ()
 readWriteMonoid = do
 
-    unzipFiles "../doctools-data" "example2" "../doctools-data"
+    unzipFilesAndPrettify "../doctools-data" "example2" "../doctools-data"
     let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
     let italicPara = ODT.p italicParaStyle "Italic para style"
