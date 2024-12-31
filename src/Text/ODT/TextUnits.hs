@@ -1,10 +1,10 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Text.ODT.Ops (
-    Text.ODT.Ops.p
-  , Text.ODT.Ops.span
-  , Text.ODT.Ops.str
+module Text.ODT.TextUnits (
+    Text.ODT.TextUnits.p
+  , Text.ODT.TextUnits.span
+  , Text.ODT.TextUnits.str
 ) where
 
 import Data.Text as T

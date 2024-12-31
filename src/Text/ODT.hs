@@ -31,7 +31,7 @@ import Text.ODT.ODT
 import Text.ODT.Doc
 import Text.ODT.Archive
 import Text.ODT.Query
-import qualified Text.ODT.Ops as ODT
+import qualified Text.ODT.TextUnits as TU
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
 
