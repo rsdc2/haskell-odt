@@ -37,11 +37,11 @@ library
       Text.ODT.ODTXML.Name
       Text.ODT.ODTXML.Namespace
       Text.ODT.ODTXML.ODTXML
-      Text.ODT.Ops
       Text.ODT.Query
       Text.ODT.Style
       Text.ODT.Style.TextStyles
       Text.ODT.Style.Types
+      Text.ODT.TextUnits
       Text.ODT.Utils.List
       Text.ODT.Utils.Types
       Text.ODT.XML.Attrs
