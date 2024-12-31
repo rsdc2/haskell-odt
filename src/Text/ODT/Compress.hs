@@ -1,5 +1,6 @@
 module Text.ODT.Compress (updateArchive) where
 
+import System.Directory ( removeDirectoryRecursive )
 import qualified Text.ODT.Zip.Zip as Zip 
 import qualified Text.XML as XML
 
@@ -19,3 +20,4 @@ updateArchive archive origFolder origFn dstFolder dstFn = do
     XML.writeFile XML.def (origpath <> "/content.xml") (toXMLDoc . contentDoc $ archive)
     XML.writeFile XML.def (origpath <> "/styles.xml") (toXMLDoc . stylesDoc $ archive) 
     Zip.zipODT (origpath <> ".odt") [origpath <> "/content.xml", origpath <> "/styles.xml"] (dstFolder <>  "/" <> dstFn <> ".odt")
+    removeDirectoryRecursive origpath
