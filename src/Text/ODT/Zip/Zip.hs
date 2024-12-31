@@ -1,7 +1,6 @@
 module Text.ODT.Zip.Zip
     ( Text.ODT.Zip.Zip.unzip
     , Text.ODT.Zip.Zip.unzipOdt
-    , Text.ODT.Zip.Zip.zipWordDir
     , Text.ODT.Zip.Zip.zipODTDir
     , Text.ODT.Zip.Zip.zipODT
     ) where
