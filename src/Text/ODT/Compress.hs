@@ -11,11 +11,12 @@ type DstFolderPath = String
 type Filename = String
 
 
-saveToArchive :: Archive -> SrcFolderPath -> DstFolderPath -> Filename -> IO ()
-saveToArchive archive orig dst fn = do
-    let rootpath = dst <> "/" <> fn
+saveToArchive :: Archive -> SrcFolderPath -> Filename -> DstFolderPath ->  IO ()
+saveToArchive archive orig fn dst = do
+    let dstpath = dst <> "/" <> fn
+    let srcpath = orig <> "/" <> fn
 
-    XML.writeFile XML.def (rootpath <> "/content.xml") (toXMLDoc . contentDoc $ archive)
-    XML.writeFile XML.def (rootpath <> "/styles.xml") (toXMLDoc . stylesDoc $ archive) 
+    XML.writeFile XML.def (dstpath <> "/content.xml") (toXMLDoc . contentDoc $ archive)
+    XML.writeFile XML.def (dstpath <> "/styles.xml") (toXMLDoc . stylesDoc $ archive) 
 
-    Zip.zipODT (rootpath <> ".odt") [rootpath <> "/content.xml", rootpath <> "/styles.xml"] (dst <>  "/modified.odt")
+    Zip.zipODT (srcpath <> ".odt") [dstpath <> "/content.xml", dstpath <> "/styles.xml"] (dst <>  "/modified.odt")
