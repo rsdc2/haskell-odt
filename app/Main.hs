@@ -7,18 +7,10 @@ import qualified Text.XML as XML
 import Text.ODT.Diagnostics.Utils ( unzipOdt, prettifyOdt )
 
 import Text.ODT.File ( concatPath )
-import Text.ODT.XML.Prettify ( prettifyFile )
 import qualified Text.ODT.Zip.Zip as Zip 
-import Text.ODT.ODT ( IsList(toList), HasODT(getODT), ODT )
+import Text.ODT.ODT ( HasODT(getODT))
 import Text.ODT.Doc ( Doc(odt), IsXMLDoc(fromXMLDoc, toXMLDoc) )
-import Text.ODT.Query ( getLastPara, getText, paraCount )
 import qualified Text.ODT.Ops as ODT
-import Text.ODT.Style
-    ( ParaStyle(paraStyleName, paraTextProps),
-      newTextProps,
-      TextProps(fontStyle),
-      FontStyle(Italic),
-      newParaStyle )
 
 import qualified Text.ODT.Style.TextStyles as TextStyles
 
