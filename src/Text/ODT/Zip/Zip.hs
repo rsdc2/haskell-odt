@@ -1,9 +1,12 @@
 module Text.ODT.Zip.Zip
     ( Text.ODT.Zip.Zip.unzip
+    , Text.ODT.Zip.Zip.unzipOdt
     , Text.ODT.Zip.Zip.zipWordDir
     , Text.ODT.Zip.Zip.zipODTDir
     , Text.ODT.Zip.Zip.zipODT
     ) where
+
+import Prelude hiding (unzip)
 
 import qualified Codec.Archive.Zip as Z
 import qualified Data.ByteString.Lazy as B
@@ -57,3 +60,7 @@ unzip :: Filepath -> Folderpath -> IO ()
 unzip fpIn fpOut = do
     archive <- Z.toArchive <$> B.readFile fpIn
     Z.extractFilesFromArchive [Z.OptDestination fpOut] archive
+
+unzipOdt :: String -> String -> String -> IO ()
+unzipOdt srcpath filename dstpath = 
+    unzip (srcpath <> "/" <> filename <> ".odt") (dstpath <> "/" <> filename)

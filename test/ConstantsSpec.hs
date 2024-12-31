@@ -13,7 +13,7 @@ import Text.ODT.Utils.Types (
       IsText(..)
     , Stringable(..))
 import Text.ODT.ODT
-import Text.ODT.Doc
+import Text.ODT.Doc ( IsXMLDoc(fromXMLDoc) )
 import Text.ODT.Archive
 import Text.ODT.Query
 import qualified Text.ODT.Ops as ODT

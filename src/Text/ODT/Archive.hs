@@ -4,16 +4,29 @@
 module Text.ODT.Archive (
     Archive(..)
   , HasODT(..)
+  , HasContentODT(..)
 ) where
 
 import Text.ODT.ODT
-import Text.ODT.Doc hiding (odt)
+import Text.ODT.Doc
 import Text.ODT.ODTXML.Name
 import Text.ODT.ODTXML.ODTXML
 import Text.ODT.Style
 import Text.ODT.XML.Attrs
 
 data Archive = Archive {contentDoc :: Doc, stylesDoc :: Doc}
+
+instance HasContentODT Archive where
+    contentODT :: Archive -> ODT
+    contentODT (Archive content _) = odt $ content
+
+    replaceContentODT :: ODT -> Archive -> Archive
+    replaceContentODT content archive = archive { contentDoc = existingContentDoc {odt = content} } 
+        where existingContentDoc = contentDoc $ archive
+
+instance HasStylesODT Archive where
+    stylesODT :: Archive -> ODT
+    stylesODT (Archive _ styles) = odt $ styles
 
 instance HasODT Archive where
     getODT :: Archive -> ODT 
@@ -52,3 +65,4 @@ instance HasODT Archive where
     prependODT (ODTSeq odt1 odt2) archive = prependODT odt1 $ prependODT (removeLastODT odt2) $ prependODT (getLastODT odt2) $ archive  
 
     prependODT odt  (Archive contentdoc stylesdoc)  = Archive (prependODT odt contentdoc) stylesdoc
+

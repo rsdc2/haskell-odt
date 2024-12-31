@@ -14,7 +14,9 @@ module Text.ODT.ODT (
     , nextTextStyleName
     , paraStyleNameInts
     , textStyleNameInts
+    , HasContentODT(..)
     , HasODT(..)
+    , HasStylesODT(..)
     , HasTextStyles(..)
     , IsList(..)
     , IsNodes(..)
@@ -392,6 +394,14 @@ class HasODT a where
     getODT :: a -> ODT
     prependODT :: ODT -> a -> a
     appendODT :: ODT -> a -> a
+
+class HasContentODT a where
+    contentODT :: a -> ODT
+    replaceContentODT :: ODT -> a -> a
+
+class HasStylesODT a where
+    stylesODT :: a -> ODT
+    -- replaceContentODT :: ODT -> a
 
 -- TODO: test
 instance HasODT ODT where

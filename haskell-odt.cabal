@@ -27,8 +27,10 @@ library
   exposed-modules:
       Text.ODT
       Text.ODT.Archive
+      Text.ODT.Compress
       Text.ODT.Diagnostics.Utils
       Text.ODT.Doc
+      Text.ODT.Extract
       Text.ODT.File
       Text.ODT.ODT
       Text.ODT.ODTXML.Attr
