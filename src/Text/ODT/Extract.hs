@@ -1,5 +1,6 @@
 module Text.ODT.Extract (archiveFromZip) where
 
+
 import qualified Text.ODT.Zip.Zip as Zip 
 import qualified Text.XML as Xml
 
@@ -31,4 +32,5 @@ loadArchive src fn = do
 archiveFromZip :: SrcFolderPath -> Filename -> DstFolderPath -> IO Archive
 archiveFromZip srcpath filename dstpath = do
     Zip.unzipOdt srcpath filename dstpath
-    loadArchive srcpath filename
+    archive <- loadArchive srcpath filename
+    return archive
