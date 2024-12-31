@@ -4,7 +4,7 @@ module Main (main) where
 
 import qualified Text.XML as XML
 
-import Text.ODT.Zip.Utils ( unzipFilesAndPrettify )
+import Text.ODT.Diagnostics.Utils ( unzipOdt, prettifyOdt )
 
 import Text.ODT.File ( path )
 import Text.ODT.XML.Prettify ( prettifyFile )
@@ -96,7 +96,8 @@ getNewODT = do
 readWriteMonoid :: IO ()
 readWriteMonoid = do
 
-    unzipFilesAndPrettify "../doctools-data" "example2" "../doctools-data"
+    -- unzipOdt "../doctools-data" "example2" "../doctools-data"
+    -- prettifyOdt "../doctools-data" "example2"
     let italicParaStyle = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
     let italicPara = ODT.p italicParaStyle "Italic para style"

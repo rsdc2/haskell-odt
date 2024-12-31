@@ -1,5 +1,5 @@
-module Text.ODT.Zip.Utils
-    ( unzipFilesAndPrettify ) where
+module Text.ODT.Diagnostics.Utils
+    ( unzipOdt, prettifyOdt ) where
 
 import System.Directory (createDirectoryIfMissing)
 import qualified Text.ODT.Zip.Zip as Zip
@@ -13,15 +13,15 @@ type Filename = String
 -- param odtpath: folderpath containing .odt file
 -- param filename: filename of .odt file without .odt extension
 -- param dstpath: destination folder of folder containing archive to be unzipped
-unzipFilesAndPrettify :: SrcFolderPath -> Filename -> DstFolderPath -> IO ()
-unzipFilesAndPrettify srcpath filename dstpath = do
+unzipOdt :: SrcFolderPath -> Filename -> DstFolderPath -> IO ()
+unzipOdt srcpath filename dstpath = 
     Zip.unzip (srcpath <> "/" <> filename <> ".odt") (dstpath <> "/" <> filename)
-    prettifyFile (dstpath <> "/" <> filename <> "/styles.xml") (dstpath <> "/prettified/styles.xml")
-    prettifyFile (dstpath <> "/" <> filename <> "/content.xml") (dstpath <> "/prettified/content.xml")
 
--- -- 
--- prettifyODT :: Folderpath -> Filename -> Folderpath -> IO ()
--- prettifyODT srcpath filename dstpath = do
+-- 
+prettifyOdt :: SrcFolderPath -> Filename -> IO ()
+prettifyOdt folderpath filename = 
+    prettifyFile (folderpath <> "/" <> filename <> "/styles.xml") (folderpath <> "/prettified/styles.xml") >>
+    prettifyFile (folderpath <> "/" <> filename <> "/content.xml") (folderpath <> "/prettified/content.xml")
 
 
     

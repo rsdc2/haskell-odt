@@ -27,6 +27,7 @@ library
   exposed-modules:
       Text.ODT
       Text.ODT.Archive
+      Text.ODT.Diagnostics.Utils
       Text.ODT.Doc
       Text.ODT.File
       Text.ODT.ODT
@@ -49,7 +50,6 @@ library
       Text.ODT.XML.Node
       Text.ODT.XML.Prettify
       Text.ODT.XML.Types
-      Text.ODT.Zip.Utils
       Text.ODT.Zip.Zip
   other-modules:
       Paths_haskell_odt
