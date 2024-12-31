@@ -24,18 +24,6 @@ appendDirs dir fpios = do
     let appended = appendDir dir <$> fps
     return appended
 
--- Zip up a folder containing an .docx archive (fpIn)
--- Write zip file to `fpOut`
-zipWordDir :: Folderpath -> Filepath -> IO ()
-zipWordDir fpIn fpOut = do
-    archive1 <- Zip.addFilesToArchive [Zip.OptLocation "" False] Zip.emptyArchive ["data/test/[Content_Types].xml"] 
-    archive2 <- Zip.addFilesToArchive [Zip.OptRecursive, Zip.OptLocation "_rels/" False] archive1 ["data/test/_rels/"] 
-    archive3 <- Zip.addFilesToArchive [Zip.OptRecursive, Zip.OptLocation "word/_rels/" False] archive2 ["data/test/word/_rels/"] 
-    archive4 <- Zip.addFilesToArchive [Zip.OptLocation "word/" False] archive3 =<< (appendDirs "data/test/word/" $ listDirectory "data/test/word/")
-    archive5 <- Zip.addFilesToArchive [Zip.OptRecursive, Zip.OptLocation "docProps/" False] archive4 ["data/test/docProps/"] 
-    let bytestring = Zip.fromArchive archive5
-    ByteString.writeFile fpOut bytestring
-
 -- Zip up a folder containing an .odt archive (fpIn)
 -- Write zip file to `fpOut`
 zipODTDir :: Folderpath -> Filepath -> IO ()
