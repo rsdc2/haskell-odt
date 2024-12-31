@@ -14,11 +14,11 @@ type Filename = String
 
 loadArchive :: SrcFolderPath -> Filename -> IO Archive
 loadArchive src fn = do
-  Zip.unzip (src <> "/" <> fn <> ".odt") (src <> fn)
+  Zip.unzip (src <> "/" <> fn <> ".odt") (src <> "/" <> fn)
 
   -- Read files
-  contentxmldoc <- Xml.readFile Xml.def (src <> fn <> "/content.xml")
-  stylesxmldoc <- Xml.readFile Xml.def (src <> fn <> "/styles.xml")
+  contentxmldoc <- Xml.readFile Xml.def (src <> "/" <> fn <> "/content.xml")
+  stylesxmldoc <- Xml.readFile Xml.def (src <> "/" <> fn <> "/styles.xml")
 
   let contentodtdoc = fromXMLDoc contentxmldoc
   let stylesodtdoc = fromXMLDoc stylesxmldoc

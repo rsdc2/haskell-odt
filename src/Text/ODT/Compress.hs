@@ -1,4 +1,4 @@
-module Text.ODT.Compress (saveToArchive) where
+module Text.ODT.Compress (updateArchive) where
 
 import qualified Text.ODT.Zip.Zip as Zip 
 import qualified Text.XML as XML
@@ -11,12 +11,11 @@ type DstFolderPath = String
 type Filename = String
 
 
-saveToArchive :: Archive -> SrcFolderPath -> Filename -> DstFolderPath ->  IO ()
-saveToArchive archive orig fn dst = do
-    let dstpath = dst <> "/" <> fn
-    let srcpath = orig <> "/" <> fn
+updateArchive :: Archive -> SrcFolderPath -> Filename -> DstFolderPath -> Filename -> IO ()
+updateArchive archive origFolder origFn dstFolder dstFn = do
+    let dstpath = dstFolder <> "/" <> dstFn
+    let origpath = origFolder <> "/" <> origFn
 
-    XML.writeFile XML.def (dstpath <> "/content.xml") (toXMLDoc . contentDoc $ archive)
-    XML.writeFile XML.def (dstpath <> "/styles.xml") (toXMLDoc . stylesDoc $ archive) 
-
-    Zip.zipODT (srcpath <> ".odt") [dstpath <> "/content.xml", dstpath <> "/styles.xml"] (dst <>  "/modified.odt")
+    XML.writeFile XML.def (origpath <> "/content.xml") (toXMLDoc . contentDoc $ archive)
+    XML.writeFile XML.def (origpath <> "/styles.xml") (toXMLDoc . stylesDoc $ archive) 
+    Zip.zipODT (origpath <> ".odt") [origpath <> "/content.xml", origpath <> "/styles.xml"] (dstFolder <>  "/" <> dstFn <> ".odt")

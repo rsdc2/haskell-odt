@@ -396,12 +396,12 @@ class HasODT a where
     appendODT :: ODT -> a -> a
 
 class HasContentODT a where
-    contentODT :: a -> ODT
-    replaceContentODT :: ODT -> a -> a
+    getContentDocODT :: a -> ODT
+    replaceContentDocODT :: ODT -> a -> a
 
 class HasStylesODT a where
-    stylesODT :: a -> ODT
-    -- replaceContentODT :: ODT -> a
+    getStylesDocODT :: a -> ODT
+    replaceStylesDocODT :: ODT -> a -> a
 
 -- TODO: test
 instance HasODT ODT where

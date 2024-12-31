@@ -17,16 +17,20 @@ import Text.ODT.XML.Attrs
 data Archive = Archive {contentDoc :: Doc, stylesDoc :: Doc}
 
 instance HasContentODT Archive where
-    contentODT :: Archive -> ODT
-    contentODT (Archive content _) = odt $ content
+    getContentDocODT :: Archive -> ODT
+    getContentDocODT (Archive content _) = odt $ content
 
-    replaceContentODT :: ODT -> Archive -> Archive
-    replaceContentODT content archive = archive { contentDoc = existingContentDoc {odt = content} } 
+    replaceContentDocODT :: ODT -> Archive -> Archive
+    replaceContentDocODT content archive = archive { contentDoc = existingContentDoc {odt = content} } 
         where existingContentDoc = contentDoc $ archive
 
 instance HasStylesODT Archive where
-    stylesODT :: Archive -> ODT
-    stylesODT (Archive _ styles) = odt $ styles
+    getStylesDocODT :: Archive -> ODT
+    getStylesDocODT (Archive _ styles) = odt $ styles
+
+    replaceStylesDocODT :: ODT -> Archive -> Archive
+    replaceStylesDocODT styles archive = archive { stylesDoc = existingStylesDoc {odt = styles} } 
+        where existingStylesDoc = stylesDoc archive
 
 instance HasODT Archive where
     getODT :: Archive -> ODT 
