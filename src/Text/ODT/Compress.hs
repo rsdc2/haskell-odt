@@ -1,4 +1,4 @@
-module Text.ODT.Compress (updateArchive) where
+module Text.ODT.Compress (updateODTFile, ODTFileOptions(..), defaultODTFileOptions ) where
 
 import System.Directory ( removeDirectoryRecursive )
 import qualified Text.ODT.Zip.Zip as Zip 
@@ -7,17 +7,39 @@ import qualified Text.XML as XML
 import Text.ODT.Archive ( Archive(..) )
 import Text.ODT.Doc ( IsXMLDoc(toXMLDoc) )
 
-type SrcFolderPath = String
-type DstFolderPath = String
+type Folderpath = String
 type Filename = String
 
 
-updateArchive :: Archive -> SrcFolderPath -> Filename -> DstFolderPath -> Filename -> IO ()
-updateArchive archive origFolder origFn dstFolder dstFn = do
-    let dstpath = dstFolder <> "/" <> dstFn
-    let origpath = origFolder <> "/" <> origFn
+data ODTFileOptions = ODTFileOptions { 
+      workingFolder :: Maybe Folderpath
+    , removeWorkingFolder :: Bool
+    , removeWorkingPath :: Bool
+}
 
-    XML.writeFile XML.def (origpath <> "/content.xml") (toXMLDoc . contentDoc $ archive)
-    XML.writeFile XML.def (origpath <> "/styles.xml") (toXMLDoc . stylesDoc $ archive) 
-    Zip.zipODT (origpath <> ".odt") [origpath <> "/content.xml", origpath <> "/styles.xml"] (dstFolder <>  "/" <> dstFn <> ".odt")
-    removeDirectoryRecursive origpath
+defaultODTFileOptions = ODTFileOptions {
+      workingFolder = Nothing
+    , removeWorkingFolder = False
+    , removeWorkingPath = True }
+
+cleanupFolders :: ODTFileOptions -> Filename -> IO () 
+cleanupFolders ODTFileOptions { workingFolder = Just path, removeWorkingFolder = True } _ = removeDirectoryRecursive path
+cleanupFolders ODTFileOptions { workingFolder = Just path, removeWorkingPath = True } fn = removeDirectoryRecursive (path <> "/" <> fn)
+cleanupFolders _ _ = return ()
+
+getWorkingPath :: ODTFileOptions -> Folderpath -> Filename -> Folderpath
+getWorkingPath ODTFileOptions { workingFolder = Just suppliedPath } _ fn = suppliedPath <> "/" <> fn
+getWorkingPath _ defaultPath fn = defaultPath <> "/" <> fn 
+
+updateODTFile :: Archive -> Folderpath -> Filename -> Folderpath -> Filename -> ODTFileOptions -> IO ()
+updateODTFile archive odtFolder odtFn dstFolder dstFn options = do
+
+    let dstPath = dstFolder <> "/" <> dstFn
+    let odtPath = odtFolder <> "/" <> odtFn
+    let workingPath = getWorkingPath options odtFolder odtFn
+
+    XML.writeFile XML.def (workingPath <> "/content.xml") (toXMLDoc . contentDoc $ archive)
+    XML.writeFile XML.def (workingPath <> "/styles.xml") (toXMLDoc . stylesDoc $ archive) 
+    Zip.zipODT (odtPath <> ".odt") [workingPath <> "/content.xml", workingPath <> "/styles.xml"] (dstFolder <>  "/" <> dstFn <> ".odt")
+
+    cleanupFolders options odtFn
