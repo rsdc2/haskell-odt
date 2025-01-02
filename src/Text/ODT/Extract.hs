@@ -15,7 +15,6 @@ type Filename = String
 
 loadArchive :: SrcFolderPath -> Filename -> IO Archive
 loadArchive src fn = do
-  Zip.unzip (src <> "/" <> fn <> ".odt") (src <> "/" <> fn)
 
   -- Read files
   contentxmldoc <- Xml.readFile Xml.def (src <> "/" <> fn <> "/content.xml")
@@ -32,5 +31,5 @@ loadArchive src fn = do
 archiveFromZip :: SrcFolderPath -> Filename -> DstFolderPath -> IO Archive
 archiveFromZip srcpath filename dstpath = do
     Zip.unzipOdt srcpath filename dstpath
-    archive <- loadArchive srcpath filename
+    archive <- loadArchive dstpath filename
     return archive
