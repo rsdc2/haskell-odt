@@ -3,7 +3,7 @@
 
 module Text.ODT.TextUnits (
     Text.ODT.TextUnits.p
-  , Text.ODT.TextUnits.span
+  , Text.ODT.TextUnits.textspan
   , Text.ODT.TextUnits.str
 ) where
 
@@ -20,9 +20,9 @@ import Text.ODT.ODTXML.Namespace
 p :: ParaStyle -> T.Text -> ODT
 p parastyle s = TextNode (P $ Just parastyle) (ODTXMLElem pName Map.empty) (TextLeaf Str $ ODTXMLText s)
 
-span :: TextStyle -> T.Text -> ODT
+textspan :: TextStyle -> T.Text -> ODT
 -- Passes the TextStyle on with the TextNode, and get the name when finally integrate into the document
-span textstyle s = TextNode (Span $ Just textstyle) (ODTXMLElem spanName Map.empty) (TextLeaf Str odtxmltext)
+textspan textstyle s = TextNode (Span $ Just textstyle) (ODTXMLElem spanName Map.empty) (TextLeaf Str odtxmltext)
     where odtxmltext = ODTXMLText s
 
 str :: T.Text -> ODT
