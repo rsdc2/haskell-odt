@@ -24,7 +24,9 @@ defaultODTFileOptions = ODTFileOptions {
 
 cleanupFolders :: ODTFileOptions -> Filename -> IO () 
 cleanupFolders ODTFileOptions { workingFolder = Just path, removeWorkingFolder = True } _ = removeDirectoryRecursive path
-cleanupFolders ODTFileOptions { workingFolder = Just path, removeWorkingPath = True } fn = removeDirectoryRecursive (path <> "/" <> fn)
+cleanupFolders ODTFileOptions { workingFolder = Just path, removeWorkingPath = True } fn = do 
+  removeDirectoryRecursive (path <> "/" <> fn)
+  removeDirectoryRecursive (path <> "/" <> fn <> "_prettified")
 cleanupFolders _ _ = return ()
 
 getWorkingPath :: ODTFileOptions -> Folderpath -> Filename -> Folderpath
