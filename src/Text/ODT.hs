@@ -24,10 +24,20 @@ module Text.ODT (
     , replaceContentDocODT
     , spanCount
     , updateODTFile
+    
+    -- Text styles
     , bold
     , italic
-    , textspan
     , underline
+    , normal
+
+    -- Paragraph styles
+    , normalPara
+
+    -- Text units
+    , para
+    , str
+    , textspan
     ) where
 
 import Text.ODT.Extract
@@ -45,6 +55,7 @@ import Text.ODT.TextUnits
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
 import Text.ODT.Style.TextStyles
+import Text.ODT.Style.ParaStyles
 
 
 
