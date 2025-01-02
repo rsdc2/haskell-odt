@@ -12,13 +12,21 @@ import Text.ODT
 
 import ConstantsSpec
 
+
+-- appendBoldSpanToEmptyDoc :: IO Bool
+-- appendBoldSpanToEmptyDoc = do
+--   archive <- loadArchive "example"
+--   let contentODT = getContentDocODT archive <> textspan italic "hello"
+
+
+
 appendBoldItalicTextStyleWithSpanSad :: IO Bool
 appendBoldItalicTextStyleWithSpanSad = 
-  hasTextStyle boldItalicStyle . contentDoc <$> loadArchive
+  hasTextStyle boldItalicStyle . contentDoc <$> loadArchive "example"
 
 appendBoldItalicTextStyleWithSpanHappy :: IO Bool
 appendBoldItalicTextStyleWithSpanHappy = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let orig = contentDoc archive
   let new = appendODT boldItalicSpan orig
   return $ not (hasTextStyle boldItalicStyle orig)
@@ -29,7 +37,7 @@ appendBoldItalicTextStyleWithSpanHappy = do
 
 prependBoldItalicTextStyleWithSpanHappy :: IO Bool
 prependBoldItalicTextStyleWithSpanHappy = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let orig = contentDoc archive
   let new = prependODT boldItalicSpan orig
   return $ not (hasTextStyle boldItalicStyle orig)
@@ -40,11 +48,11 @@ prependBoldItalicTextStyleWithSpanHappy = do
 
 appendItalicParaStyleWithParaSad :: IO Bool
 appendItalicParaStyleWithParaSad = 
-  hasParaStyle italicParaStyle . contentDoc <$> loadArchive
+  hasParaStyle italicParaStyle . contentDoc <$> loadArchive "example"
 
 appendItalicParaStyleWithParaHappy :: IO Bool
 appendItalicParaStyleWithParaHappy = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let orig = contentDoc archive
   let new = appendODT italicPara orig
 
@@ -56,7 +64,7 @@ appendItalicParaStyleWithParaHappy = do
 
 prependItalicParaStyleWithParaHappy :: IO Bool
 prependItalicParaStyleWithParaHappy = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let orig = contentDoc archive
   let new = prependODT italicPara orig
 
@@ -72,7 +80,7 @@ prependItalicParaStyleWithParaHappy = do
 -- is that of the content doc
 appendParaToArchive :: IO Bool
 appendParaToArchive = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let archive' = appendODT italicPara archive
   let cdoc = contentDoc archive'
   let sdoc = stylesDoc archive'
@@ -87,7 +95,7 @@ appendParaToArchive = do
 -- is that of the styles doc, and not of the content doc
 appendParaToArchive' :: IO Bool
 appendParaToArchive' = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let cdoc = contentDoc archive
   let sdoc = stylesDoc archive
 
@@ -108,7 +116,7 @@ appendParaToArchive' = do
 -- it is only appended once
 appendStyleWithSameAttributesToStyleDocOnlyOnce :: IO Bool
 appendStyleWithSameAttributesToStyleDocOnlyOnce = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let sdoc = appendODT (toODT italicParaStyle) . stylesDoc $ archive
   let sdoc' = appendODT (toODT italicParaStyle) sdoc
   return $ (length . getParaStylesWithName "italicPara" $ sdoc') == 1
@@ -117,7 +125,7 @@ appendStyleWithSameAttributesToStyleDocOnlyOnce = do
 -- result as appending to a doc
 appendToODTEqAppendToDoc :: IO Bool
 appendToODTEqAppendToDoc = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let doc = contentDoc archive
   let odt = getODT doc
 
@@ -130,7 +138,7 @@ appendToODTEqAppendToDoc = do
 -- result as appending to a doc
 prependToODTEqAppendToDoc :: IO Bool
 prependToODTEqAppendToDoc = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let doc = contentDoc archive
   let odt = getODT doc
 

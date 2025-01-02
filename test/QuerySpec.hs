@@ -12,7 +12,7 @@ import ConstantsSpec
 
 lastParaHappy :: IO Bool
 lastParaHappy = do
-  archive <- loadArchive
+  archive <- loadArchive "example"
   let orig = contentDoc archive
   let new = appendODT italicPara orig
   let lastParaText = getText . getLastPara 
