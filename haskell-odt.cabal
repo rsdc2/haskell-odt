@@ -40,6 +40,7 @@ library
       Text.ODT.ODTXML.ODTXML
       Text.ODT.Query
       Text.ODT.Style
+      Text.ODT.Style.ParaStyles
       Text.ODT.Style.TextStyles
       Text.ODT.Style.Types
       Text.ODT.TextUnits
@@ -76,6 +77,7 @@ library
 executable haskell-odt-exe
   main-is: Main.hs
   other-modules:
+      ExploratoryTests
       Paths_haskell_odt
   autogen-modules:
       Paths_haskell_odt
