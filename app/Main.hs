@@ -2,14 +2,8 @@
 
 module Main (main) where
 
-import qualified Text.XML as XML
-
-import Text.ODT.Diagnostics.Utils ( prettifyODT )
 import Text.ODT.Extract ( archiveFromZip )
 import Text.ODT.Compress ( updateODTFile, defaultODTFileOptions, ODTFileOptions(..) )
-
-import Text.ODT.File ( concatPath )
-import qualified Text.ODT.Zip.Zip as Zip 
 import Text.ODT.ODT ( HasContentODT(..) )
 import qualified Text.ODT.TextUnits as TU
 
