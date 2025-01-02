@@ -33,6 +33,7 @@ library
       Text.ODT.Extract
       Text.ODT.File
       Text.ODT.ODT
+      Text.ODT.ODTMonad
       Text.ODT.ODTXML.Attr
       Text.ODT.ODTXML.Name
       Text.ODT.ODTXML.Namespace
@@ -75,7 +76,6 @@ library
 executable haskell-odt-exe
   main-is: Main.hs
   other-modules:
-      ExploratoryTests
       Paths_haskell_odt
   autogen-modules:
       Paths_haskell_odt
