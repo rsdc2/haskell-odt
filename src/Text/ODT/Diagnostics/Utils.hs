@@ -10,9 +10,10 @@ type Filename = String
 
 -- 
 prettifyODT :: SrcFolderPath -> Filename -> IO ()
-prettifyODT folderpath filename = 
-    prettifyFile (folderpath <> "/" <> filename <> "/styles.xml") (folderpath <> "/prettified/styles.xml") >>
-    prettifyFile (folderpath <> "/" <> filename <> "/content.xml") (folderpath <> "/prettified/content.xml")
+prettifyODT folderpath filename = do
+    createDirectoryIfMissing True (folderpath <> "/" <> filename <> "_prettified")
+    prettifyFile (folderpath <> "/" <> filename <> "/styles.xml") (folderpath <> "/" <> filename <> "_prettified/styles.xml")
+    prettifyFile (folderpath <> "/" <> filename <> "/content.xml") (folderpath <> "/" <> filename <> "_prettified/content.xml")
 
 
     
