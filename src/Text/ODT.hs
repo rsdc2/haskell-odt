@@ -23,6 +23,7 @@ module Text.ODT (
     , ParaStyle(..)
     , replaceContentDocODT
     , spanCount
+    , TextStyle(..)
     , updateODTFile
     
     -- Text styles
@@ -38,6 +39,8 @@ module Text.ODT (
     , para
     , str
     , textspan
+    , paraM
+    , textspanM
     ) where
 
 import Text.ODT.Extract
