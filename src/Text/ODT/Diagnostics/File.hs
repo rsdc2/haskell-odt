@@ -12,22 +12,22 @@ import Control.Monad.Writer
 
 saveNewODTDiag :: Folderpath -> Filename -> Writer ODT () -> IO ()
 saveNewODTDiag fp fn odt = do
-    archive <- archiveFromZip templatesPath "empty" "./.working"
+    archive <- archiveFromZip templatesPath "empty" workingFolderPath
 
     let contentODT = getContentDocODT archive <> execWriter odt
 
     let archive' = replaceContentDocODT contentODT archive 
-    let options = defaultODTFileOptions { workingFolder = Just "./.working", removeWorkingFolder = False, removeWorkingPath = False } 
+    let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = False } 
     updateODTFile archive' templatesPath "empty" fp fn options
-    prettifyODT "./.working" fn
+    prettifyODT workingFolderPath "empty"
 
 appendToODTDiag :: Folderpath -> Filename -> Writer ODT () -> IO ()
 appendToODTDiag fp fn odt = do
-    archive <- archiveFromZip fp fn "./.working"
+    archive <- archiveFromZip fp fn workingFolderPath
 
     let contentODT = getContentDocODT archive <> execWriter odt
 
     let archive' = replaceContentDocODT contentODT archive 
-    let options = defaultODTFileOptions { workingFolder = Just "./.working", removeWorkingFolder = False, removeWorkingPath = False } 
+    let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = False } 
     updateODTFile archive' fp fn fp (fn <> "_modified") options
-    prettifyODT "./.working" fn
+    prettifyODT workingFolderPath fn

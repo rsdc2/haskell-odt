@@ -7,7 +7,8 @@ module Text.ODT.File (
     , saveNewODT
     , Filename
     , Folderpath
-    , templatesPath ) where
+    , templatesPath
+    , workingFolderPath ) where
 
 import Data.List ( intercalate )
 import Control.Monad.Writer
@@ -25,6 +26,9 @@ type Ext = String
 templatesPath :: Folderpath
 templatesPath = "./templates"
 
+workingFolderPath :: Folderpath
+workingFolderPath = "./.odt-work"
+
 concatFileExt :: Filename -> Ext -> Filepath
 concatFileExt fn ext = fn <> "." <> ext
 
@@ -33,20 +37,20 @@ concatPath fp1 fps fn ext = intercalate "/" ([fp1] <> fps) <> "/" <> fn <> "." <
 
 saveNewODT :: Folderpath -> Filename -> Writer ODT () -> IO ()
 saveNewODT fp fn odt = do
-    archive <- archiveFromZip templatesPath "empty" "./.working"
+    archive <- archiveFromZip templatesPath "empty" workingFolderPath
 
     let contentODT = getContentDocODT archive <> execWriter odt
 
     let archive' = replaceContentDocODT contentODT archive 
-    let options = defaultODTFileOptions { workingFolder = Just "./.working", removeWorkingFolder = True, removeWorkingPath = True } 
+    let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = True } 
     updateODTFile archive' templatesPath "empty" fp fn options
 
 appendToODT :: Folderpath -> Filename -> Writer ODT () -> IO ()
 appendToODT fp fn odt = do
-    archive <- archiveFromZip fp fn "./.working"
+    archive <- archiveFromZip fp fn workingFolderPath
 
     let contentODT = getContentDocODT archive <> execWriter odt
 
     let archive' = replaceContentDocODT contentODT archive 
-    let options = defaultODTFileOptions { workingFolder = Just "./.working", removeWorkingFolder = True, removeWorkingPath = True } 
+    let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = True, removeWorkingPath = True } 
     updateODTFile archive' fp fn fp (fn <> "_modified") options
