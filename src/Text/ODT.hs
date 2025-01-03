@@ -1,5 +1,6 @@
 module Text.ODT (
       Archive(..)
+    , appendToODT
     , archiveFromZip
     , defaultODTFileOptions
     , Doc(..)
@@ -22,6 +23,7 @@ module Text.ODT (
     , paraCount
     , ParaStyle(..)
     , replaceContentDocODT
+    , saveNewODT
     , spanCount
     , TextStyle(..)
     , updateODTFile
