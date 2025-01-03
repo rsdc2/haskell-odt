@@ -21,18 +21,23 @@ import Text.ODT.ODTXML.Namespace
 import Control.Monad.Writer
 
 
-para :: Maybe ParaStyle -> T.Text -> ODT
-para parastyle s = TextNode (P parastyle) (ODTXMLElem pName Map.empty) (TextLeaf Str $ ODTXMLText s)
+para :: ParaStyle -> T.Text -> ODT
+para parastyle s = TextNode (P $ Just parastyle) (ODTXMLElem pName Map.empty) (TextLeaf Str $ ODTXMLText s)
 
-textspan :: Maybe TextStyle -> T.Text -> ODT
+paraM :: ParaStyle -> T.Text -> Writer ODT ()
+paraM style = tell . para style
+
 -- Passes the TextStyle on with the TextNode, and get the name when finally integrate into the document
-textspan textstyle s = TextNode (Span textstyle) (ODTXMLElem spanName Map.empty) (TextLeaf Str $ ODTXMLText s)
+textspan :: TextStyle -> T.Text -> ODT
+textspan textstyle s = TextNode (Span $ Just textstyle) (ODTXMLElem spanName Map.empty) (TextLeaf Str $ ODTXMLText s)
+
+textspanM :: TextStyle -> T.Text -> Writer ODT ()
+textspanM style = tell . textspan style
 
 str :: T.Text -> ODT
 str s = TextLeaf Str (ODTXMLText s)
 
-textspanM :: Maybe TextStyle -> T.Text -> Writer ODT ()
-textspanM style s = tell $ textspan style s
+strM :: T.Text -> Writer ODT ()
+strM = tell . str
 
-paraM :: Maybe ParaStyle -> T.Text -> Writer ODT ()
-paraM style s = tell $ para style s
+
