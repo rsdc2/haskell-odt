@@ -28,6 +28,8 @@ library
       Text.ODT
       Text.ODT.Archive
       Text.ODT.Compress
+      Text.ODT.Diagnostics
+      Text.ODT.Diagnostics.File
       Text.ODT.Diagnostics.Utils
       Text.ODT.Doc
       Text.ODT.Extract
