@@ -32,6 +32,15 @@ instance HasStylesODT Archive where
     replaceStylesDocODT styles archive = archive { stylesDoc = existingStylesDoc {odt = styles} } 
         where existingStylesDoc = stylesDoc archive
 
+    appendStyleODT :: ODT -> Archive -> Archive
+    appendStyleODT style archive = replaceStylesDocODT stylesDocOdt archive
+        where stylesDocOdt = odt . appendODT style . stylesDoc $ archive
+
+    appendStyle :: (IsStyle a, IsODT a) => a -> Archive -> Archive
+    appendStyle style archive = 
+        replaceStylesDocODT stylesDocOdt archive
+        where stylesDocOdt = odt . appendODT (toODT style) . stylesDoc $ archive
+
 instance HasODT Archive where
     getODT :: Archive -> ODT 
     getODT (Archive contentdoc styledoc) = getODT contentdoc <> getODT styledoc 
