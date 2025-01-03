@@ -25,6 +25,7 @@ dependencies:
 - containers
 - text
 - directory
+- mtl
 - xml 
 - xml-conduit
 - zip-archive
