@@ -26,12 +26,10 @@ cleanupFolders :: ODTFileOptions -> Filename -> IO ()
 cleanupFolders ODTFileOptions { workingFolder = Just path, removeWorkingFolder = True } _ = removeDirectoryRecursive path
 cleanupFolders ODTFileOptions { workingFolder = Just path, removeWorkingPath = True } fn = do 
   removeDirectoryRecursive (path <> "/" <> fn)
-  removeDirectoryRecursive (path <> "/" <> fn <> "_prettified")
 cleanupFolders _ _ = return ()
 
 getWorkingPath :: ODTFileOptions -> Folderpath -> Filename -> Folderpath
 getWorkingPath ODTFileOptions { workingFolder = Just suppliedPath } _ fn = suppliedPath <> "/" <> fn
-getWorkingPath _ defaultPath fn = defaultPath <> "/" <> fn 
 
 updateODTFile :: Archive -> Folderpath -> Filename -> Folderpath -> Filename -> ODTFileOptions -> IO ()
 updateODTFile archive odtFolder odtFn dstFolder dstFn options = do
