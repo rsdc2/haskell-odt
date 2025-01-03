@@ -11,7 +11,6 @@ setupStyles = do
 
 minimalODT :: Writer ODT ()
 minimalODT = do
-    italicParaM
     textspanM italic "Hello"
     textspanM bold " world."
     paraM normalPara ""
@@ -19,4 +18,5 @@ minimalODT = do
     paraM italicPara "This text is italic because it is in an italic paragraph."
 
 main :: IO ()
-main = saveNewODTDiag "./examples/output" "newodt" minimalODT
+main = do
+    saveNewODTWithStylesDiag "./examples/output" "newodt" minimalODT setupStyles
