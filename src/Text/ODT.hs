@@ -18,6 +18,7 @@ module Text.ODT (
     , HasParaStyles(..)
     , HasTextStyles(..)
     , IsODT(..)
+    , IsStyle(..)
     , ODT(..)
     , ODTFileOptions(..)
     , paraCount
