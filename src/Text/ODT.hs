@@ -36,6 +36,8 @@ module Text.ODT (
 
     -- Paragraph styles
     , normalPara
+    , italicPara
+    , italicParaM
 
     -- Text units
     , para
