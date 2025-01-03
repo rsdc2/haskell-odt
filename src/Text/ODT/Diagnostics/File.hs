@@ -13,10 +13,7 @@ import Control.Monad.Writer
 saveNewODTDiag :: Folderpath -> Filename -> Writer ODT () -> IO ()
 saveNewODTDiag fp fn odt = do
     archive <- archiveFromZip templatesPath "empty" workingFolderPath
-
-    let contentODT = getContentDocODT archive <> execWriter odt
-
-    let archive' = replaceContentDocODT contentODT archive 
+    let archive' = appendODT (execWriter odt) archive
     let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = False } 
     updateODTFile archive' templatesPath "empty" fp fn options
     prettifyODT workingFolderPath "empty"
