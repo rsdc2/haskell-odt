@@ -11,4 +11,4 @@ minimalODT = do
     textspanM (Just bold) " world."
 
 main :: IO ()
-main = saveNewODTDiag "./examples/output" "newodt" minimalODT
+main = appendToODTDiag "./examples/output" "newodt" minimalODT
