@@ -1,4 +1,9 @@
-module Text.ODT.Diagnostics.File (saveNewODTDiag, appendToODTDiag, saveNewStylesDiag, saveNewODTWithStylesDiag)
+module Text.ODT.Diagnostics.File (
+      saveNewODTDiag
+    , appendToODTDiag
+    , saveNewStylesDiag
+    , saveNewODTWithStylesDiag
+    , saveNewODTWithStylesDiag' )
 
 where
 
@@ -27,6 +32,17 @@ saveNewODTWithStylesDiag fp fn odt styles = do
     let archive'' = appendODT (execWriter odt) archive'
     let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = False } 
     updateODTFile archive'' templatesPath "empty" fp fn options
+    prettifyODT workingFolderPath "empty"
+
+-- saveNewODTWithStylesDiag' :: (IsStyle a, IsODT a) => Folderpath -> Filename -> Writer ODT () -> Writer [a] () -> IO ()
+saveNewODTWithStylesDiag' :: Folderpath -> Filename -> Writer ODT () -> Writer [ParaStyle] () -> Writer [TextStyle] () -> IO ()
+saveNewODTWithStylesDiag' fp fn odt paraStyles textStyles = do
+    archive <- archiveFromZip templatesPath "empty" workingFolderPath
+    let archive' = appendStyleODT (mconcat $ toODT <$> execWriter paraStyles) archive
+    let archive'' = appendStyleODT (mconcat $ toODT <$> execWriter textStyles) archive'
+    let archive''' = appendODT (execWriter odt) archive''
+    let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = False } 
+    updateODTFile archive''' templatesPath "empty" fp fn options
     prettifyODT workingFolderPath "empty"
 
 saveNewODTDiag :: Folderpath -> Filename -> Writer ODT () -> IO ()

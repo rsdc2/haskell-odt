@@ -4,6 +4,7 @@ module Text.ODT.Style.ParaStyles (
       normalPara
     , italicPara
     , italicParaM
+    , italicParaODTM
 ) 
 
 where
@@ -18,5 +19,8 @@ normalPara = newParaStyle
 italicPara :: ParaStyle
 italicPara = newParaStyle {paraTextProps = newTextProps {fontStyle = Italic}, paraStyleName = Just "italicPara"}
 
-italicParaM :: Writer ODT ()
-italicParaM = tell . toODT $ italicPara
+italicParaODTM :: Writer ODT ()
+italicParaODTM = tell . toODT $ italicPara
+
+italicParaM :: Writer [ParaStyle] ()
+italicParaM = tell [italicPara]

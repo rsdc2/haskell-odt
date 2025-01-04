@@ -4,6 +4,7 @@ module Text.ODT (
     , archiveFromZip
     , defaultODTFileOptions
     , Doc(..)
+    , FontStyle(..)
     , getFirstODT
     , getFirstPara
     , getLastPara
@@ -27,8 +28,14 @@ module Text.ODT (
     , saveNewODT
     , spanCount
     , TextStyle(..)
+    , TextProps(..)
     , updateODTFile
     
+    -- New styles
+    , newParaStyle
+    , newTextProps
+    , newTextStyle
+
     -- Text styles
     , bold
     , italic
@@ -39,6 +46,7 @@ module Text.ODT (
     , normalPara
     , italicPara
     , italicParaM
+    , italicParaODTM
 
     -- Text units
     , para
