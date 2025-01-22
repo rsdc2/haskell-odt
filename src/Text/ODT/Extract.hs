@@ -6,6 +6,8 @@ import qualified Text.XML as Xml
 
 import Text.ODT.Archive ( Archive(..) )
 import Text.ODT.Doc ( IsXMLDoc(fromXMLDoc) )
+import qualified Data.ByteString.Lazy as LBS
+import Control.Exception.Base
 
 type SrcFolderPath = String
 type DstFolderPath = String
@@ -27,6 +29,9 @@ loadArchive src fn = do
       contentDoc = contentodtdoc
     , stylesDoc = stylesodtdoc
   } 
+
+
+
 
 archiveFromZip :: SrcFolderPath -> Filename -> DstFolderPath -> IO Archive
 archiveFromZip srcpath filename dstpath = do

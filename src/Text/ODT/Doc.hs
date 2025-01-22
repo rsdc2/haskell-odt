@@ -8,6 +8,7 @@ module Text.ODT.Doc (
   , IsXMLDoc(..)
   , odtFromXMLDoc
   , odtFromODTDoc
+  , odtFromXmlLBS
 ) where
 
 import Text.XML
@@ -24,6 +25,8 @@ import Text.Read
 import qualified Data.Text as T
 import qualified Data.Map as Map
 import qualified Data.List as L
+import qualified Text.XML as XML
+import qualified Data.ByteString.Lazy as LBS
 
 import Text.ODT.Utils.Types (
       IsText(..)
@@ -115,3 +118,8 @@ odtFromODTDoc (Doc _ _ odt') = odt'
 
 odtFromXMLDoc :: Document -> ODT
 odtFromXMLDoc xmldoc = odtFromODTDoc . fromXMLDoc $ xmldoc
+
+odtFromXmlLBS :: LBS.ByteString -> ODT
+odtFromXmlLBS lbs = 
+    let xmldoc = XML.parseLBS_ XML.def lbs in
+    odtFromXMLDoc xmldoc
