@@ -4,6 +4,8 @@
 module Text.ODT.Doc (
     insertNewODT
   , Doc(..)
+  , docFromXmlLBS
+  , docToXmlLBS
   , HasAttrs(..)
   , IsXMLDoc(..)
   , odtFromXMLDoc
@@ -110,6 +112,14 @@ instance HasParaStyles Doc where
     hasParaStyle :: ParaStyle -> Doc -> Bool
     hasParaStyle parastyle doc = hasParaStyle parastyle $ getODT doc
 
+docFromXmlLBS :: LBS.ByteString -> Doc
+docFromXmlLBS lbs =
+    let xmldoc = XML.parseLBS_ XML.def lbs in
+        fromXMLDoc xmldoc
+
+docToXmlLBS :: Doc -> LBS.ByteString
+docToXmlLBS doc = XML.renderLBS XML.def (toXMLDoc doc)
+
 insertNewODT :: ODT -> Doc -> Doc
 insertNewODT odt' (Doc prlg eplg _) = Doc prlg eplg odt'
 
@@ -122,4 +132,4 @@ odtFromXMLDoc xmldoc = odtFromODTDoc . fromXMLDoc $ xmldoc
 odtFromXmlLBS :: LBS.ByteString -> ODT
 odtFromXmlLBS lbs = 
     let xmldoc = XML.parseLBS_ XML.def lbs in
-    odtFromXMLDoc xmldoc
+        odtFromXMLDoc xmldoc

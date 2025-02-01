@@ -72,6 +72,7 @@ library
     , extra
     , mtl
     , text
+    , time
     , xml
     , xml-conduit
     , zip-archive
@@ -96,6 +97,7 @@ executable haskell-odt-exe
     , haskell-odt
     , mtl
     , text
+    , time
     , xml
     , xml-conduit
     , zip-archive
@@ -126,6 +128,7 @@ test-suite haskell-odt-test
     , haskell-odt
     , mtl
     , text
+    , time
     , xml
     , xml-conduit
     , zip-archive

@@ -1,9 +1,9 @@
 module Text.ODT (
       Archive(..)
-    , appendToODT
-    , archiveFromZip
+    , appendToODTWithExtraction
     , defaultODTFileOptions
     , Doc(..)
+    , extractAndLoadArchiveFromZip
     , FontStyle(..)
     , getFirstODT
     , getFirstPara
@@ -20,6 +20,7 @@ module Text.ODT (
     , HasTextStyles(..)
     , IsODT(..)
     , IsStyle(..)
+    , loadArchiveFromZip
     , ODT(..)
     , ODTFileOptions(..)
     , paraCount

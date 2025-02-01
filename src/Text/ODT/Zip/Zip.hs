@@ -1,5 +1,8 @@
 module Text.ODT.Zip.Zip
-    ( Text.ODT.Zip.Zip.unzip
+    ( archiveFromFile
+    , archiveToZipLBS
+    , saveFileLbsToZipArchive
+    , Text.ODT.Zip.Zip.unzip
     , Text.ODT.Zip.Zip.unzipOdt
     , Text.ODT.Zip.Zip.zipODTDir
     , Text.ODT.Zip.Zip.zipODT
@@ -10,6 +13,7 @@ module Text.ODT.Zip.Zip
 import Prelude hiding (unzip)
 import qualified Data.Text as T 
 import Data.Text.Encoding
+import Data.Time.Clock.POSIX
 import qualified Codec.Archive.Zip as Zip
 import qualified Data.ByteString.Lazy as ByteString
 import System.Directory (getDirectoryContents, listDirectory)
@@ -26,6 +30,11 @@ appendDirs dir fpios = do
     let appended = appendDir dir <$> fps
     return appended
 
+-- Return a zip archive from a file at the specified file path
+archiveFromFile :: FilePath -> IO Zip.Archive
+archiveFromFile fp = Zip.toArchive <$> ByteString.readFile fp
+
+-- Returns a LazyByteString of a file within a zip archive structure
 fileLBSFromZip :: FilePath -> FilePath -> IO ByteString.ByteString
 fileLBSFromZip filePath archivePath = do
     file <- ByteString.readFile filePath
@@ -36,10 +45,29 @@ fileLBSFromZip filePath archivePath = do
         Just bytestring     -> pure bytestring
         Nothing             -> pure ByteString.empty 
 
+archiveToZipLBS :: Zip.Archive -> ByteString.ByteString
+archiveToZipLBS = Zip.fromArchive
+
+-- Return a LazyByteString as a Zip archive entry
+fileLbsToEntry :: ByteString.ByteString -> FilePath -> IO Zip.Entry
+fileLbsToEntry lbs fp = do
+    time <- round <$> getPOSIXTime
+    pure $ Zip.toEntry fp time lbs
+
+
 fileTextFromZip :: FilePath -> FilePath -> IO T.Text
 fileTextFromZip filePath archivePath = do
     bytestring <- fileLBSFromZip filePath archivePath
     pure . decodeUtf8Lenient . ByteString.toStrict $ bytestring
+
+
+-- Save a file LazyByteString to a zip archive with a specified filepath within the archive
+saveFileLbsToZipArchive :: ByteString.ByteString -> Filepath -> Zip.Archive -> IO Zip.Archive
+saveFileLbsToZipArchive lbs fp archive = do
+    entry <- fileLbsToEntry lbs fp
+    let updatedArchive = Zip.addEntryToArchive entry archive
+    pure updatedArchive
+
 
 -- Zip up a folder containing an .odt archive (fpIn)
 -- Write zip file to `fpOut`
@@ -65,4 +93,5 @@ unzip fpIn fpOut = do
 unzipOdt :: String -> String -> String -> IO ()
 unzipOdt srcpath filename dstpath = 
     unzip (srcpath <> "/" <> filename <> ".odt") (dstpath <> "/" <> filename)
+
 
