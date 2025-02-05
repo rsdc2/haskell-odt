@@ -49,7 +49,7 @@ boldItalicStyle = newTextStyle
   , fontWeight = Bold, fontSize = ""} }
 
 boldItalicSpan :: ODT
-boldItalicSpan = textspan (Just boldItalicStyle) testText
+boldItalicSpan = textspan (boldItalicStyle) testText
 
 italicParaStyle :: ParaStyle
 italicParaStyle = newParaStyle 
@@ -57,7 +57,7 @@ italicParaStyle = newParaStyle
   , paraStyleName = Just "italicPara" }
 
 italicPara :: ODT
-italicPara = para (Just italicParaStyle) testText
+italicPara = para (italicParaStyle) testText
 
 odtList :: [ODT]
 odtList = [italicPara, boldItalicSpan]
