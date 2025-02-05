@@ -81,7 +81,6 @@ library
 executable haskell-odt-exe
   main-is: Main.hs
   other-modules:
-      ExploratoryTests
       Paths_haskell_odt
   autogen-modules:
       Paths_haskell_odt

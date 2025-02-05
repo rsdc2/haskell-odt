@@ -9,9 +9,6 @@ import Control.Monad.Writer
 newTextStyle' :: TextStyle
 newTextStyle' = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
 
-newTextStyleM' :: Writer [TextStyle] ()
-newTextStyleM' = tell [newTextStyle']
-
 minimalODT :: Writer ODT ()
 minimalODT = do
     textspanM newTextStyle' "Hello"
@@ -23,4 +20,4 @@ minimalODT = do
 
 main :: IO ()
 main = do
-    saveNewODT "./examples/output" "newodt_mod.odt" minimalODT
+    saveNewODT "./examples/output" "SimpleExample.odt" minimalODT

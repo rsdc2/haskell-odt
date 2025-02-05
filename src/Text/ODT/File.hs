@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Text.ODT.File ( 
-      concatPath
+      appendToODTWithExtraction
+    , concatPath
     , concatFileExt
-    , appendToODTWithExtraction
-    , saveNewODT
     , Filename
     , Folderpath
+    , saveNewODT
+    , saveNewODTWithStyles
     , templatesPath
     , workingFolderPath ) where
 
@@ -17,6 +18,7 @@ import Text.ODT.Archive
 import Text.ODT.ODT
 import Text.ODT.Extract
 import Text.ODT.Compress
+import Text.ODT.Style.Types
 
 type Filename = String
 type Rootpath = String
@@ -52,6 +54,14 @@ saveNewODT fp fn odt = do
     updateODTFile archive' (templatesPath <> "/" <> "empty.odt") (fp <> "/" <> fn)
     putStrLn ("Written output to " <> fp <> "/" <> fn)
 
+saveNewODTWithStyles :: Folderpath -> Filename -> Writer [ParaStyle] () -> Writer [TextStyle] () -> Writer ODT () -> IO ()
+saveNewODTWithStyles fp fn paraStyles textStyles odt = do
+    archive <- loadArchiveFromZip templatesPath "empty.odt"
+    let archiveWithParaStyles = appendStyleODT (mconcat $ toODT <$> execWriter paraStyles) archive
+    let archiveWithStyles = appendStyleODT (mconcat $ toODT <$> execWriter textStyles) archiveWithParaStyles
+    let archiveWithContent = appendODT (execWriter odt) archiveWithStyles
+    updateODTFile archiveWithContent (templatesPath <> "/" <> "empty.odt") (fp <> "/" <> fn)
+    putStrLn ("Written output to " <> fp <> "/" <> fn)
 
 -- saveNewODTWithStylesDiag' :: Folderpath -> Filename -> Writer ODT () -> Writer [ParaStyle] () -> Writer [TextStyle] () -> IO ()
 -- saveNewODTWithStylesDiag' fp fn odt paraStyles textStyles = do

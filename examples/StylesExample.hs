@@ -16,7 +16,6 @@ setupStyles :: Writer ODT ()
 setupStyles = do
     italicParaODTM
 
--- setupStyles' :: (IsStyle a, IsODT a) => Writer [a] ()
 paraStyles :: Writer [ParaStyle] ()
 paraStyles = do 
     italicParaM
@@ -25,6 +24,7 @@ paraStyles = do
 textStyles :: Writer [TextStyle] ()
 textStyles = do
     newTextStyleM'
+    tell [bold]
     return ()
 
 minimalODT :: Writer ODT ()
@@ -38,4 +38,4 @@ minimalODT = do
 
 main :: IO ()
 main = do
-    saveNewODT "./examples/output" "newodt_mod.odt" minimalODT
+    saveNewODTWithStyles "./examples/output" "StylesExample.odt" paraStyles textStyles minimalODT

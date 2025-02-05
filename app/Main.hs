@@ -7,11 +7,16 @@ import Text.ODT.Doc
 
 import Text.ODT
 import Text.ODT.Diagnostics
+import Text.ODT.Style.Types
 
 import Control.Monad.Writer
 
 newTextStyle' :: TextStyle
 newTextStyle' = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
+
+newBold :: TextStyle
+newBold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}, textStyleName = Just "newBold"}
+
 
 newTextStyleM' :: Writer [TextStyle] ()
 newTextStyleM' = tell [newTextStyle']
@@ -28,17 +33,26 @@ paraStyles = do
 textStyles :: Writer [TextStyle] ()
 textStyles = do
     newTextStyleM'
+    tell [newBold]
     return ()
 
 minimalODT :: Writer ODT ()
 minimalODT = do
     textspanM newTextStyle' "Hello"
-    textspanM bold " world."
+    textspanM newBold " world."
     paraM normalPara ""
     textspanM underline "This text is underlined."
     paraM italicPara "This text is italic because it is in an italic paragraph."
     paraM normalPara "This text is normal."
 
+simple :: IO ()
+simple = do
+    saveNewODT "./examples/output" "SimpleExample.odt" minimalODT
+
+styles :: IO ()
+styles = do
+    saveNewODTWithStyles "./examples/output" "StylesExample.odt" paraStyles textStyles minimalODT 
+
 main :: IO ()
 main = do
-    saveNewODT "./examples/output" "newodt_mod.odt" minimalODT
+    styles
