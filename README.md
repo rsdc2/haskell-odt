@@ -2,8 +2,10 @@
 
 
 ## Overview
+
 Haskell-ODT provides an interface in Haskell for reading and writing Open Document Format `.odt` files.
 
+The program is set up to enable the user to compose their own `.odt` files using Haskell syntax. 
 
 ## Installing and building
 
@@ -37,15 +39,20 @@ $ stack run
 
 ## Key concepts
 
+## Acknowledgements 
+
+The main inspiration for this project was the [HaTeX](https://gitlab.com/daniel-casanueva/haskell/HaTeX) project, which provides an interface in Haskell for composing and otherwise analysing LaTeX documents. 
+
 ## Dependencies and licenses
 
 - [bytestring](https://hackage.haskell.org/package/bytestring-0.12.1.0/docs/Data-ByteString.html): BSD-style
-- [containers](https://hackage.haskell.org/package/containers): BSD-3
+- [containers](https://hackage.haskell.org/package/containers): [BSD-3](https://hackage.haskell.org/package/containers-0.7/src/LICENSE)
+- [directory](https://hackage.haskell.org/package/directory): [BSD-3](https://hackage.haskell.org/package/directory-1.3.9.0/src/LICENSE)
+- [extra](https://hackage.haskell.org/package/extra): [BSD-3](https://hackage.haskell.org/package/extra-1.8/src/LICENSE)
+- [mtl](https://hackage.haskell.org/package/mtl): [BSD-3](https://hackage.haskell.org/package/mtl-2.3.1/src/LICENSE)
 - [text](https://hackage.haskell.org/package/text-2.1.2/docs/Data-Text.html): BSD-style
-- [directory](https://hackage.haskell.org/package/directory): BSD-3
-- [mtl](https://hackage.haskell.org/package/mtl): BSD-3
-- [xml](https://hackage.haskell.org/package/xml): BSD-3
-- [xml-conduit](https://hackage.haskell.org/package/xml-conduit): MIT
+- [time](https://hackage.haskell.org/package/time): [BSD-2](https://hackage.haskell.org/package/time-1.14/src/LICENSE)
+- [xml](https://hackage.haskell.org/package/xml): [BSD-3](https://hackage.haskell.org/package/xml-1.3.14/src/LICENSE)
+- [xml-conduit](https://hackage.haskell.org/package/xml-conduit): [MIT](https://hackage.haskell.org/package/xml-conduit-1.10.0.0/src/LICENSE)
 - [zip-archive](https://hackage.haskell.org/package/zip-archive-0.4.3.2/docs/Codec-Archive-Zip.html): BSD-3
-- [extra](https://hackage.haskell.org/package/extra): BSD-3
-- [HUnit](https://hackage.haskell.org/package/HUnit): BSD-3
+- [HUnit](https://hackage.haskell.org/package/HUnit): [BSD-3](https://hackage.haskell.org/package/HUnit-1.6.2.0/src/LICENSE)

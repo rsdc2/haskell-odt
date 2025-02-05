@@ -50,6 +50,8 @@ saveNewODT fp fn odt = do
     archive <- loadArchiveFromZip templatesPath "empty.odt"
     let archive' = appendODT (execWriter odt) archive
     updateODTFile archive' (templatesPath <> "/" <> "empty.odt") (fp <> "/" <> fn)
+    putStrLn ("Written output to " <> fp <> "/" <> fn)
+
 
 -- saveNewODTWithStylesDiag' :: Folderpath -> Filename -> Writer ODT () -> Writer [ParaStyle] () -> Writer [TextStyle] () -> IO ()
 -- saveNewODTWithStylesDiag' fp fn odt paraStyles textStyles = do
