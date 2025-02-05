@@ -10,31 +10,6 @@ import Text.ODT.Diagnostics
 
 import Control.Monad.Writer
 
--- printFiles :: IO ()
--- printFiles = do
---     file <- ByteS.readFile "./examples/example2.odt"
---     let archive = toArchive file
---     let files = filesInArchive archive
---     putStrLn . show $ files
-
-
--- main :: IO ()
--- main = do
---     file <- ByteS.readFile "./examples/example2.odt"
---     let archive = toArchive file
---     let entry = findEntryByPath "content.xml" archive
---     let decompressed = fromEntry <$> entry
---     putStrLn . show $ decompressed
-
-
-
--- main :: IO ()
--- main = do
---     lbs <- fileLBSFromZip "./examples/example2.odt" "content.xml"
---     let odt = odtFromXmlLBS lbs
---     putStrLn . show $ odt
-         
-
 newTextStyle' :: TextStyle
 newTextStyle' = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
 
@@ -45,7 +20,6 @@ setupStyles :: Writer ODT ()
 setupStyles = do
     italicParaODTM
 
--- setupStyles' :: (IsStyle a, IsODT a) => Writer [a] ()
 paraStyles :: Writer [ParaStyle] ()
 paraStyles = do 
     italicParaM
