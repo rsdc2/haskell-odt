@@ -20,4 +20,4 @@ minimalODT = do
 
 main :: IO ()
 main = do
-    saveNewODT "./examples/output" "SimpleExample.odt" minimalODT
+    writeNewODT "./examples/output" "SimpleExample.odt" minimalODT

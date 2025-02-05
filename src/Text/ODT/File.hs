@@ -6,8 +6,8 @@ module Text.ODT.File (
     , concatFileExt
     , Filename
     , Folderpath
-    , saveNewODT
-    , saveNewODTWithStyles
+    , writeNewODT
+    , writeNewODTWithStyles
     , templatesPath
     , workingFolderPath ) where
 
@@ -39,39 +39,29 @@ concatPath :: Rootpath -> [Folderpath] -> Filename -> Ext -> Filepath
 concatPath fp1 fps fn ext = intercalate "/" ([fp1] <> fps) <> "/" <> fn <> "." <> ext
 
 -- Save ODT content to an empty ODT file by extracting the empty ODT first
-saveNewODTWithExtraction :: Folderpath -> Filename -> Writer ODT () -> IO ()
-saveNewODTWithExtraction fp fn odt = do
+writeNewODTWithExtraction :: Folderpath -> Filename -> Writer ODT () -> IO ()
+writeNewODTWithExtraction fp fn odt = do
     archive <- extractAndLoadArchiveFromZip templatesPath "empty" workingFolderPath
     let archive' = appendODT (execWriter odt) archive
     let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = True } 
     updateODTFileWithExtraction archive' templatesPath "empty" fp fn options
 
 -- Save ODT content to an empty ODT file without extracting the empty ODT first
-saveNewODT :: Folderpath -> Filename -> Writer ODT () -> IO ()
-saveNewODT fp fn odt = do
+writeNewODT :: Folderpath -> Filename -> Writer ODT () -> IO ()
+writeNewODT fp fn odt = do
     archive <- loadArchiveFromZip templatesPath "empty.odt"
     let archive' = appendODT (execWriter odt) archive
     updateODTFile archive' (templatesPath <> "/" <> "empty.odt") (fp <> "/" <> fn)
     putStrLn ("Written output to " <> fp <> "/" <> fn)
 
-saveNewODTWithStyles :: Folderpath -> Filename -> Writer [ParaStyle] () -> Writer [TextStyle] () -> Writer ODT () -> IO ()
-saveNewODTWithStyles fp fn paraStyles textStyles odt = do
+writeNewODTWithStyles :: Folderpath -> Filename -> Writer [ParaStyle] () -> Writer [TextStyle] () -> Writer ODT () -> IO ()
+writeNewODTWithStyles fp fn paraStyles textStyles odt = do
     archive <- loadArchiveFromZip templatesPath "empty.odt"
     let archiveWithParaStyles = appendStyleODT (mconcat $ toODT <$> execWriter paraStyles) archive
     let archiveWithStyles = appendStyleODT (mconcat $ toODT <$> execWriter textStyles) archiveWithParaStyles
     let archiveWithContent = appendODT (execWriter odt) archiveWithStyles
     updateODTFile archiveWithContent (templatesPath <> "/" <> "empty.odt") (fp <> "/" <> fn)
     putStrLn ("Written output to " <> fp <> "/" <> fn)
-
--- saveNewODTWithStylesDiag' :: Folderpath -> Filename -> Writer ODT () -> Writer [ParaStyle] () -> Writer [TextStyle] () -> IO ()
--- saveNewODTWithStylesDiag' fp fn odt paraStyles textStyles = do
---     archive <- extractAndLoadArchiveFromZip templatesPath "empty" workingFolderPath
---     let archive' = appendStyleODT (mconcat $ toODT <$> execWriter paraStyles) archive
---     let archive'' = appendStyleODT (mconcat $ toODT <$> execWriter textStyles) archive'
---     let archive''' = appendODT (execWriter odt) archive''
---     let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = False } 
---     updateODTFileWithExtraction archive''' templatesPath "empty" fp fn options
---     prettifyODT workingFolderPath "empty"
 
 appendToODTWithExtraction :: Folderpath -> Filename -> Writer ODT () -> IO ()
 appendToODTWithExtraction fp fn odt = do

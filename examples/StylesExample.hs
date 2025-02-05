@@ -38,4 +38,4 @@ minimalODT = do
 
 main :: IO ()
 main = do
-    saveNewODTWithStyles "./examples/output" "StylesExample.odt" paraStyles textStyles minimalODT
+    writeNewODTWithStyles "./examples/output" "StylesExample.odt" paraStyles textStyles minimalODT

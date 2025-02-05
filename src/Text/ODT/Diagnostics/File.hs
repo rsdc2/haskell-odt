@@ -1,9 +1,9 @@
 module Text.ODT.Diagnostics.File (
-      saveNewODTDiag
+      writeNewODTDiag
     , appendToODTDiag
-    , saveNewStylesDiag
-    , saveNewODTWithStylesDiag
-    , saveNewODTWithStylesDiag' )
+    , writeNewStylesDiag
+    , writeNewODTWithStylesDiag
+    , writeNewODTWithStylesDiag' )
 
 where
 
@@ -17,16 +17,16 @@ import Text.ODT.Diagnostics.Utils
 
 import Control.Monad.Writer
 
-saveNewStylesDiag :: (IsStyle a, IsODT a) => Folderpath -> Filename -> Writer a () -> IO ()
-saveNewStylesDiag fp fn styles = do
+writeNewStylesDiag :: (IsStyle a, IsODT a) => Folderpath -> Filename -> Writer a () -> IO ()
+writeNewStylesDiag fp fn styles = do
     archive <- extractAndLoadArchiveFromZip templatesPath "empty" workingFolderPath
     let archive' = appendStyle (execWriter styles) archive
     let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = False } 
     updateODTFileWithExtraction archive' templatesPath "empty" fp fn options
     prettifyODT workingFolderPath "empty"
 
-saveNewODTWithStylesDiag :: Folderpath -> Filename -> Writer ODT () -> Writer ODT () -> IO ()
-saveNewODTWithStylesDiag fp fn odt styles = do
+writeNewODTWithStylesDiag :: Folderpath -> Filename -> Writer ODT () -> Writer ODT () -> IO ()
+writeNewODTWithStylesDiag fp fn odt styles = do
     archive <- extractAndLoadArchiveFromZip templatesPath "empty" workingFolderPath
     let archive' = appendStyleODT (execWriter styles) archive
     let archive'' = appendODT (execWriter odt) archive'
@@ -34,9 +34,8 @@ saveNewODTWithStylesDiag fp fn odt styles = do
     updateODTFileWithExtraction archive'' templatesPath "empty" fp fn options
     prettifyODT workingFolderPath "empty"
 
--- saveNewODTWithStylesDiag' :: (IsStyle a, IsODT a) => Folderpath -> Filename -> Writer ODT () -> Writer [a] () -> IO ()
-saveNewODTWithStylesDiag' :: Folderpath -> Filename -> Writer ODT () -> Writer [ParaStyle] () -> Writer [TextStyle] () -> IO ()
-saveNewODTWithStylesDiag' fp fn odt paraStyles textStyles = do
+writeNewODTWithStylesDiag' :: Folderpath -> Filename -> Writer ODT () -> Writer [ParaStyle] () -> Writer [TextStyle] () -> IO ()
+writeNewODTWithStylesDiag' fp fn odt paraStyles textStyles = do
     archive <- extractAndLoadArchiveFromZip templatesPath "empty" workingFolderPath
     let archive' = appendStyleODT (mconcat $ toODT <$> execWriter paraStyles) archive
     let archive'' = appendStyleODT (mconcat $ toODT <$> execWriter textStyles) archive'
@@ -45,8 +44,8 @@ saveNewODTWithStylesDiag' fp fn odt paraStyles textStyles = do
     updateODTFileWithExtraction archive''' templatesPath "empty" fp fn options
     prettifyODT workingFolderPath "empty"
 
-saveNewODTDiag :: Folderpath -> Filename -> Writer ODT () -> IO ()
-saveNewODTDiag fp fn odt = do
+writeNewODTDiag :: Folderpath -> Filename -> Writer ODT () -> IO ()
+writeNewODTDiag fp fn odt = do
     archive <- extractAndLoadArchiveFromZip templatesPath "empty" workingFolderPath
     let archive' = appendODT (execWriter odt) archive
     let options = defaultODTFileOptions { workingFolder = Just workingFolderPath, removeWorkingFolder = False, removeWorkingPath = False } 

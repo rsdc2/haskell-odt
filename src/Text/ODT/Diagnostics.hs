@@ -1,10 +1,10 @@
 module Text.ODT.Diagnostics (
       prettifyODT
-    , saveNewODTDiag
+    , writeNewODTDiag
     , appendToODTDiag
-    , saveNewODTWithStylesDiag
-    , saveNewODTWithStylesDiag' 
-    , saveNewStylesDiag) where
+    , writeNewODTWithStylesDiag
+    , writeNewODTWithStylesDiag' 
+    , writeNewStylesDiag) where
 
 import Text.ODT.Diagnostics.File
 import Text.ODT.Diagnostics.Utils

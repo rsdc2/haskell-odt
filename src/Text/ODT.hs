@@ -26,8 +26,8 @@ module Text.ODT (
     , paraCount
     , ParaStyle(..)
     , replaceContentDocODT
-    , saveNewODT
-    , saveNewODTWithStyles
+    , writeNewODT
+    , writeNewODTWithStyles
     , spanCount
     , TextStyle(..)
     , TextProps(..)
