@@ -45,14 +45,14 @@ minimalODT = do
     paraM italicPara "This text is italic because it is in an italic paragraph."
     paraM normalPara "This text is normal."
 
-simple :: IO ()
-simple = do
+simpleExample :: IO ()
+simpleExample = do
     writeNewODT "./examples/output" "SimpleExample.odt" minimalODT
 
-styles :: IO ()
-styles = do
+stylesExample :: IO ()
+stylesExmaple = do
     writeNewODTWithStyles "./examples/output" "StylesExample.odt" paraStyles textStyles minimalODT 
 
 main :: IO ()
 main = do
-    styles
+    stylesExample
