@@ -1,57 +1,38 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Codec.Archive.Zip
-import qualified Data.ByteString.Lazy as ByteS 
-import Text.ODT.Zip.Zip
-import Text.ODT.Doc
-
 import Text.ODT
-import Text.ODT.Diagnostics
 import Text.ODT.Style.Types
 
 import Control.Monad.Writer
 
-newTextStyle' :: TextStyle
-newTextStyle' = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
+italicTextStyle :: TextStyle
+italicTextStyle = newTextStyle {textTextProps = newTextProps {fontStyle = Italic}, textStyleName = Just "newstyle"}
 
-newBold :: TextStyle
-newBold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}, textStyleName = Just "newBold"}
-
-
-newTextStyleM' :: Writer [TextStyle] ()
-newTextStyleM' = tell [newTextStyle']
-
-setupStyles :: Writer ODT ()
-setupStyles = do
-    italicParaODTM
+boldTextStyle :: TextStyle
+boldTextStyle = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}, textStyleName = Just "newBold"}
 
 paraStyles :: Writer [ParaStyle] ()
-paraStyles = do 
-    italicParaM
-    return ()
+paraStyles = tell [italicPara]
 
 textStyles :: Writer [TextStyle] ()
-textStyles = do
-    newTextStyleM'
-    tell [newBold]
-    return ()
+textStyles = tell [italicTextStyle, boldTextStyle]
 
-minimalODT :: Writer ODT ()
-minimalODT = do
-    textspanM newTextStyle' "Hello"
-    textspanM newBold " world."
-    paraM normalPara ""
-    textspanM underline "This text is underlined."
-    paraM italicPara "This text is italic because it is in an italic paragraph."
-    paraM normalPara "This text is normal."
+content :: Writer ODT ()
+content = do
+    writeTextSpan italicTextStyle "Hello"
+    writeTextSpan boldTextStyle " world."
+    writePara normalPara ""
+    writeTextSpan underline "This text is underlined."
+    writePara italicPara "This text is italic because it is in an italic paragraph."
+    writePara normalPara "This text is normal."
 
 simpleExample :: IO ()
 simpleExample = do
-    writeNewODT "./examples/output" "SimpleExample.odt" minimalODT
+    writeNewODT "./examples/output" "SimpleExample.odt" content
 
 stylesExample :: IO ()
 stylesExample = do
-    writeNewODTWithStyles "./examples/output" "StylesExample.odt" paraStyles textStyles minimalODT 
+    writeNewODTWithStyles "./examples/output" "StylesExample.odt" paraStyles textStyles content 
 
 main :: IO ()
 main = do

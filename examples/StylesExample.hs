@@ -18,7 +18,7 @@ setupStyles = do
 
 paraStyles :: Writer [ParaStyle] ()
 paraStyles = do 
-    italicParaM
+    italicwritePara
     return ()
 
 textStyles :: Writer [TextStyle] ()
@@ -29,12 +29,12 @@ textStyles = do
 
 minimalODT :: Writer ODT ()
 minimalODT = do
-    textspanM newTextStyle' "Hello"
-    textspanM bold " world."
-    paraM normalPara ""
-    textspanM underline "This text is underlined."
-    paraM italicPara "This text is italic because it is in an italic paragraph."
-    paraM normalPara "This text is normal."
+    writeTextSpan newTextStyle' "Hello"
+    writeTextSpan bold " world."
+    writePara normalPara ""
+    writeTextSpan underline "This text is underlined."
+    writePara italicPara "This text is italic because it is in an italic paragraph."
+    writePara normalPara "This text is normal."
 
 main :: IO ()
 main = do

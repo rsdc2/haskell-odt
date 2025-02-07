@@ -47,15 +47,15 @@ module Text.ODT (
     -- Paragraph styles
     , normalPara
     , italicPara
-    , italicParaM
+    , italicwritePara
     , italicParaODTM
 
     -- Text units
     , para
     , str
     , textspan
-    , paraM
-    , textspanM
+    , writePara
+    , writeTextSpan
     ) where
 
 import Text.ODT.Extract
