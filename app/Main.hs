@@ -50,7 +50,7 @@ simpleExample = do
     writeNewODT "./examples/output" "SimpleExample.odt" minimalODT
 
 stylesExample :: IO ()
-stylesExmaple = do
+stylesExample = do
     writeNewODTWithStyles "./examples/output" "StylesExample.odt" paraStyles textStyles minimalODT 
 
 main :: IO ()
