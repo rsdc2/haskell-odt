@@ -36,14 +36,20 @@ $ stack test
 $ stack run
 ```
 
-## Example usage
+## Key functionality
 
+### Writing a new document to disk
+
+There are two main functions which can write a new `.odt` file to disk:
+
+- `writeNewODT`: Writes a new document to disk with all styling applied as _direct_ formatting. For example, applying bold formatting using this function would be equivalent to pressing the `B` button in LibreOffice Writer.
+- `writeNewODTWithStyles`: Writes a new document to disk with all styling applied via _styles_. Applying e.g. bold formatting using this function would be equivalent to using the `Strong Emphasis` style in LibreOffice Writer. 
 
 ## Key concepts
 
 ## Acknowledgements 
 
-The main inspiration for this project was the [HaTeX](https://gitlab.com/daniel-casanueva/haskell/HaTeX) project, which provides an interface in Haskell for composing and otherwise analysing LaTeX documents. 
+The inspiration for modelling an `.odt` file as a monoid, and for using the `Writer` monad for document composition, came from the [HaTeX](https://gitlab.com/daniel-casanueva/haskell/HaTeX) project, which provides an interface in Haskell for composing and otherwise analysing LaTeX documents. 
 
 ## Dependencies and licenses
 
