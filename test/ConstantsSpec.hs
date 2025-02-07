@@ -13,23 +13,22 @@ import Text.ODT.Utils.Types (
       IsText(..)
     , Stringable(..))
 import Text.ODT.ODT
-import Text.ODT.Doc
+import Text.ODT.Doc ( IsXMLDoc(fromXMLDoc) )
 import Text.ODT.Archive
 import Text.ODT.Query
-import qualified Text.ODT.Ops as ODT
+import Text.ODT.TextUnits
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
 
-exampleFileName = "example"
 inputPath = "test/files/input/"
 
-loadArchive :: IO Archive
-loadArchive = do
-  Z.unzip (inputPath <> exampleFileName <> ".odt") (inputPath <> exampleFileName)
+loadArchive :: String -> IO Archive
+loadArchive filename = do
+  Z.unzip (inputPath <> filename <> ".odt") (inputPath <> filename)
 
   -- Read files
-  contentxmldoc <- X.readFile X.def (inputPath <> exampleFileName <> "/content.xml")
-  stylesxmldoc <- X.readFile X.def (inputPath <> exampleFileName <> "/styles.xml")
+  contentxmldoc <- X.readFile X.def (inputPath <> filename <> "/content.xml")
+  stylesxmldoc <- X.readFile X.def (inputPath <> filename <> "/styles.xml")
 
   let contentodtdoc = fromXMLDoc contentxmldoc
   let stylesodtdoc = fromXMLDoc stylesxmldoc
@@ -50,7 +49,7 @@ boldItalicStyle = newTextStyle
   , fontWeight = Bold, fontSize = ""} }
 
 boldItalicSpan :: ODT
-boldItalicSpan = ODT.span boldItalicStyle testText
+boldItalicSpan = textspan (boldItalicStyle) testText
 
 italicParaStyle :: ParaStyle
 italicParaStyle = newParaStyle 
@@ -58,7 +57,7 @@ italicParaStyle = newParaStyle
   , paraStyleName = Just "italicPara" }
 
 italicPara :: ODT
-italicPara = ODT.p italicParaStyle testText
+italicPara = para (italicParaStyle) testText
 
 odtList :: [ODT]
 odtList = [italicPara, boldItalicSpan]

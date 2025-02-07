@@ -4,10 +4,13 @@
 module Text.ODT.Doc (
     insertNewODT
   , Doc(..)
+  , docFromXmlLBS
+  , docToXmlLBS
   , HasAttrs(..)
   , IsXMLDoc(..)
   , odtFromXMLDoc
   , odtFromODTDoc
+  , odtFromXmlLBS
 ) where
 
 import Text.XML
@@ -24,6 +27,8 @@ import Text.Read
 import qualified Data.Text as T
 import qualified Data.Map as Map
 import qualified Data.List as L
+import qualified Text.XML as XML
+import qualified Data.ByteString.Lazy as LBS
 
 import Text.ODT.Utils.Types (
       IsText(..)
@@ -48,7 +53,7 @@ data Doc =
 -- instances
 
 instance Show Doc where
-    show (Doc _ _ odt) = "Doc " <> "(" <> (show odt) <> ")" 
+    show (Doc _ _ odt') = "Doc " <> "(" <> (show odt') <> ")" 
 
 instance HasAttrs Doc where
     getAttrs :: Doc -> Map.Map Name T.Text
@@ -65,7 +70,7 @@ instance HasAttrs Doc where
 
 instance HasODT Doc where
     getODT :: Doc -> ODT
-    getODT (Doc _ _ odt) = odt
+    getODT (Doc _ _ odt') = odt'
 
     prependODT :: ODT -> Doc -> Doc
     prependODT odt1 (Doc prlg eplg odt2) = Doc prlg eplg $ odt1 <> odt2
@@ -76,10 +81,10 @@ instance HasODT Doc where
 instance IsXMLDoc Doc where 
     -- TODO: other combinations
     toXMLDoc :: Doc -> Document
-    toXMLDoc (Doc prlg eplg (OfficeNode DocContent (ODTXMLElem name attrs) odt)) = 
-        Document prlg (Element name attrs $ toNodes odt) eplg
-    toXMLDoc (Doc prlg eplg (OfficeNode DocStyles (ODTXMLElem name attrs) odt)) = 
-        Document prlg (Element name attrs $ toNodes odt) eplg
+    toXMLDoc (Doc prlg eplg (OfficeNode DocContent (ODTXMLElem name attrs) odt')) = 
+        Document prlg (Element name attrs $ toNodes odt') eplg
+    toXMLDoc (Doc prlg eplg (OfficeNode DocStyles (ODTXMLElem name attrs) odt')) = 
+        Document prlg (Element name attrs $ toNodes odt') eplg
     toXMLDoc doc = error $ show doc 
     -- toXMLDocument (Doc prlg eplg (OfficeNode typ odtxml odt)) = Document prlg () eplg
 
@@ -107,11 +112,24 @@ instance HasParaStyles Doc where
     hasParaStyle :: ParaStyle -> Doc -> Bool
     hasParaStyle parastyle doc = hasParaStyle parastyle $ getODT doc
 
+docFromXmlLBS :: LBS.ByteString -> Doc
+docFromXmlLBS lbs =
+    let xmldoc = XML.parseLBS_ XML.def lbs in
+        fromXMLDoc xmldoc
+
+docToXmlLBS :: Doc -> LBS.ByteString
+docToXmlLBS doc = XML.renderLBS XML.def (toXMLDoc doc)
+
 insertNewODT :: ODT -> Doc -> Doc
-insertNewODT odt (Doc prlg eplg _) = Doc prlg eplg odt
+insertNewODT odt' (Doc prlg eplg _) = Doc prlg eplg odt'
 
 odtFromODTDoc :: Doc -> ODT
-odtFromODTDoc (Doc _ _ odt) = odt
+odtFromODTDoc (Doc _ _ odt') = odt'
 
 odtFromXMLDoc :: Document -> ODT
 odtFromXMLDoc xmldoc = odtFromODTDoc . fromXMLDoc $ xmldoc
+
+odtFromXmlLBS :: LBS.ByteString -> ODT
+odtFromXmlLBS lbs = 
+    let xmldoc = XML.parseLBS_ XML.def lbs in
+        odtFromXMLDoc xmldoc

@@ -27,7 +27,7 @@ bold = newTextStyle {textTextProps = newTextProps {fontWeight = Bold}}
 
 -- TODO find out why fontSize is set to ""
 boldItalic :: TextStyle
-boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = ""}}
+boldItalic = newTextStyle {textTextProps = newTextProps {fontStyle = Italic, fontWeight = Bold, fontSize = "14 pt"}}
 
 footnoteAnchor :: TextStyle
 footnoteAnchor = newTextStyle {textTextProps = newTextProps {textPosition = "super 58%"}}

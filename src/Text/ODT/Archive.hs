@@ -4,6 +4,7 @@
 module Text.ODT.Archive (
     Archive(..)
   , HasODT(..)
+  , HasContentODT(..)
 ) where
 
 import Text.ODT.ODT
@@ -14,6 +15,31 @@ import Text.ODT.Style
 import Text.ODT.XML.Attrs
 
 data Archive = Archive {contentDoc :: Doc, stylesDoc :: Doc}
+
+instance HasContentODT Archive where
+    getContentDocODT :: Archive -> ODT
+    getContentDocODT (Archive content _) = odt $ content
+
+    replaceContentDocODT :: ODT -> Archive -> Archive
+    replaceContentDocODT content archive = archive { contentDoc = existingContentDoc {odt = content} } 
+        where existingContentDoc = contentDoc $ archive
+
+instance HasStylesODT Archive where
+    getStylesDocODT :: Archive -> ODT
+    getStylesDocODT (Archive _ styles) = odt $ styles
+
+    replaceStylesDocODT :: ODT -> Archive -> Archive
+    replaceStylesDocODT styles archive = archive { stylesDoc = existingStylesDoc {odt = styles} } 
+        where existingStylesDoc = stylesDoc archive
+
+    appendStyleODT :: ODT -> Archive -> Archive
+    appendStyleODT style archive = replaceStylesDocODT stylesDocOdt archive
+        where stylesDocOdt = odt . appendODT style . stylesDoc $ archive
+
+    appendStyle :: (IsStyle a, IsODT a) => a -> Archive -> Archive
+    appendStyle style archive = 
+        replaceStylesDocODT stylesDocOdt archive
+        where stylesDocOdt = odt . appendODT (toODT style) . stylesDoc $ archive
 
 instance HasODT Archive where
     getODT :: Archive -> ODT 
@@ -52,3 +78,4 @@ instance HasODT Archive where
     prependODT (ODTSeq odt1 odt2) archive = prependODT odt1 $ prependODT (removeLastODT odt2) $ prependODT (getLastODT odt2) $ archive  
 
     prependODT odt  (Archive contentdoc stylesdoc)  = Archive (prependODT odt contentdoc) stylesdoc
+

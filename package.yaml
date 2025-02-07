@@ -23,12 +23,14 @@ dependencies:
 - base >= 4.7 && < 5
 - bytestring
 - containers
-- text
 - directory
+- extra
+- mtl
+- text
+- time
 - xml 
 - xml-conduit
 - zip-archive
-- extra
 
 ghc-options:
 - -Wall

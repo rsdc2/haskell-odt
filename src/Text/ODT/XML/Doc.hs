@@ -62,3 +62,4 @@ getNamespaces (Document _ (Element _ namespaces _) _) = namespaces
 
 prologue :: Document -> Prologue
 prologue (Document prlg elem eplg) = prlg
+

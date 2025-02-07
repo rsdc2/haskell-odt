@@ -27,18 +27,25 @@ library
   exposed-modules:
       Text.ODT
       Text.ODT.Archive
+      Text.ODT.Compress
+      Text.ODT.Diagnostics
+      Text.ODT.Diagnostics.File
+      Text.ODT.Diagnostics.Utils
       Text.ODT.Doc
+      Text.ODT.Extract
       Text.ODT.File
       Text.ODT.ODT
+      Text.ODT.ODTMonad
       Text.ODT.ODTXML.Attr
       Text.ODT.ODTXML.Name
       Text.ODT.ODTXML.Namespace
       Text.ODT.ODTXML.ODTXML
-      Text.ODT.Ops
       Text.ODT.Query
       Text.ODT.Style
+      Text.ODT.Style.ParaStyles
       Text.ODT.Style.TextStyles
       Text.ODT.Style.Types
+      Text.ODT.TextUnits
       Text.ODT.Utils.List
       Text.ODT.Utils.Types
       Text.ODT.XML.Attrs
@@ -63,7 +70,9 @@ library
     , containers
     , directory
     , extra
+    , mtl
     , text
+    , time
     , xml
     , xml-conduit
     , zip-archive
@@ -85,7 +94,9 @@ executable haskell-odt-exe
     , directory
     , extra
     , haskell-odt
+    , mtl
     , text
+    , time
     , xml
     , xml-conduit
     , zip-archive
@@ -114,7 +125,9 @@ test-suite haskell-odt-test
     , directory
     , extra
     , haskell-odt
+    , mtl
     , text
+    , time
     , xml
     , xml-conduit
     , zip-archive

@@ -1,2 +1,5 @@
 .stack-work/
+.odt-work/
+examples/*/*.odt
+examples/*.odt
 *~
