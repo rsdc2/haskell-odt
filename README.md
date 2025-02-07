@@ -25,11 +25,13 @@ $ stack build
 ```
 
 ### 3. Run the tests
+
 ```
 $ stack test
 ```
 
 ### 4. Run the Main app
+
 ```
 $ stack run
 ```
