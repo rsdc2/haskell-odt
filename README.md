@@ -141,6 +141,14 @@ This will save the content we have described in `content` to a file `SimpleExamp
 
 The inspiration for modelling an `.odt` file as a monoid, and for using the `Writer` monad for document composition, came from the [HaTeX](https://gitlab.com/daniel-casanueva/haskell/HaTeX) project, which provides an interface in Haskell for composing and otherwise analysing LaTeX documents. 
 
+## Further information
+
+- [OpenDocument (Wikipedia)](https://en.wikipedia.org/wiki/OpenDocument)
+
+- [OpenDocument technical specification (Wikipedia)](https://en.wikipedia.org/wiki/OpenDocument_technical_specification)
+
+- [OpenDocument standard (OASIS Open)](https://www.oasis-open.org/2021/06/16/opendocument-v1-3-oasis-standard-published/)
+
 ## Dependencies and licenses
 
 - [bytestring](https://hackage.haskell.org/package/bytestring-0.12.1.0/docs/Data-ByteString.html): BSD-style
