@@ -56,7 +56,7 @@ This functions provides the content of your document. There are two primary func
 - `writeNewPara`
 - `writePara` 
 
-### `writeTextSpan :: TextStyle -> T.Text -> Writer ODT ()`
+#### `writeTextSpan :: TextStyle -> T.Text -> Writer ODT ()`
 
 This function takes a `TextStyle` and a section of text, applies this style to the text, and appends it to the document. For example, the following will write out "Hello world." to the document without any formatting:
 
