@@ -19,8 +19,8 @@ textStyles = tell [italicTextStyle, boldTextStyle]
 
 content :: Writer ODT ()
 content = do
-    writeTextSpan italicTextStyle "Hello"
-    writeTextSpan boldTextStyle " world."
+    writeTextSpan italic "Hello"
+    writeTextSpan bold " world."
     writeNewPara
     writeTextSpan underline "This text is underlined."
     writePara italicPara "This text is italic because it is in an italic paragraph."
