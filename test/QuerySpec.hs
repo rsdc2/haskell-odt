@@ -7,6 +7,7 @@ import qualified Data.ByteString as B
 import qualified Data.Text as T
 import qualified Text.XML as X
 import Text.ODT hiding (italicPara)
+
 import ConstantsSpec
 
 

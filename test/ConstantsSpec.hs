@@ -19,26 +19,12 @@ import Text.ODT.Query
 import Text.ODT.TextUnits
 import qualified Text.ODT.ODT as ODTType
 import Text.ODT.Style
+import Text.ODT.Extract
 
 inputPath = "test/files/input/"
 
 loadArchive :: String -> IO Archive
-loadArchive filename = do
-  Z.unzip (inputPath <> filename <> ".odt") (inputPath <> filename)
-
-  -- Read files
-  contentxmldoc <- X.readFile X.def (inputPath <> filename <> "/content.xml")
-  stylesxmldoc <- X.readFile X.def (inputPath <> filename <> "/styles.xml")
-
-  let contentodtdoc = fromXMLDoc contentxmldoc
-  let stylesodtdoc = fromXMLDoc stylesxmldoc
-
-  let archive = Archive {
-      contentDoc = contentodtdoc
-    , stylesDoc = stylesodtdoc
-  } 
-
-  return archive
+loadArchive fn = loadArchiveFromZip inputPath (fn <> ".odt")
 
 testText :: T.Text
 testText = "test text"
