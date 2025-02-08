@@ -9,15 +9,7 @@ import qualified Text.XML as X
 import Data.Maybe (fromMaybe)
 
 import Text.ODT hiding (italicPara)
-
 import ConstantsSpec
-
-
--- appendBoldSpanToEmptyDoc :: IO Bool
--- appendBoldSpanToEmptyDoc = do
---   archive <- loadArchive "example"
---   let contentODT = getContentDocODT archive <> textspan italic "hello"
-
 
 
 appendBoldItalicTextStyleWithSpanSad :: IO Bool
