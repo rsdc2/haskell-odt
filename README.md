@@ -38,6 +38,10 @@ $ stack run
 
 ## Key functionality
 
+### Composing OpenDocument Text documents
+
+From a writer's perspective, there are two key components to a 
+
 ### Writing a new document to disk
 
 There are two main functions which can write a new `.odt` file to disk:
