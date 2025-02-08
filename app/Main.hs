@@ -21,7 +21,7 @@ content :: Writer ODT ()
 content = do
     writeTextSpan italicTextStyle "Hello"
     writeTextSpan boldTextStyle " world."
-    writePara normalPara ""
+    writeNewPara
     writeTextSpan underline "This text is underlined."
     writePara italicPara "This text is italic because it is in an italic paragraph."
     writePara normalPara "This text is normal."
