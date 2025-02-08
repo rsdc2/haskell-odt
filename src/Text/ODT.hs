@@ -54,6 +54,7 @@ module Text.ODT (
     , para
     , str
     , textspan
+    , writeNewPara
     , writePara
     , writeTextSpan
     ) where

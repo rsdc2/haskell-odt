@@ -6,6 +6,7 @@ module Text.ODT.TextUnits (
   , Text.ODT.TextUnits.textspan
   , Text.ODT.TextUnits.str
   , writeTextSpan
+  , writeNewPara
   , writePara
 ) where
 
@@ -18,6 +19,8 @@ import Text.ODT.ODTXML.ODTXML
 import Text.ODT.ODTXML.Name
 import Text.ODT.ODTXML.Namespace
 
+import Text.ODT.Style.ParaStyles
+
 import Control.Monad.Writer
 
 
@@ -26,6 +29,9 @@ para parastyle s = TextNode (P $ Just parastyle) (ODTXMLElem pName Map.empty) (T
 
 writePara :: ParaStyle -> T.Text -> Writer ODT ()
 writePara style = tell . para style
+
+writeNewPara :: Writer ODT ()
+writeNewPara = writePara normalPara ""
 
 -- Passes the TextStyle on with the TextNode, and get the name when finally integrate into the document
 textspan :: TextStyle -> T.Text -> ODT
