@@ -2,7 +2,7 @@
 
 ## Overview
 
-Haskell-ODT provides an interface in Haskell for reading and writing Open Document Format `.odt` files.
+Haskell ODT Writer provides an interface in Haskell for reading and writing Open Document Format `.odt` files.
 
 The program is set up to enable the user to compose their own `.odt` files using Haskell syntax. 
 
