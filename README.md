@@ -89,7 +89,7 @@ content = do
 
 In this case, the document will comprise a single line: "*Hello world.* **This is bold text.**"
 
-### `writeNewPara :: Writer ODT ()`
+#### `writeNewPara :: Writer ODT ()`
 
 If you want to start a new paragraph, use the `writeNewPara` function, which takes no arguments. You can then follow this with further `TextSpan`s:
 
@@ -105,7 +105,7 @@ content = do
 The text "This is normal text." will appear in a new paragraph.
 
 
-### `writePara :: ParaStyle -> T.Text -> Writer ODT ()`
+#### `writePara :: ParaStyle -> T.Text -> Writer ODT ()`
 
 To write a new section of text as a new paragraph with a _paragraph style_ (as opposed to a _text style_), use the `writePara` function, e.g.:
 
@@ -120,11 +120,11 @@ content = do
 ```
 
 
-### Saving the document to disk
+## Saving the document to disk
 
 There are two main functions which can write a new `.odt` file to disk, use the function `writeNewODT`.
 
-### `writeNewODT :: Folderpath -> Filename -> Writer ODT () -> IO ()`
+#### `writeNewODT :: Folderpath -> Filename -> Writer ODT () -> IO ()`
 
 Writes a new document to disk with all styling applied as _direct_ formatting. For example, applying bold formatting using this function would be equivalent to pressing the `B` button in LibreOffice Writer, e.g.:
 
@@ -136,7 +136,7 @@ This will save the content we have described in `content` to a file `SimpleExamp
 
 <!-- - `writeNewODTWithStyles`: Writes a new document to disk with all styling applied via _styles_. Applying e.g. bold formatting using this function would be equivalent to using the `Strong Emphasis` style in LibreOffice Writer.  -->
 
-## Key concepts
+<!-- ## Key concepts -->
 
 ## Acknowledgements 
 
