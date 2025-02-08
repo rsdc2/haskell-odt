@@ -1,6 +1,7 @@
 module Text.ODT.Zip.Zip
     ( archiveFromFile
     , archiveToZipLBS
+    , replaceMimetype
     , saveFileLbsToZipArchive
     , Text.ODT.Zip.Zip.unzip
     , Text.ODT.Zip.Zip.unzipOdt
@@ -67,6 +68,13 @@ saveFileLbsToZipArchive lbs fp archive = do
     entry <- fileLbsToEntry lbs fp
     let updatedArchive = Zip.addEntryToArchive entry archive
     pure updatedArchive
+
+
+replaceMimetype :: Zip.Archive -> IO Zip.Archive
+replaceMimetype archive = 
+    case Zip.findEntryByPath "mimetype" archive of
+        Just mimetype -> pure . Zip.addEntryToArchive mimetype $ archive
+        Nothing -> error "No mimetype file present."
 
 
 -- Zip up a folder containing an .odt archive (fpIn)

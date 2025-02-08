@@ -59,7 +59,8 @@ updateODTFile odtArchive src dst = do
   zipArchive <- Zip.archiveFromFile src
   zipArchiveWithContent <- Zip.saveFileLbsToZipArchive contentLBS "content.xml" zipArchive
   zipArchiveWithStyles <- Zip.saveFileLbsToZipArchive stylesLBS "styles.xml" zipArchiveWithContent
+  zipArchiveWithMimetype <- Zip.replaceMimetype zipArchiveWithStyles
 
-  let zipLBS = Zip.archiveToZipLBS zipArchiveWithStyles
+  let zipLBS = Zip.archiveToZipLBS zipArchiveWithMimetype
   LBS.writeFile dst zipLBS 
 
