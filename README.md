@@ -1,5 +1,4 @@
-# Haskell ODT
-
+# Haskell ODT Writer
 
 ## Overview
 
